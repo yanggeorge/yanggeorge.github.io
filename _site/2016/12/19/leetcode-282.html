@@ -143,6 +143,17 @@
 <p>那么最终我们可以选择的优化方向就是，使用深度优先遍历的时候，必须要在
 遍历的同时，进行计算。这样当到达结束判断的时候，能够直接判断。</p>
 
+<p>为了便于分析，首先简化问题。考虑如何计算字符串”123”，并且
+只允许插入加号或者不插入加号。</p>
+
+<p>为了把问题组合描述为一个树的形式。我们把两个数字直接连接起来组成
+一个新的数字，看做一个操作，定义为<code class="highlighter-rouge">.</code>，那么<code class="highlighter-rouge">a.b = ab</code>，而数值计算
+的公式为<code class="highlighter-rouge">a.b = a*10+b</code>，
+而且这个符号的优先级高于加号和乘号。
+这样可得如下树图。</p>
+
+<p><img src="http://localhost:4000/assets/tree.png" alt="tree pic" /></p>
+
 <p>这样我们有了解法２。</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">Solution2</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>

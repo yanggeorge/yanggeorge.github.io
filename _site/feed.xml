@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2016-12-19T03:00:12-05:00</updated><id>http://localhost:4000//</id><title type="html">形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">leetcode 282解题思路</title><link href="http://localhost:4000/2016/12/19/leetcode-282.html" rel="alternate" type="text/html" title="leetcode 282解题思路" /><published>2016-12-19T00:00:00-05:00</published><updated>2016-12-19T00:00:00-05:00</updated><id>http://localhost:4000/2016/12/19/leetcode-282</id><content type="html" xml:base="http://localhost:4000/2016/12/19/leetcode-282.html">&lt;p&gt;解题思路。&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2016-12-19T04:45:09-05:00</updated><id>http://localhost:4000//</id><title type="html">形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">leetcode 282解题思路</title><link href="http://localhost:4000/2016/12/19/leetcode-282.html" rel="alternate" type="text/html" title="leetcode 282解题思路" /><published>2016-12-19T00:00:00-05:00</published><updated>2016-12-19T00:00:00-05:00</updated><id>http://localhost:4000/2016/12/19/leetcode-282</id><content type="html" xml:base="http://localhost:4000/2016/12/19/leetcode-282.html">&lt;p&gt;解题思路。&lt;/p&gt;
 
 &lt;p&gt;题目概述。&lt;/p&gt;
 
@@ -74,6 +74,17 @@
 
 &lt;p&gt;那么最终我们可以选择的优化方向就是，使用深度优先遍历的时候，必须要在
 遍历的同时，进行计算。这样当到达结束判断的时候，能够直接判断。&lt;/p&gt;
+
+&lt;p&gt;为了便于分析，首先简化问题。考虑如何计算字符串”123”，并且
+只允许插入加号或者不插入加号。&lt;/p&gt;
+
+&lt;p&gt;为了把问题组合描述为一个树的形式。我们把两个数字直接连接起来组成
+一个新的数字，看做一个操作，定义为&lt;code class=&quot;highlighter-rouge&quot;&gt;.&lt;/code&gt;，那么&lt;code class=&quot;highlighter-rouge&quot;&gt;a.b = ab&lt;/code&gt;，而数值计算
+的公式为&lt;code class=&quot;highlighter-rouge&quot;&gt;a.b = a*10+b&lt;/code&gt;，
+而且这个符号的优先级高于加号和乘号。
+这样可得如下树图。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://localhost:4000/assets/tree.png&quot; alt=&quot;tree pic&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;这样我们有了解法２。&lt;/p&gt;
 
