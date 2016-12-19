@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>leetcode 282解题思路</title>
-  <meta name="description" content="解题思路。">
+  <meta name="description" content="    解题思路。">
 
   <link rel="stylesheet" href="/assets/main.css">
   <link rel="canonical" href="http://localhost:4000/2016/12/19/leetcode-282.html">
@@ -66,11 +66,11 @@
   </header>
 
   <div class="post-content" itemprop="articleBody">
-    <p>解题思路。</p>
+    <p>    解题思路。</p>
 
-<p>题目概述。</p>
+<p>    题目概述。</p>
 
-<p>首先想到的解法就是遍历所有的组合，一一计算比较排除。</p>
+<p>    首先想到的解法就是遍历所有的组合，一一计算比较排除。</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">Solution1</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">addOperators</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
@@ -123,10 +123,11 @@
 
         <span class="k">return</span> <span class="n">flag</span></code></pre></figure>
 
-<p>没有意外，这种解法超时了。</p>
+<p>    没有意外，这种解法超时了。</p>
 
-<p>先不考虑eval()函数是否应该使用。
+<p>    先不考虑eval()函数是否应该使用。
 显然的情况是每一种字符组合至少遍历４遍。</p>
+
 <ul>
   <li>第一遍，得到组合</li>
   <li>第二遍，join</li>
@@ -134,19 +135,19 @@
   <li>第四遍，is_valid排除</li>
 </ul>
 
-<p>有办法使用动态规划么？把一个大问题替换成子问题进行求解。
+<p>    有办法使用动态规划么？把一个大问题替换成子问题进行求解。
 比如先计算一个字符的所有的解。然后考虑增加到两个字符。在第一个字符的解
 的基础上，考虑在两个字符中间插入加减乘。然后再在两个字符的解的基础上
 再加入第三个字符。以此类推。这种方法，并没有减少计算量，其实还是遍历
 所有的组合。然后得到最终的解。</p>
 
-<p>那么最终我们可以选择的优化方向就是，使用深度优先遍历的时候，必须要在
+<p>    那么最终我们可以选择的优化方向就是，使用深度优先遍历的时候，必须要在
 遍历的同时，进行计算。这样当到达结束判断的时候，能够直接判断。</p>
 
-<p>为了便于分析，首先简化问题。考虑如何计算字符串”123”，并且
+<p>    为了便于分析，首先简化问题。考虑如何计算字符串”123”，并且
 只允许插入加号或者不插入加号。</p>
 
-<p>为了把问题组合描述为一个树的形式。我们把两个数字直接连接起来组成
+<p>    为了把问题组合描述为一个树的形式。我们把两个数字直接连接起来组成
 一个新的数字，看做一个操作，定义为<code class="highlighter-rouge">.</code>，那么<code class="highlighter-rouge">a.b = ab</code>，而数值计算
 的公式为<code class="highlighter-rouge">a.b = a*10+b</code>，
 而且这个符号的优先级高于加号和乘号。
@@ -154,7 +155,7 @@
 
 <p><img src="http://localhost:4000/assets/tree.png" alt="tree pic" /></p>
 
-<p>这样我们有了解法２。</p>
+<p>    这样我们有了解法２。</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">Solution2</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">addOperators</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
