@@ -6,11 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>形而下技术博客</title>
-  <meta name="description" content="这里只关注技术实现，用代码说话。">
+  <title>得到传入参数的变量名</title>
+  <meta name="description" content="    同事写R程序的时候，问我能不能获取一个变量的name， 我说这个好办啊，在R里可以这样写，用quote()">
 
   <link rel="stylesheet" href="/assets/main.css">
-  <link rel="canonical" href="http://localhost:4000/">
+  <link rel="canonical" href="http://localhost:4000/2016/12/21/get-val-name-and-value.html">
   <link rel="alternate" type="application/rss+xml" title="形而下技术博客" href="/feed.xml">
   
   
@@ -58,36 +58,86 @@
 
     <main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <div class="home">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
-  <h1 class="page-heading">Posts</h1>
-  
-  
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">得到传入参数的变量名</h1>
+    <p class="post-meta"><time datetime="2016-12-21T00:00:00-05:00" itemprop="datePublished">Dec 21, 2016</time></p>
+  </header>
 
+  <div class="post-content" itemprop="articleBody">
+    <p>    同事写R程序的时候，问我能不能获取一个变量的<code class="highlighter-rouge">name</code>，
+我说这个好办啊，在R里可以这样写，用<code class="highlighter-rouge">quote()</code></p>
 
-  <ul class="post-list">
-    
-      <li>
-        <span class="post-meta">Dec 21, 2016</span>
-
-        <h2>
-          <a class="post-link" href="/2016/12/21/get-val-name-and-value.html">得到传入参数的变量名</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Dec 19, 2016</span>
-
-        <h2>
-          <a class="post-link" href="/2016/12/19/leetcode-282.html">leetcode 282解题思路</a>
-        </h2>
-      </li>
-    
-  </ul>
-
-  <p class="rss-subscribe">subscribe <a href="/feed.xml">via RSS</a></p>
-
+<div class="highlighter-rouge"><pre class="highlight"><code>&gt; a &lt;- 1
+&gt; quote(a)
+a
+</code></pre>
 </div>
+
+<p>    不过我把问题想简单了，他实际需要的是要获得传入
+参数的<code class="highlighter-rouge">name</code>。例如定义一个函数<code class="highlighter-rouge">foo(c)</code>, 给它传入参数<code class="highlighter-rouge">a</code>，我能够在函数
+内部知道传入参数的名字<code class="highlighter-rouge">a</code>。</p>
+
+<p>    我说可以增加一个参数嘛。把参数的名字直接传入。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&gt; foo(a,"a")
+</code></pre>
+</div>
+
+<p>    但是我立刻意识到，这里存在重复，而写代码是提倡
+<code class="highlighter-rouge">do not repeat yourself</code>的。而且对R这种可以随意获取环境变量的高级语言。
+肯定有办法做到。</p>
+
+<p>    但是我还是先看看Python吧，毕竟最近用Python用的
+多一些。Google关键字<code class="highlighter-rouge">python print variable name and value</code>,立刻可以获得
+答案。这段代码的思想也很直白，就是对输入的obj在环境变量名中遍历寻找与之
+对应的变量名。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>def namestr(obj, namespace=globals()):
+    return [name for name in namespace if namespace[name] is obj]
+</code></pre>
+</div>
+
+<p>    这样可以这样使用</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&gt;&gt;&gt; a = 1
+&gt;&gt;&gt; namestr(a)
+['a']
+</code></pre>
+</div>
+
+<p>    那么R肯定也有办法做到。Google关键字
+<code class="highlighter-rouge">r print variable name and value</code></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>myfunc &lt;- function(v1) {
+  deparse(substitute(v1))
+}
+
+myfunc(foo)
+[1] "foo"
+</code></pre>
+</div>
+
+<p>    真是很不错啊。把结果告诉了同事，他也很高兴。
+但是<code class="highlighter-rouge">substitute()</code>和<code class="highlighter-rouge">deparse()</code>究竟是啥意思呢？在R里输入<code class="highlighter-rouge">?substitute</code>，可以
+看到解释。</p>
+
+<blockquote>
+  <p>substitute returns the parse tree for
+the (unevaluated) expression expr, substituting any variables bound in env.</p>
+</blockquote>
+
+<p>    够晦涩难懂的吧。不过仔细思考一下，也大概明白了。
+在R里，从语法角度来说，所有都是<code class="highlighter-rouge">expr</code>，（这跟其他语言都是<code class="highlighter-rouge">statement</code>不同）
+在R的函数里，可以对传入的未进行求值的<code class="highlighter-rouge">expr</code>进行操作。这点非常有趣。
+而<code class="highlighter-rouge">deparse()</code>，比较好理解了至少再我看来，与<code class="highlighter-rouge">as.character()</code>的作用是一样的。</p>
+
+
+  </div>
+
+  
+</article>
 
       </div>
     </main>
