@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2016-12-19T05:00:48-05:00</updated><id>http://localhost:4000//</id><title type="html">形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">leetcode 282解题思路</title><link href="http://localhost:4000/2016/12/19/leetcode-282.html" rel="alternate" type="text/html" title="leetcode 282解题思路" /><published>2016-12-19T00:00:00-05:00</published><updated>2016-12-19T00:00:00-05:00</updated><id>http://localhost:4000/2016/12/19/leetcode-282</id><content type="html" xml:base="http://localhost:4000/2016/12/19/leetcode-282.html">&lt;p&gt;    解题思路。&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2016-12-21T01:40:20-05:00</updated><id>http://localhost:4000//</id><title type="html">形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">leetcode 282解题思路</title><link href="http://localhost:4000/2016/12/19/leetcode-282.html" rel="alternate" type="text/html" title="leetcode 282解题思路" /><published>2016-12-19T00:00:00-05:00</published><updated>2016-12-19T00:00:00-05:00</updated><id>http://localhost:4000/2016/12/19/leetcode-282</id><content type="html" xml:base="http://localhost:4000/2016/12/19/leetcode-282.html">&lt;p&gt;    解题思路。&lt;/p&gt;
 
 &lt;p&gt;    题目概述。&lt;/p&gt;
 
@@ -86,6 +86,11 @@
 这样可得如下树图。&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;http://localhost:4000/assets/tree.png&quot; alt=&quot;tree pic&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;    根据这种假定，对于任意数字字符串&lt;code class=&quot;highlighter-rouge&quot;&gt;n1n2n3&lt;/code&gt;，可以得到
+的查找树如下图。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://localhost:4000/assets/282_2.png&quot; alt=&quot;tree2 pic&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;    这样我们有了解法２。&lt;/p&gt;
 
