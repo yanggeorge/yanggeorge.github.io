@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 得到传入参数的变量名
+title: R和Python里得到传入参数的变量名
 ---
 
 &nbsp;&nbsp;&nbsp;&nbsp;同事写R程序的时候，问我能不能获取一个变量的`name`，
