@@ -24,10 +24,10 @@ title: R和Python里得到传入参数的变量名
 `do not repeat yourself`的。而且对R这种可以随意获取环境变量的高级语言。
 肯定有办法做到。
 
-&nbsp;&nbsp;&nbsp;&nbsp;但是我还是先看看Python吧，毕竟最近用Python用的
+&nbsp;&nbsp;&nbsp;&nbsp;但是我还是先看看Python吧，毕竟最近用Python
 多一些。Google关键字`python print variable name and value`,立刻可以获得
-答案。这段代码的思想也很直白，就是对输入的obj在环境变量名中遍历寻找与之
-对应的变量名。
+答案。这段代码的思想也很直白，就是对输入的obj在环境变量（名称,对象）键值对
+中查找，返回名称。
 
 	def namestr(obj, namespace=globals()):
 	    return [name for name in namespace if namespace[name] is obj]
@@ -59,7 +59,7 @@ title: R和Python里得到传入参数的变量名
 &nbsp;&nbsp;&nbsp;&nbsp;够晦涩难懂的吧。不过仔细思考一下，也大概明白了。
 在R里，从语法角度来说，所有都是`expr`，（这跟其他语言都是`statement`不同）
 在R的函数里，可以对传入的未进行求值的`expr`进行操作。这点非常有趣。
-而`deparse()`，比较好理解了至少再我看来，与`as.character()`的作用是一样的。
+而`deparse()`，比较好理解了至少在我看来，与`as.character()`的作用是一样的。
 
 
 
