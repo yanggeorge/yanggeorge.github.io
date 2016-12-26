@@ -149,7 +149,9 @@ Return the array [2, 1, 1, 0].
   <li>重复2</li>
 </ol>
 
-<p>    如下图。</p>
+<p>    如下图。首先找到最大的数字<code class="highlighter-rouge">7</code>，它的索引是<code class="highlighter-rouge">4</code>(第四个数字)，
+而数组的长度为<code class="highlighter-rouge">6</code>，那么<code class="highlighter-rouge">smaller_num("7") = 6 - 4 = 2</code>。然后不考虑该数字<code class="highlighter-rouge">7</code>。
+对<code class="highlighter-rouge">7</code>右侧的<code class="highlighter-rouge">2</code>和<code class="highlighter-rouge">3</code>同时向左移动，同时令数组的长度减一。然后依次这样操作。</p>
 
 <p><img src="http://localhost:4000/assets/2016-12-26-2.png" alt="2016-12-26-2" /></p>
 

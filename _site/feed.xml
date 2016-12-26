@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2016-12-26T07:32:22-05:00</updated><id>http://localhost:4000//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">[leetcode 315]Count of Smaller Numbers After Self 原创解法</title><link href="http://localhost:4000/2016/12/26/leetcode-315.html" rel="alternate" type="text/html" title="[leetcode 315]Count of Smaller Numbers After Self 原创解法" /><published>2016-12-26T00:00:00-05:00</published><updated>2016-12-26T00:00:00-05:00</updated><id>http://localhost:4000/2016/12/26/leetcode-315</id><content type="html" xml:base="http://localhost:4000/2016/12/26/leetcode-315.html">&lt;p&gt;    题目概述。&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2016-12-26T07:42:04-05:00</updated><id>http://localhost:4000//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">[leetcode 315]Count of Smaller Numbers After Self 原创解法</title><link href="http://localhost:4000/2016/12/26/leetcode-315.html" rel="alternate" type="text/html" title="[leetcode 315]Count of Smaller Numbers After Self 原创解法" /><published>2016-12-26T00:00:00-05:00</published><updated>2016-12-26T00:00:00-05:00</updated><id>http://localhost:4000/2016/12/26/leetcode-315</id><content type="html" xml:base="http://localhost:4000/2016/12/26/leetcode-315.html">&lt;p&gt;    题目概述。&lt;/p&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;You are given an integer array nums and you
@@ -81,7 +81,9 @@ Return the array [2, 1, 1, 0].
   &lt;li&gt;重复2&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;    如下图。&lt;/p&gt;
+&lt;p&gt;    如下图。首先找到最大的数字&lt;code class=&quot;highlighter-rouge&quot;&gt;7&lt;/code&gt;，它的索引是&lt;code class=&quot;highlighter-rouge&quot;&gt;4&lt;/code&gt;(第四个数字)，
+而数组的长度为&lt;code class=&quot;highlighter-rouge&quot;&gt;6&lt;/code&gt;，那么&lt;code class=&quot;highlighter-rouge&quot;&gt;smaller_num(&quot;7&quot;) = 6 - 4 = 2&lt;/code&gt;。然后不考虑该数字&lt;code class=&quot;highlighter-rouge&quot;&gt;7&lt;/code&gt;。
+对&lt;code class=&quot;highlighter-rouge&quot;&gt;7&lt;/code&gt;右侧的&lt;code class=&quot;highlighter-rouge&quot;&gt;2&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;3&lt;/code&gt;同时向左移动，同时令数组的长度减一。然后依次这样操作。&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;http://localhost:4000/assets/2016-12-26-2.png&quot; alt=&quot;2016-12-26-2&quot; /&gt;&lt;/p&gt;
 
