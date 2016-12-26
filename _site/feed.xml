@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2016-12-26T07:24:15-05:00</updated><id>http://localhost:4000//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">[leetcode 315]Count of Smaller Numbers After Self 原创解法</title><link href="http://localhost:4000/2016/12/26/leetcode-315.html" rel="alternate" type="text/html" title="[leetcode 315]Count of Smaller Numbers After Self 原创解法" /><published>2016-12-26T00:00:00-05:00</published><updated>2016-12-26T00:00:00-05:00</updated><id>http://localhost:4000/2016/12/26/leetcode-315</id><content type="html" xml:base="http://localhost:4000/2016/12/26/leetcode-315.html">&lt;p&gt;    题目概述。&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2016-12-26T07:32:22-05:00</updated><id>http://localhost:4000//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">[leetcode 315]Count of Smaller Numbers After Self 原创解法</title><link href="http://localhost:4000/2016/12/26/leetcode-315.html" rel="alternate" type="text/html" title="[leetcode 315]Count of Smaller Numbers After Self 原创解法" /><published>2016-12-26T00:00:00-05:00</published><updated>2016-12-26T00:00:00-05:00</updated><id>http://localhost:4000/2016/12/26/leetcode-315</id><content type="html" xml:base="http://localhost:4000/2016/12/26/leetcode-315.html">&lt;p&gt;    题目概述。&lt;/p&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;You are given an integer array nums and you
@@ -111,7 +111,7 @@ Return the array [2, 1, 1, 0].
                 &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cur_pos2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cur_pos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
                     &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cur_pos2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
                     &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-			&lt;span class=&quot;c&quot;&gt;# 考虑值相等的情况。&lt;/span&gt;
+                        &lt;span class=&quot;c&quot;&gt;# 考虑值相等的情况。&lt;/span&gt;
                         &lt;span class=&quot;n&quot;&gt;equal_n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
 
             &lt;span class=&quot;n&quot;&gt;smaller&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;origin_pos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;equal_n&lt;/span&gt;
@@ -147,7 +147,8 @@ Return the array [2, 1, 1, 0].
 
 &lt;p&gt;    而相等的数怎么办呢？嗯我们可以在排序
 的时候保证序列不但满足值的升序，还能保证索引值的升序。
-这样，原始数组种处于最右侧的最大数永远在序列的末尾。这个数的右侧不会有相等的值。
+这样，原始数组中处于最右侧的最大数永远在序列的末尾。这个数的右侧不会有相等的值。
+因而计算的时候就不需要考虑相等值的情况。
 而该数字计算之后会进行删除。那么即使有相等的数，也不会受到影响。
 真是很不错啊。&lt;/p&gt;
 

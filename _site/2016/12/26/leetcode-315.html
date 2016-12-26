@@ -179,7 +179,7 @@ Return the array [2, 1, 1, 0].
                 <span class="k">if</span> <span class="n">cur_pos2</span> <span class="o">&gt;</span> <span class="n">cur_pos</span><span class="p">:</span>
                     <span class="n">l</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">cur_pos2</span> <span class="o">-</span> <span class="mi">1</span>
                     <span class="k">if</span> <span class="n">v1</span> <span class="o">==</span> <span class="n">v</span><span class="p">:</span>
-			<span class="c"># 考虑值相等的情况。</span>
+                        <span class="c"># 考虑值相等的情况。</span>
                         <span class="n">equal_n</span> <span class="o">+=</span> <span class="mi">1</span>
 
             <span class="n">smaller</span><span class="p">[</span><span class="n">origin_pos</span><span class="p">]</span> <span class="o">-=</span> <span class="n">equal_n</span>
@@ -215,7 +215,8 @@ Return the array [2, 1, 1, 0].
 
 <p>    而相等的数怎么办呢？嗯我们可以在排序
 的时候保证序列不但满足值的升序，还能保证索引值的升序。
-这样，原始数组种处于最右侧的最大数永远在序列的末尾。这个数的右侧不会有相等的值。
+这样，原始数组中处于最右侧的最大数永远在序列的末尾。这个数的右侧不会有相等的值。
+因而计算的时候就不需要考虑相等值的情况。
 而该数字计算之后会进行删除。那么即使有相等的数，也不会受到影响。
 真是很不错啊。</p>
 
