@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>[leetcode 315]Count of Smaller Numbers After Self 原创解法</title>
+  <meta name="description" content="    题目概述。">
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="http://localhost:4000/2016/12/26/leetcode-315.html">
+  <link rel="alternate" type="application/rss+xml" title="3.λ｜形而下技术博客" href="/feed.xml">
+  
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">3.λ｜形而下技术博客</a>
+
+    <nav class="site-nav">
+      <span class="menu-icon">
+        <svg viewBox="0 0 18 15" width="18px" height="15px">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </span>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">关于作者</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">[leetcode 315]Count of Smaller Numbers After Self 原创解法</h1>
+    <p class="post-meta"><time datetime="2016-12-26T00:00:00+08:00" itemprop="datePublished">Dec 26, 2016</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>    题目概述。</p>
+
+<blockquote>
+  <p>You are given an integer array nums and you
+have to return a new counts array. 
+The counts array has the property where counts[i] is 
+the number of smaller elements to the right of nums[i].</p>
+</blockquote>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Example:
+
+Given nums = [5, 2, 6, 1]
+
+To the right of 5 there are 2 smaller elements (2 and 1).
+To the right of 2 there is only 1 smaller element (1).
+To the right of 6 there is 1 smaller element (1).
+To the right of 1 there is 0 smaller element.
+Return the array [2, 1, 1, 0].
+</code></pre>
+</div>
+
+<p>    拿到这个题，最先想到的还是比较基本的时间复杂度O(N*N)
+的解法。那就实现一下吧，最起码可以用进行优化后的比较。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">Solution2</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">countSmaller</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nums</span><span class="p">):</span>
+        <span class="s">"""
+        O(N*N)
+        :type nums: List[int]
+        :rtype: List[int]
+        """</span>
+        <span class="k">if</span> <span class="n">nums</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nums</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+                <span class="n">cur_val</span> <span class="o">=</span> <span class="n">nums</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">smaller_n</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">nums</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">cur_val</span><span class="p">:</span>
+                        <span class="n">smaller_n</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">smaller_n</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span></code></pre></figure>
+
+<p>    把上面的代码提交上去，还是正确的，但是超时了。
+该怎么优化呢？</p>
+
+<p>    对于这样的题，还是尝试了能不能使用动态规划，
+但是仔仔细细列出来，发现怎么也找不到递推的方法。只好放弃。不过在思考
+的过程中忽然想到一种思路。对于数组<code class="highlighter-rouge">[5, 2, 6, 1]]</code>，如果我先遍历
+求出<code class="highlighter-rouge">5</code>的smaller数组<code class="highlighter-rouge">[2,1]</code>和larger数组<code class="highlighter-rouge">[6]</code>。那么<code class="highlighter-rouge">6</code>的smaller个数怎么
+求呢，<code class="highlighter-rouge">s(6) = len([5,2,6,1] - pos(6) = 4-3 = 1</code>。看起来很不错，但是当
+数组数的个数多起来，就变得复杂了，无法这样简单的求解了。真是非常的泄气啊。
+想了好久也没有相出第二可用的思路来。脑子里把曾经用到的方法想了一个遍，
+也还是不行。</p>
+
+<h2 id="用二维图描述问题">用二维图描述问题</h2>
+
+<p>    物理学科中经常使用的一个策略就是转换坐标系，可以神奇的
+化繁为简。那么我是否可以这样做呢。看看能不能用二维的图来重新展示这个问题。
+于是我就画了这样一个图。这是对数组<code class="highlighter-rouge">[5,1,6,7,2,3]</code>画的表格。横轴表示数组的index，
+纵轴表示大小。</p>
+
+<p><img src="http://localhost:4000/assets/2016-12-26-1.png" alt="2016-12-26-1" /></p>
+
+<p>    我把它画在纸上，盯着看了半小时。呵呵，真的有这么长时间。
+因为我一直还是老思路，总想着根据第一个数字把剩下的数组分成两批。
+后来我想，既然是二维图，<strong>我既可以从左向右，一列一列的看，也可以从上往下一行一行的
+看。</strong> 不错，终于有了新的思路。</p>
+
+<ol>
+  <li>初始化一个长度为N的smaller数组。</li>
+  <li>对数组从大到小排序。</li>
+  <li>取出最大的数，这个数的 <code class="highlighter-rouge">n = smaller_num(Nmax) = 数组的长度 - pos(Nmax)</code></li>
+  <li><code class="highlighter-rouge">smaller[index(Nmax)] = n</code></li>
+  <li>对于index大于该数的所有数字的index-1。</li>
+  <li>重复2</li>
+</ol>
+
+<p>    如下图。</p>
+
+<p><img src="http://localhost:4000/assets/2016-12-26-2.png" alt="2016-12-26-2" /></p>
+
+<p>    这样我们就可以写出一个新的算法。而对于步骤3则
+使用了简单实现，遍历整个数组，对所有<code class="highlighter-rouge">index &gt; index(Nmax)</code>数的索引进行
+减一。上述算法描述没有考虑有多个最大值的情况。但是下面的代码里考虑了。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">Solution1</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">countSmaller</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nums</span><span class="p">):</span>
+        <span class="s">"""
+        O(N*N)
+        :type nums: List[int]
+        :rtype: List[int]
+        """</span>
+        <span class="n">origin</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">nums</span><span class="p">))</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">nums</span><span class="p">)</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="nb">cmp</span><span class="o">=</span><span class="n">compare</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">smaller</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">nums</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nums</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+            <span class="n">v</span><span class="p">,</span> <span class="n">origin_pos</span><span class="p">,</span> <span class="n">cur_pos</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">smaller</span><span class="p">[</span><span class="n">origin_pos</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">cur_pos</span>
+            <span class="n">equal_n</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">nums</span><span class="p">)):</span>
+                <span class="n">v1</span><span class="p">,</span> <span class="n">origin_pos2</span><span class="p">,</span> <span class="n">cur_pos2</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">cur_pos2</span> <span class="o">&gt;</span> <span class="n">cur_pos</span><span class="p">:</span>
+                    <span class="n">l</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">cur_pos2</span> <span class="o">-</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="n">v1</span> <span class="o">==</span> <span class="n">v</span><span class="p">:</span>
+		    	<span class="c"># 考虑值相等的情况。</span>
+                        <span class="n">equal_n</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">smaller</span><span class="p">[</span><span class="n">origin_pos</span><span class="p">]</span> <span class="o">-=</span> <span class="n">equal_n</span>
+
+            <span class="n">N</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">smaller</span>
+
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nums</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nums</span><span class="p">)):</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">nums</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">result</span></code></pre></figure>
+
+<h2 id="终于通过了">终于通过了</h2>
+
+<p>    事情终于有了进展，看起来很不错。但是仍然
+遇到了时间复杂度过高的问题。因为实现步骤3的方法导致整个程序的
+时间复杂度是O(N*N)。那么有什么办法能够优化呢。嗯，肯定有办法的。
+我们这样来做。</p>
+
+<ol>
+  <li>保存一个原始索引的<code class="highlighter-rouge">(origin_index,value)</code>的<code class="highlighter-rouge">origin</code>List(tuple)</li>
+  <li>再保存一个从大到小排序后的<code class="highlighter-rouge">(origin_index,value)</code>的<code class="highlighter-rouge">l</code>List。</li>
+  <li>对<code class="highlighter-rouge">l</code>从大到小进行遍历：根据orgin_index使用二分查找
+查找<code class="highlighter-rouge">origin</code>中对应的实际索引，计算得到该值对应的smaller_num之后，
+从<code class="highlighter-rouge">origin</code>中删除该项。</li>
+</ol>
+
+<p>    因为二分查找和删除项的时间复杂度是O(logN)。
+上述步骤的总的时间复杂度是O(N*logN)。</p>
+
+<p>    而相等的数怎么办呢？嗯我们可以在排序
+的时候保证序列不但满足值的升序排列，还能保证索引值的升序排列。
+这样，最右侧的最大数永远在序列的末尾。这个数的右侧不会有相等的值。
+真是很不错啊。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">Solution11</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">countSmaller</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nums</span><span class="p">):</span>
+        <span class="s">"""
+        O(NlogN)
+        :type nums: List[int]
+        :rtype: List[int]
+        """</span>
+        <span class="n">origin</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">nums</span><span class="p">))</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">nums</span><span class="p">)</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="nb">cmp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compare</span><span class="p">)</span>
+        <span class="n">smaller</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">nums</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">l</span><span class="p">:</span>
+            <span class="n">v</span><span class="p">,</span> <span class="n">pos</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">cur_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_find</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+            <span class="n">smaller</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">origin</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">cur_pos</span>
+            <span class="n">origin</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">cur_pos</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">smaller</span>
+
+    <span class="k">def</span> <span class="nf">compare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="c"># 这样排序那么相等的元素的仍然顺序不变</span>
+        <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nums</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nums</span><span class="p">)):</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">nums</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">i</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">bin_find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">origin</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+        <span class="c"># 二分查找法</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">origin</span><span class="p">)</span>
+        <span class="n">mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">start</span> <span class="o">+</span> <span class="n">end</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">new_mid</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">while</span> <span class="n">mid</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">origin</span><span class="p">)</span> <span class="ow">and</span> <span class="n">mid</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">origin</span><span class="p">[</span><span class="n">mid</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">pos</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">elif</span> <span class="n">origin</span><span class="p">[</span><span class="n">mid</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">pos</span><span class="p">:</span>
+                <span class="n">end</span> <span class="o">=</span> <span class="n">mid</span>
+                <span class="n">new_mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">start</span> <span class="o">+</span> <span class="n">end</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+            <span class="k">elif</span> <span class="n">origin</span><span class="p">[</span><span class="n">mid</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">pos</span><span class="p">:</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="n">mid</span>
+                <span class="n">new_mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">start</span> <span class="o">+</span> <span class="n">end</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+            <span class="k">if</span> <span class="n">new_mid</span> <span class="o">==</span> <span class="n">mid</span><span class="p">:</span>
+                <span class="n">mid</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mid</span> <span class="o">=</span> <span class="n">new_mid</span>
+
+        <span class="k">return</span> <span class="n">mid</span></code></pre></figure>
+
+
+  </div>
+
+  
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">3.λ｜形而下技术博客</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              3.λ｜形而下技术博客
+            
+            </li>
+            
+            <li><a href="mailto:alenym@qq.com">alenym@qq.com</a></li>
+            
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/yanggeorge"><span class="icon icon--github"><svg viewBox="0 0 16 16" width="16px" height="16px"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">yanggeorge</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>这里只关注技术实现，用代码说话。</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
