@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2016-12-26T20:42:57-05:00</updated><id>http://localhost:4000//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">[leetcode 315]Count of Smaller Numbers After Self 原创解法</title><link href="http://localhost:4000/2016/12/26/leetcode-315.html" rel="alternate" type="text/html" title="[leetcode 315]Count of Smaller Numbers After Self 原创解法" /><published>2016-12-26T00:00:00-05:00</published><updated>2016-12-26T00:00:00-05:00</updated><id>http://localhost:4000/2016/12/26/leetcode-315</id><content type="html" xml:base="http://localhost:4000/2016/12/26/leetcode-315.html">&lt;p&gt;    题目概述。&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2016-12-26T20:46:56-05:00</updated><id>http://localhost:4000//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">[leetcode 315]Count of Smaller Numbers After Self 原创解法</title><link href="http://localhost:4000/2016/12/26/leetcode-315.html" rel="alternate" type="text/html" title="[leetcode 315]Count of Smaller Numbers After Self 原创解法" /><published>2016-12-26T00:00:00-05:00</published><updated>2016-12-26T00:00:00-05:00</updated><id>http://localhost:4000/2016/12/26/leetcode-315</id><content type="html" xml:base="http://localhost:4000/2016/12/26/leetcode-315.html">&lt;p&gt;    题目概述。&lt;/p&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;You are given an integer array nums and you
@@ -87,7 +87,7 @@ Return the array [2, 1, 1, 0].
 
 &lt;p&gt;&lt;img src=&quot;http://localhost:4000/assets/2016-12-26-2.png&quot; alt=&quot;2016-12-26-2&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;    这样我们就可以写出一个新的算法。而对于步骤3则
+&lt;p&gt;    这样我们就可以写出一个新的算法。而对于步骤5则
 使用了简单实现，遍历整个数组，对所有&lt;code class=&quot;highlighter-rouge&quot;&gt;index &amp;gt; index(Nmax)&lt;/code&gt;数的索引进行
 减一。上述算法描述没有考虑有多个最大值的情况。但是下面的代码里考虑了。&lt;/p&gt;
 
@@ -132,7 +132,7 @@ Return the array [2, 1, 1, 0].
 &lt;h2 id=&quot;终于通过了&quot;&gt;终于通过了&lt;/h2&gt;
 
 &lt;p&gt;    事情终于有了进展，看起来很不错。但是仍然
-遇到了时间复杂度过高的问题。因为实现步骤3的方法导致整个程序的
+遇到了时间复杂度过高的问题。因为实现步骤5的方法导致整个程序的
 时间复杂度是O(N*N)。那么有什么办法能够优化呢。嗯，肯定有办法的。
 我们这样来做。&lt;/p&gt;
 
