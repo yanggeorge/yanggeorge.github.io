@@ -1,6 +1,8 @@
 ---
 layout: post
 title: 使用pandas.read_csv()读取csv文件
+categories:  Python 技巧
+author: alenym@qq.com
 ---
 
 &nbsp;&nbsp;&nbsp;&nbsp;以下Python代码实现对`Excel`转存的csv文件进行读取。
