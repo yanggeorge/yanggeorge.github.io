@@ -127,7 +127,7 @@ Return the array [2, 1, 1, 0].
 还是要仔仔细细列出来，可是怎么也找不到递推规律。只好放弃。不过在思考
 的过程中忽然想到一种思路。对于数组<code class="highlighter-rouge">[5, 2, 6, 1]]</code>，如果我先遍历
 求出<code class="highlighter-rouge">5</code>的smaller数组<code class="highlighter-rouge">[2,1]</code>和larger数组<code class="highlighter-rouge">[6]</code>。那么<code class="highlighter-rouge">6</code>的smaller个数怎么
-求呢，<code class="highlighter-rouge">s(6) = len([5,2,6,1] - pos(6) = 4-3 = 1</code>。看起来很不错，但是当
+求呢，<code class="highlighter-rouge">s(6) = len([5,2,6,1]) - pos(6) = 4-3 = 1</code>。看起来很不错，但是当
 数的个数多起来，就变得复杂了，无法这样简单的求解了。真是非常的泄气啊。
 想了好久也没有想出新点子。脑子里把曾经用到的方法想了一个遍，
 也还是不行。</p>
