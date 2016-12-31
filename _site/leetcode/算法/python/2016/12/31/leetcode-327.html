@@ -180,15 +180,15 @@ The three ranges are : [0, 0], [2, 2], [0, 2] and their respective sums are: -2,
 可以使用二分查找法找出上限的位置是2，下限的位置为1，个数为2。
 那么第二列<code class="highlighter-rouge">[7,15,13,14]</code>在<code class="highlighter-rouge">[12,18]</code>的数字的个数为3。
 怎么根据第一列排序后的数字求出呢。嗯，很简单。
-我们把上下线加上5，变成<code class="highlighter-rouge">17, 23</code>，这样就可以发现<code class="highlighter-rouge">[5,12,18,19,20]</code>找出
+我们把上下限加上5，变成<code class="highlighter-rouge">17, 23</code>，这样就可以发现<code class="highlighter-rouge">[5,12,18,19,20]</code>找出
 个数为3。嗯，哈哈。真是不错。这样子，就不需要求出所有的<code class="highlighter-rouge">s(i,j)</code>了。</p>
 
 <p> 
  
  
  
-但是，别着急，还是有问题，我们需要在计算第二列的个数的之前，把第一列的数字中的，<code class="highlighter-rouge">5</code>排除掉。
-否则的话，如果如果区间是<code class="highlighter-rouge">[-100,100]</code>，那么我们就多计算了。</p>
+但是，别着急，还是有问题，我们需要在计算第二列的个数的之前，把第一列的数字中的<code class="highlighter-rouge">5</code>排除掉。
+否则的话，如果区间是<code class="highlighter-rouge">[-100,100]</code>，那么我们就多计算了。</p>
 
 <h2 id="通过的代码">通过的代码　</h2>
 
@@ -285,10 +285,10 @@ The three ranges are : [0, 0], [2, 2], [0, 2] and their respective sums are: -2,
 <p> 
  
  
- 排序操作的时间复杂度是<code class="highlighter-rouge">O(NlogN)</code>，而找出每列一列的个数的事件复杂度是<code class="highlighter-rouge">O(logN)</code>
-因为一共有N列，所以事件复杂度为<code class="highlighter-rouge">O(NlogN)</code>，另外
-我们在代码中使用了对<code class="highlighter-rouge">List</code>数据的非尾部的<code class="highlighter-rouge">pop</code>操作，这个操作的事件
-复杂度接近<code class="highlighter-rouge">O(N)</code>，严格来说，我们的代码的事件复杂度还是<code class="highlighter-rouge">O(N^2)</code>。如果能够不使用这个操作。
+ 排序操作的时间复杂度是<code class="highlighter-rouge">O(NlogN)</code>，而找出每列一列的个数的时间复杂度是<code class="highlighter-rouge">O(logN)</code>
+因为一共有N列，所以时间复杂度为<code class="highlighter-rouge">O(NlogN)</code>，另外
+我们在代码中使用了对<code class="highlighter-rouge">List</code>数据的非尾部的<code class="highlighter-rouge">pop</code>操作，这个操作的时间
+复杂度接近<code class="highlighter-rouge">O(N)</code>，严格来说，我们的代码的时间复杂度还是<code class="highlighter-rouge">O(N^2)</code>。如果能够不使用这个操作。
 我们的代码速度会更快。</p>
 
 <div class="highlighter-rouge"><pre class="highlight"><code>l.pop(pos) # &lt;-- 这里是个接近O(N)的操作

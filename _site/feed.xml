@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2016-12-31T06:08:14-05:00</updated><id>http://localhost:4000//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">[leetcode 327]Count of Range Sum 原创解法</title><link href="http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/31/leetcode-327.html" rel="alternate" type="text/html" title="[leetcode 327]Count of Range Sum 原创解法" /><published>2016-12-31T00:00:00-05:00</published><updated>2016-12-31T00:00:00-05:00</updated><id>http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/31/leetcode-327</id><content type="html" xml:base="http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/31/leetcode-327.html">&lt;h2 id=&quot;题目概述&quot;&gt;题目概述&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2016-12-31T06:18:38-05:00</updated><id>http://localhost:4000//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">[leetcode 327]Count of Range Sum 原创解法</title><link href="http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/31/leetcode-327.html" rel="alternate" type="text/html" title="[leetcode 327]Count of Range Sum 原创解法" /><published>2016-12-31T00:00:00-05:00</published><updated>2016-12-31T00:00:00-05:00</updated><id>http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/31/leetcode-327</id><content type="html" xml:base="http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/31/leetcode-327.html">&lt;h2 id=&quot;题目概述&quot;&gt;题目概述&lt;/h2&gt;
 
 &lt;p&gt; 
  
@@ -112,15 +112,15 @@ The three ranges are : [0, 0], [2, 2], [0, 2] and their respective sums are: -2,
 可以使用二分查找法找出上限的位置是2，下限的位置为1，个数为2。
 那么第二列&lt;code class=&quot;highlighter-rouge&quot;&gt;[7,15,13,14]&lt;/code&gt;在&lt;code class=&quot;highlighter-rouge&quot;&gt;[12,18]&lt;/code&gt;的数字的个数为3。
 怎么根据第一列排序后的数字求出呢。嗯，很简单。
-我们把上下线加上5，变成&lt;code class=&quot;highlighter-rouge&quot;&gt;17, 23&lt;/code&gt;，这样就可以发现&lt;code class=&quot;highlighter-rouge&quot;&gt;[5,12,18,19,20]&lt;/code&gt;找出
+我们把上下限加上5，变成&lt;code class=&quot;highlighter-rouge&quot;&gt;17, 23&lt;/code&gt;，这样就可以发现&lt;code class=&quot;highlighter-rouge&quot;&gt;[5,12,18,19,20]&lt;/code&gt;找出
 个数为3。嗯，哈哈。真是不错。这样子，就不需要求出所有的&lt;code class=&quot;highlighter-rouge&quot;&gt;s(i,j)&lt;/code&gt;了。&lt;/p&gt;
 
 &lt;p&gt; 
  
  
  
-但是，别着急，还是有问题，我们需要在计算第二列的个数的之前，把第一列的数字中的，&lt;code class=&quot;highlighter-rouge&quot;&gt;5&lt;/code&gt;排除掉。
-否则的话，如果如果区间是&lt;code class=&quot;highlighter-rouge&quot;&gt;[-100,100]&lt;/code&gt;，那么我们就多计算了。&lt;/p&gt;
+但是，别着急，还是有问题，我们需要在计算第二列的个数的之前，把第一列的数字中的&lt;code class=&quot;highlighter-rouge&quot;&gt;5&lt;/code&gt;排除掉。
+否则的话，如果区间是&lt;code class=&quot;highlighter-rouge&quot;&gt;[-100,100]&lt;/code&gt;，那么我们就多计算了。&lt;/p&gt;
 
 &lt;h2 id=&quot;通过的代码&quot;&gt;通过的代码　&lt;/h2&gt;
 
@@ -217,10 +217,10 @@ The three ranges are : [0, 0], [2, 2], [0, 2] and their respective sums are: -2,
 &lt;p&gt; 
  
  
- 排序操作的时间复杂度是&lt;code class=&quot;highlighter-rouge&quot;&gt;O(NlogN)&lt;/code&gt;，而找出每列一列的个数的事件复杂度是&lt;code class=&quot;highlighter-rouge&quot;&gt;O(logN)&lt;/code&gt;
-因为一共有N列，所以事件复杂度为&lt;code class=&quot;highlighter-rouge&quot;&gt;O(NlogN)&lt;/code&gt;，另外
-我们在代码中使用了对&lt;code class=&quot;highlighter-rouge&quot;&gt;List&lt;/code&gt;数据的非尾部的&lt;code class=&quot;highlighter-rouge&quot;&gt;pop&lt;/code&gt;操作，这个操作的事件
-复杂度接近&lt;code class=&quot;highlighter-rouge&quot;&gt;O(N)&lt;/code&gt;，严格来说，我们的代码的事件复杂度还是&lt;code class=&quot;highlighter-rouge&quot;&gt;O(N^2)&lt;/code&gt;。如果能够不使用这个操作。
+ 排序操作的时间复杂度是&lt;code class=&quot;highlighter-rouge&quot;&gt;O(NlogN)&lt;/code&gt;，而找出每列一列的个数的时间复杂度是&lt;code class=&quot;highlighter-rouge&quot;&gt;O(logN)&lt;/code&gt;
+因为一共有N列，所以时间复杂度为&lt;code class=&quot;highlighter-rouge&quot;&gt;O(NlogN)&lt;/code&gt;，另外
+我们在代码中使用了对&lt;code class=&quot;highlighter-rouge&quot;&gt;List&lt;/code&gt;数据的非尾部的&lt;code class=&quot;highlighter-rouge&quot;&gt;pop&lt;/code&gt;操作，这个操作的时间
+复杂度接近&lt;code class=&quot;highlighter-rouge&quot;&gt;O(N)&lt;/code&gt;，严格来说，我们的代码的时间复杂度还是&lt;code class=&quot;highlighter-rouge&quot;&gt;O(N^2)&lt;/code&gt;。如果能够不使用这个操作。
 我们的代码速度会更快。&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;l.pop(pos) # &amp;lt;-- 这里是个接近O(N)的操作
