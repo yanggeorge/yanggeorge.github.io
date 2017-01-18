@@ -4,6 +4,12 @@ title: 使用pandas.read_csv()读取csv文件
 categories:  Python 技巧
 author: alenym@qq.com
 ---
+## 目录 ##
+
+- [问题](#hh0) 
+- [解决问题](#hh1) 
+
+## 问题<a name="hh0"></a> ##
 
 &nbsp;&nbsp;&nbsp;&nbsp;以下Python代码实现对`Excel`转存的csv文件进行读取。
 {% highlight python %}
@@ -16,6 +22,7 @@ df = pd.read_csv(file_path + file_name + ".csv", encoding="gbk")
 并且对所有的项用双引号包裹。现在我就遇到了从`Oracle`导出的`csv`文件，以上的代码
 不起作用了。
 
+## 解决问题<a name="hh1"></a> ##
 
 &nbsp;&nbsp;&nbsp;&nbsp;究竟怎么回事呢，找了一圈也没有发现使用`pandas.read_csv()`读取
 这种标准csv文件的方法。还是先把问题简化一下，看看`Python`的`csv模块`是如何读取的吧。

@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>R和Python里得到传入参数的变量名</title>
-  <meta name="description" content="    同事写R程序的时候，问我能不能获取一个变量的name， 我说这个好办啊，在R里可以这样写，用quote()">
+  <meta name="description" content="目录">
 
   <link rel="stylesheet" href="/assets/main.css">
   <link rel="canonical" href="http://localhost:4000/r/python/2016/12/21/get-val-name-and-value.html">
@@ -66,7 +66,17 @@
   </header>
 
   <div class="post-content" itemprop="articleBody">
-    <p>    同事写R程序的时候，问我能不能获取一个变量的<code class="highlighter-rouge">name</code>，
+    <h2 id="目录">目录</h2>
+
+<ul>
+  <li><a href="#hh0">问题</a></li>
+  <li><a href="#hh1">python可以做到</a></li>
+  <li><a href="#hh2">R也可以</a></li>
+</ul>
+
+<h2 id="问题">问题<a name="hh0"></a></h2>
+
+<p>    同事写R程序的时候，问我能不能获取一个变量的<code class="highlighter-rouge">name</code>，
 我说这个好办啊，在R里可以这样写，用<code class="highlighter-rouge">quote()</code></p>
 
 <div class="highlighter-rouge"><pre class="highlight"><code>&gt; a &lt;- 1
@@ -89,6 +99,8 @@ a
 <code class="highlighter-rouge">do not repeat yourself</code>的。而且对R这种可以随意获取环境变量的高级语言。
 肯定有办法做到。</p>
 
+<h2 id="python可以做到">python可以做到<a name="hh1"></a></h2>
+
 <p>    但是我还是先看看Python吧，毕竟最近用Python
 多一些。Google关键字<code class="highlighter-rouge">python print variable name and value</code>,立刻可以获得
 答案。这段代码的思想也很直白，就是对输入的obj在环境变量（名称,对象）键值对
@@ -106,6 +118,8 @@ a
 ['a']
 </code></pre>
 </div>
+
+<h2 id="r也可以">R也可以<a name="hh2"></a></h2>
 
 <p>    那么R肯定也有办法做到。Google关键字
 <code class="highlighter-rouge">r print variable name and value</code></p>

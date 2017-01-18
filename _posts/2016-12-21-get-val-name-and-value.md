@@ -4,6 +4,13 @@ title: R和Python里得到传入参数的变量名
 categories: R  Python
 author: alenym@qq.com
 ---
+## 目录 ##
+
+- [问题](#hh0) 
+- [python可以做到](#hh1) 
+- [R也可以](#hh2) 
+
+## 问题<a name="hh0"></a> ##
 
 &nbsp;&nbsp;&nbsp;&nbsp;同事写R程序的时候，问我能不能获取一个变量的`name`，
 我说这个好办啊，在R里可以这样写，用`quote()`
@@ -26,6 +33,8 @@ author: alenym@qq.com
 `do not repeat yourself`的。而且对R这种可以随意获取环境变量的高级语言。
 肯定有办法做到。
 
+## python可以做到<a name="hh1"></a> ##
+
 &nbsp;&nbsp;&nbsp;&nbsp;但是我还是先看看Python吧，毕竟最近用Python
 多一些。Google关键字`python print variable name and value`,立刻可以获得
 答案。这段代码的思想也很直白，就是对输入的obj在环境变量（名称,对象）键值对
@@ -40,6 +49,8 @@ author: alenym@qq.com
 	>>> namestr(a)
 	['a']
 
+
+## R也可以<a name="hh2"></a> ##
 
 &nbsp;&nbsp;&nbsp;&nbsp;那么R肯定也有办法做到。Google关键字
 `r print variable name and value`

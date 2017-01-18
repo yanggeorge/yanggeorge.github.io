@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>[leetcode 224 &amp; 227]Basic Calculator I &amp; II 原创解法</title>
-  <meta name="description" content="题目概述">
+  <meta name="description" content="目录">
 
   <link rel="stylesheet" href="/assets/main.css">
   <link rel="canonical" href="http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/10/24/leetcode-224.html">
@@ -66,7 +66,19 @@
   </header>
 
   <div class="post-content" itemprop="articleBody">
-    <h2 id="题目概述">题目概述</h2>
+    <h2 id="目录">目录</h2>
+
+<ul>
+  <li><a href="#hh0">题目概述</a></li>
+  <li><a href="#hh1">波兰计数法</a></li>
+  <li><a href="#hh2">抽象语法树</a></li>
+  <li><a href="#hh3">初步解法</a></li>
+  <li><a href="#hh4">栈调用过深了</a></li>
+  <li><a href="#hh5">通过的代码</a></li>
+  <li><a href="#hh6">总结</a></li>
+</ul>
+
+<h2 id="题目概述">题目概述<a name="hh0"></a></h2>
 
 <p> 
  
@@ -96,7 +108,7 @@
 </code></pre>
 </div>
 
-<h2 id="波兰计数法">波兰计数法</h2>
+<h2 id="波兰计数法">波兰计数法<a name="hh1"></a></h2>
 
 <p> 
  
@@ -107,7 +119,7 @@
 <code class="highlighter-rouge">postfix</code>表达式。所以需要一种把<code class="highlighter-rouge">infix expression</code>转换成<code class="highlighter-rouge">postfix expression</code>
 。<a href="https://en.wikipedia.org/wiki/Shunting-yard_algorithm">转换方法</a></p>
 
-<h2 id="抽象语法树">抽象语法树</h2>
+<h2 id="抽象语法树">抽象语法树<a name="hh2"></a></h2>
 
 <p> 
  
@@ -138,7 +150,7 @@
 </code></pre>
 </div>
 
-<h2 id="初步解法">初步解法</h2>
+<h2 id="初步解法">初步解法<a name="hh3"></a></h2>
 
 <p> 
  
@@ -278,7 +290,7 @@
 <span class="k">print</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">t</span><span class="p">))</span></code></pre></figure>
 
-<h2 id="栈调用过深了">栈调用过深了</h2>
+<h2 id="栈调用过深了">栈调用过深了<a name="hh4"></a></h2>
 
 <p> 
  
@@ -479,7 +491,7 @@ python默认的递归栈深度是10000。</p>
 
         <span class="k">return</span> <span class="n">result</span></code></pre></figure>
 
-<h2 id="通过的代码">通过的代码</h2>
+<h2 id="通过的代码">通过的代码<a name="hh5"></a></h2>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">binarytree</span> <span class="kn">import</span> <span class="n">Node</span>
 <span class="k">class</span> <span class="nc">TreeNode</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
@@ -661,7 +673,7 @@ python默认的递归栈深度是10000。</p>
 <span class="k">print</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">compute2</span><span class="p">(</span><span class="n">t</span><span class="p">))</span></code></pre></figure>
 
-<h2 id="总结">总结</h2>
+<h2 id="总结">总结<a name="hh6"></a></h2>
 
 <p> 
  

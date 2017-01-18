@@ -1,4 +1,151 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-01-17T20:19:22-05:00</updated><id>http://localhost:4000//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">在WIN10下使用Cython</title><link href="http://localhost:4000/cython/python/2017/01/12/cython-on-win10.html" rel="alternate" type="text/html" title="在WIN10下使用Cython" /><published>2017-01-12T00:00:00-05:00</published><updated>2017-01-12T00:00:00-05:00</updated><id>http://localhost:4000/cython/python/2017/01/12/cython-on-win10</id><content type="html" xml:base="http://localhost:4000/cython/python/2017/01/12/cython-on-win10.html">&lt;h2 id=&quot;cython&quot;&gt;Cython&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-01-18T02:45:04-05:00</updated><id>http://localhost:4000//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">解决python3使用system-site-packages创建虚拟环境时没有pip的问题</title><link href="http://localhost:4000/python3/venv/2017/01/17/venv-no-pip.html" rel="alternate" type="text/html" title="解决python3使用system-site-packages创建虚拟环境时没有pip的问题" /><published>2017-01-17T00:00:00-05:00</published><updated>2017-01-17T00:00:00-05:00</updated><id>http://localhost:4000/python3/venv/2017/01/17/venv-no-pip</id><content type="html" xml:base="http://localhost:4000/python3/venv/2017/01/17/venv-no-pip.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh0&quot;&gt;python虚拟环境&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh1&quot;&gt;WIN下的解决办法&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh2&quot;&gt;Linux下的解决办法&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh3&quot;&gt;可能的解决办法&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;python虚拟环境&quot;&gt;python虚拟环境&lt;a name=&quot;hh0&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt; 
+ 
+ 
+ 
+从&lt;code class=&quot;highlighter-rouge&quot;&gt;python3.5&lt;/code&gt;开始,使用&lt;code class=&quot;highlighter-rouge&quot;&gt;venv&lt;/code&gt;创建虚拟环境已经成为官方推荐的方案。
+查看官方文档，可以看到如果想要创建一个干净的虚拟环境。方式如下&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;python -m venv myenv
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt; 
+ 
+ 
+ 
+如果要创建一个当前环境的副本，也就是说，可以引用当前环境的所有已经
+安装的包。那么需要增加&lt;code class=&quot;highlighter-rouge&quot;&gt;--system-site-packages&lt;/code&gt;参数&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;python -m venv myenv2 --system-site-packages
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt; 
+ 
+ 
+ 
+两种方式，我们都希望能够独立使用pip来管理包。但是第二种方式发现并没有pip
+文件。&lt;/p&gt;
+
+&lt;h2 id=&quot;win下的解决办法&quot;&gt;WIN下的解决办法&lt;a name=&quot;hh1&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt; 
+ 
+ 
+ 
+因为我一般都是用神器&lt;code class=&quot;highlighter-rouge&quot;&gt;pycharm&lt;/code&gt;，幸运的是&lt;code class=&quot;highlighter-rouge&quot;&gt;pycharm&lt;/code&gt;提供了一个简单的方法。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://localhost:4000/assets/env-1.png&quot; alt=&quot;env-1&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;可以看到目录下是有pip的。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://localhost:4000/assets/env-2.png&quot; alt=&quot;env-2&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;linux下的解决办法&quot;&gt;Linux下的解决办法&lt;a name=&quot;hh2&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt; 
+ 
+ 
+ 
+如果不使用&lt;code class=&quot;highlighter-rouge&quot;&gt;pycharm&lt;/code&gt;是不是就没办法了呢。我们google一下
+关键字&lt;code class=&quot;highlighter-rouge&quot;&gt;python system-site-packages no pip&lt;/code&gt;很顺利的找到
+这个链接&lt;a href=&quot;https://bugs.python.org/issue24875&quot;&gt;pyvenv doesn´t install PIP inside a new venv with –system-site-package&lt;/a&gt;
+这个是python的bug跟踪记录。大概看看应该能明白，原来
+我们遇到的这个问题，已经在&lt;code class=&quot;highlighter-rouge&quot;&gt;2015-08-16&lt;/code&gt;就被人标记了。但是直到最近还没有解决。
+但是最新的更新是几天前&lt;code class=&quot;highlighter-rouge&quot;&gt;last changed 2017-01-13&lt;/code&gt;。呵呵看看这些大咖
+都讨论些啥。&lt;/p&gt;
+
+&lt;p&gt; 
+ 
+ 
+ 
+看到这句话，我笑了。这个问题的等级被标记为普通。所以一直没有解决。
+而这个大咖觉得这个问题如果不解决，非但&lt;code class=&quot;highlighter-rouge&quot;&gt;--system-site-packages&lt;/code&gt;没有用，
+甚至会误导大量的初学者。&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;I agree this makes –system-site-packages a useless option unless it’s fixed. We just had many beginners install pyvenv’s and get very confused because of this.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt; 
+ 
+ 
+ 
+最后发现补丁已经提交了，而且就在几天前。但是很显然没有进入我们的安装版里。
+我在我的debian虚拟机上安装了python3.6.0。测试了一下这个bug是存在的。
+那么问题简单了。把源码改一下吧，根据这个&lt;a href=&quot;https://bugs.python.org/review/24875/patch/19738/77413&quot;&gt;patch&lt;/a&gt;
+然后重新编译安装。测试一下。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; ~/ python
+Python 3.6.0 (default, Jan 17 2017, 22:12:56) 
+[GCC 4.9.2] on linux
+Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
+&amp;gt;&amp;gt;&amp;gt; 
+ ~/ pip list --format=columns
+Package    Version
+---------- -------
+binarytree 1.1.1  
+pip        9.0.1  
+setuptools 28.8.0 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt; 
+ 
+ 
+ 
+这是我当前的python版本和已经安装的包。其中有个&lt;code class=&quot;highlighter-rouge&quot;&gt;binarytree&lt;/code&gt;。
+现在创建一个继承全部包的虚拟环境。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; ~/tmp/ python -m venv fenv --system-site-packages
+ ~/tmp/ cd fenv/bin
+ ~/tmp/fenv/bin/ ls
+activate      activate.fish  easy_install-3.6  pip3    python
+activate.csh  easy_install   pip               pip3.6  python3
+ ~/tmp/fenv/bin/ ./pip list --format=columns
+Package    Version
+---------- -------
+binarytree 1.1.1  
+pip        9.0.1  
+setuptools 28.8.0 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt; 
+ 
+ 
+ 
+嗯成功了。&lt;/p&gt;
+
+&lt;h2 id=&quot;可能的解决办法&quot;&gt;可能的解决办法&lt;a name=&quot;hh3&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt; 
+ 
+ 
+ 
+虽然第二种办法很好。但是需要修改源代码。可是服务器上的代码是不能修改的呀。
+那可以尝试自己写一个venv.Builder，对其中的create方法进行覆盖，这个方法
+我没有尝试。如果你尝试了，也可以发邮件告诉我结果。&lt;/p&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">在WIN10下使用Cython</title><link href="http://localhost:4000/cython/python/2017/01/12/cython-on-win10.html" rel="alternate" type="text/html" title="在WIN10下使用Cython" /><published>2017-01-12T00:00:00-05:00</published><updated>2017-01-12T00:00:00-05:00</updated><id>http://localhost:4000/cython/python/2017/01/12/cython-on-win10</id><content type="html" xml:base="http://localhost:4000/cython/python/2017/01/12/cython-on-win10.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh0&quot;&gt;Cython&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh1&quot;&gt;软件安装&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh2&quot;&gt;跟着Cython的tutorial走&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh3&quot;&gt;与python代码进行测试比较&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;cython&quot;&gt;Cython&lt;a name=&quot;hh0&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt; 
  
@@ -8,7 +155,7 @@
 据说一般达到30x。一会我们来看看是不是真的。这个技术对老鸟来说已经是好多
 年前的了。但是很多情况下python用户真的用不上，所以不知道也无妨。&lt;/p&gt;
 
-&lt;h2 id=&quot;软件安装&quot;&gt;软件安装&lt;/h2&gt;
+&lt;h2 id=&quot;软件安装&quot;&gt;软件安装&lt;a name=&quot;hh1&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt; 
  
@@ -22,7 +169,7 @@
   &lt;li&gt;安装Anaconda3&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h2 id=&quot;跟着cython的tutorial走&quot;&gt;跟着Cython的tutorial走&lt;/h2&gt;
+&lt;h2 id=&quot;跟着cython的tutorial走&quot;&gt;跟着Cython的tutorial走&lt;a name=&quot;hh2&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt; 
  
@@ -85,7 +232,7 @@ hello cython!
 再想导入helloworld则是不行的。怎么回事，我们不是已经setup了么。
 原因在于&lt;code class=&quot;highlighter-rouge&quot;&gt;--inplace&lt;/code&gt;这个参数，它表示只生成动态链接库。&lt;/p&gt;
 
-&lt;h2 id=&quot;与python代码进行测试比较&quot;&gt;与python代码进行测试比较&lt;/h2&gt;
+&lt;h2 id=&quot;与python代码进行测试比较&quot;&gt;与python代码进行测试比较&lt;a name=&quot;hh3&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt;    
 我们还在那个目录下创建一个&lt;code class=&quot;highlighter-rouge&quot;&gt;test.py&lt;/code&gt;文件。&lt;/p&gt;
@@ -148,7 +295,7 @@ cython fib : 0.00059495s
 &lt;/div&gt;
 
 &lt;p&gt;    
-真是不错哦，诚不我欺，100x。&lt;/p&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">Cython</summary></entry><entry><title type="html">[leetcode 327]Count of Range Sum 原创解法</title><link href="http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/31/leetcode-327.html" rel="alternate" type="text/html" title="[leetcode 327]Count of Range Sum 原创解法" /><published>2016-12-31T00:00:00-05:00</published><updated>2016-12-31T00:00:00-05:00</updated><id>http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/31/leetcode-327</id><content type="html" xml:base="http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/31/leetcode-327.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
+真是不错哦，诚不我欺，100x。&lt;/p&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">[leetcode 327]Count of Range Sum 原创解法</title><link href="http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/31/leetcode-327.html" rel="alternate" type="text/html" title="[leetcode 327]Count of Range Sum 原创解法" /><published>2016-12-31T00:00:00-05:00</published><updated>2016-12-31T00:00:00-05:00</updated><id>http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/31/leetcode-327</id><content type="html" xml:base="http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/31/leetcode-327.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;#hh1&quot;&gt;题目概述&lt;/a&gt;&lt;/li&gt;
@@ -621,7 +768,16 @@ Return the array [2, 1, 1, 0].
   题目概述
   用二维图描述问题
   终于通过了
-  总结</summary></entry><entry><title type="html">使用pandas.read_csv()读取csv文件</title><link href="http://localhost:4000/python/%E6%8A%80%E5%B7%A7/2016/12/22/pandas-read-csv.html" rel="alternate" type="text/html" title="使用pandas.read_csv()读取csv文件" /><published>2016-12-22T00:00:00-05:00</published><updated>2016-12-22T00:00:00-05:00</updated><id>http://localhost:4000/python/%E6%8A%80%E5%B7%A7/2016/12/22/pandas-read-csv</id><content type="html" xml:base="http://localhost:4000/python/%E6%8A%80%E5%B7%A7/2016/12/22/pandas-read-csv.html">&lt;p&gt;    以下Python代码实现对&lt;code class=&quot;highlighter-rouge&quot;&gt;Excel&lt;/code&gt;转存的csv文件进行读取。&lt;/p&gt;
+  总结</summary></entry><entry><title type="html">使用pandas.read_csv()读取csv文件</title><link href="http://localhost:4000/python/%E6%8A%80%E5%B7%A7/2016/12/22/pandas-read-csv.html" rel="alternate" type="text/html" title="使用pandas.read_csv()读取csv文件" /><published>2016-12-22T00:00:00-05:00</published><updated>2016-12-22T00:00:00-05:00</updated><id>http://localhost:4000/python/%E6%8A%80%E5%B7%A7/2016/12/22/pandas-read-csv</id><content type="html" xml:base="http://localhost:4000/python/%E6%8A%80%E5%B7%A7/2016/12/22/pandas-read-csv.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh0&quot;&gt;问题&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh1&quot;&gt;解决问题&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;问题&quot;&gt;问题&lt;a name=&quot;hh0&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;    以下Python代码实现对&lt;code class=&quot;highlighter-rouge&quot;&gt;Excel&lt;/code&gt;转存的csv文件进行读取。&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;pandas&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;pd&lt;/span&gt;
 &lt;span class=&quot;n&quot;&gt;df&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pd&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;read_csv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;file_path&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;file_name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;.csv&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;encoding&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;gbk&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
@@ -630,6 +786,8 @@ Return the array [2, 1, 1, 0].
 逗号分隔符文件。但是其实不然。&lt;code class=&quot;highlighter-rouge&quot;&gt;Excel&lt;/code&gt;转存的&lt;code class=&quot;highlighter-rouge&quot;&gt;csv&lt;/code&gt;文件并不是标准的以逗号作为分隔符，
 并且对所有的项用双引号包裹。现在我就遇到了从&lt;code class=&quot;highlighter-rouge&quot;&gt;Oracle&lt;/code&gt;导出的&lt;code class=&quot;highlighter-rouge&quot;&gt;csv&lt;/code&gt;文件，以上的代码
 不起作用了。&lt;/p&gt;
+
+&lt;h2 id=&quot;解决问题&quot;&gt;解决问题&lt;a name=&quot;hh1&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt;    究竟怎么回事呢，找了一圈也没有发现使用&lt;code class=&quot;highlighter-rouge&quot;&gt;pandas.read_csv()&lt;/code&gt;读取
 这种标准csv文件的方法。还是先把问题简化一下，看看&lt;code class=&quot;highlighter-rouge&quot;&gt;Python&lt;/code&gt;的&lt;code class=&quot;highlighter-rouge&quot;&gt;csv模块&lt;/code&gt;是如何读取的吧。
@@ -672,10 +830,17 @@ Return the array [2, 1, 1, 0].
 
 &lt;p&gt;    一运行还是报错，这是怎么回事呢，编码换成&lt;code class=&quot;highlighter-rouge&quot;&gt;utf8&lt;/code&gt;，也不行。最后才发现
 需要使用&lt;code class=&quot;highlighter-rouge&quot;&gt;gb18030&lt;/code&gt;才行。即使使用&lt;code class=&quot;highlighter-rouge&quot;&gt;chardet&lt;/code&gt;的编码探测模块，也不一定能探测出来，因为整个文档
-只有少数字符是超出了&lt;code class=&quot;highlighter-rouge&quot;&gt;gbk&lt;/code&gt;，所以不可能既高效又准确的解决这个问题。&lt;/p&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">    以下Python代码实现对Excel转存的csv文件进行读取。
+只有少数字符是超出了&lt;code class=&quot;highlighter-rouge&quot;&gt;gbk&lt;/code&gt;，所以不可能既高效又准确的解决这个问题。&lt;/p&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">R和Python里得到传入参数的变量名</title><link href="http://localhost:4000/r/python/2016/12/21/get-val-name-and-value.html" rel="alternate" type="text/html" title="R和Python里得到传入参数的变量名" /><published>2016-12-21T00:00:00-05:00</published><updated>2016-12-21T00:00:00-05:00</updated><id>http://localhost:4000/r/python/2016/12/21/get-val-name-and-value</id><content type="html" xml:base="http://localhost:4000/r/python/2016/12/21/get-val-name-and-value.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
 
-import pandas as pd
-df = pd.read_csv(file_path + file_name + &quot;.csv&quot;, encoding=&quot;gbk&quot;)</summary></entry><entry><title type="html">R和Python里得到传入参数的变量名</title><link href="http://localhost:4000/r/python/2016/12/21/get-val-name-and-value.html" rel="alternate" type="text/html" title="R和Python里得到传入参数的变量名" /><published>2016-12-21T00:00:00-05:00</published><updated>2016-12-21T00:00:00-05:00</updated><id>http://localhost:4000/r/python/2016/12/21/get-val-name-and-value</id><content type="html" xml:base="http://localhost:4000/r/python/2016/12/21/get-val-name-and-value.html">&lt;p&gt;    同事写R程序的时候，问我能不能获取一个变量的&lt;code class=&quot;highlighter-rouge&quot;&gt;name&lt;/code&gt;，
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh0&quot;&gt;问题&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh1&quot;&gt;python可以做到&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh2&quot;&gt;R也可以&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;问题&quot;&gt;问题&lt;a name=&quot;hh0&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;    同事写R程序的时候，问我能不能获取一个变量的&lt;code class=&quot;highlighter-rouge&quot;&gt;name&lt;/code&gt;，
 我说这个好办啊，在R里可以这样写，用&lt;code class=&quot;highlighter-rouge&quot;&gt;quote()&lt;/code&gt;&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;gt; a &amp;lt;- 1
@@ -698,6 +863,8 @@ a
 &lt;code class=&quot;highlighter-rouge&quot;&gt;do not repeat yourself&lt;/code&gt;的。而且对R这种可以随意获取环境变量的高级语言。
 肯定有办法做到。&lt;/p&gt;
 
+&lt;h2 id=&quot;python可以做到&quot;&gt;python可以做到&lt;a name=&quot;hh1&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
 &lt;p&gt;    但是我还是先看看Python吧，毕竟最近用Python
 多一些。Google关键字&lt;code class=&quot;highlighter-rouge&quot;&gt;python print variable name and value&lt;/code&gt;,立刻可以获得
 答案。这段代码的思想也很直白，就是对输入的obj在环境变量（名称,对象）键值对
@@ -715,6 +882,8 @@ a
 ['a']
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
+
+&lt;h2 id=&quot;r也可以&quot;&gt;R也可以&lt;a name=&quot;hh2&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt;    那么R肯定也有办法做到。Google关键字
 &lt;code class=&quot;highlighter-rouge&quot;&gt;r print variable name and value&lt;/code&gt;&lt;/p&gt;
@@ -740,8 +909,16 @@ the (unevaluated) expression expr, substituting any variables bound in env.&lt;/
 &lt;p&gt;    够晦涩难懂的吧。不过仔细思考一下，也大概明白了。
 在R里，从语法角度来说，所有都是&lt;code class=&quot;highlighter-rouge&quot;&gt;expr&lt;/code&gt;，（这跟其他语言都是&lt;code class=&quot;highlighter-rouge&quot;&gt;statement&lt;/code&gt;不同）
 在R的函数里，可以对传入的未进行求值的&lt;code class=&quot;highlighter-rouge&quot;&gt;expr&lt;/code&gt;进行操作。这点非常有趣。
-而&lt;code class=&quot;highlighter-rouge&quot;&gt;deparse()&lt;/code&gt;，比较好理解了至少在我看来，与&lt;code class=&quot;highlighter-rouge&quot;&gt;as.character()&lt;/code&gt;的作用是一样的。&lt;/p&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">    同事写R程序的时候，问我能不能获取一个变量的name，
-我说这个好办啊，在R里可以这样写，用quote()</summary></entry><entry><title type="html">[leetcode 282]Expression Add Operators 原创解法</title><link href="http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/19/leetcode-282.html" rel="alternate" type="text/html" title="[leetcode 282]Expression Add Operators 原创解法" /><published>2016-12-19T00:00:00-05:00</published><updated>2016-12-19T00:00:00-05:00</updated><id>http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/19/leetcode-282</id><content type="html" xml:base="http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/19/leetcode-282.html">&lt;h2 id=&quot;题目概述&quot;&gt;题目概述&lt;/h2&gt;
+而&lt;code class=&quot;highlighter-rouge&quot;&gt;deparse()&lt;/code&gt;，比较好理解了至少在我看来，与&lt;code class=&quot;highlighter-rouge&quot;&gt;as.character()&lt;/code&gt;的作用是一样的。&lt;/p&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">[leetcode 282]Expression Add Operators 原创解法</title><link href="http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/19/leetcode-282.html" rel="alternate" type="text/html" title="[leetcode 282]Expression Add Operators 原创解法" /><published>2016-12-19T00:00:00-05:00</published><updated>2016-12-19T00:00:00-05:00</updated><id>http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/19/leetcode-282</id><content type="html" xml:base="http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/19/leetcode-282.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh0&quot;&gt;题目概述&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh1&quot;&gt;分析&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh2&quot;&gt;简化问题　&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh3&quot;&gt;通过的解法　&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;题目概述&quot;&gt;题目概述&lt;a name=&quot;hh0&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt; 
  
@@ -815,6 +992,8 @@ not unary) +, -, or * between the digits so they evaluate to the target value.&l
 
         &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
+&lt;h2 id=&quot;分析&quot;&gt;分析&lt;a name=&quot;hh1&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
 &lt;p&gt;    没有意外，这种解法超时了。&lt;/p&gt;
 
 &lt;p&gt;    先不考虑eval()函数是否应该使用。
@@ -836,6 +1015,8 @@ not unary) +, -, or * between the digits so they evaluate to the target value.&l
 &lt;p&gt;    那么最终我们可以选择的优化方向就是，使用深度优先遍历的时候，必须要在
 遍历的同时，进行计算。这样当到达结束判断的时候，能够直接判断。&lt;/p&gt;
 
+&lt;h2 id=&quot;简化问题&quot;&gt;简化问题　&lt;a name=&quot;hh2&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
 &lt;p&gt;    为了便于分析，首先简化问题。考虑如何计算字符串”123”，并且
 只允许插入加号或者不插入加号。&lt;/p&gt;
 
@@ -851,6 +1032,8 @@ not unary) +, -, or * between the digits so they evaluate to the target value.&l
 的查找树如下图。&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;http://localhost:4000/assets/282_2.png&quot; alt=&quot;tree2 pic&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;通过的解法&quot;&gt;通过的解法　&lt;a name=&quot;hh3&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt;    这样我们有了解法２。&lt;/p&gt;
 
@@ -1020,7 +1203,19 @@ not unary) +, -, or * between the digits so they evaluate to the target value.&l
                 &lt;span class=&quot;n&quot;&gt;is_valid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;False&lt;/span&gt;
 
             &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;is_valid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-                &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;find&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;begin&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;num&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">题目概述</summary></entry><entry><title type="html">[leetcode 224 &amp;amp; 227]Basic Calculator I &amp;amp; II 原创解法</title><link href="http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/10/24/leetcode-224.html" rel="alternate" type="text/html" title="[leetcode 224 &amp; 227]Basic Calculator I &amp; II 原创解法" /><published>2016-10-24T00:00:00-04:00</published><updated>2016-10-24T00:00:00-04:00</updated><id>http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/10/24/leetcode-224</id><content type="html" xml:base="http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/10/24/leetcode-224.html">&lt;h2 id=&quot;题目概述&quot;&gt;题目概述&lt;/h2&gt;
+                &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;find&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;begin&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;num&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">[leetcode 224 &amp;amp; 227]Basic Calculator I &amp;amp; II 原创解法</title><link href="http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/10/24/leetcode-224.html" rel="alternate" type="text/html" title="[leetcode 224 &amp; 227]Basic Calculator I &amp; II 原创解法" /><published>2016-10-24T00:00:00-04:00</published><updated>2016-10-24T00:00:00-04:00</updated><id>http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/10/24/leetcode-224</id><content type="html" xml:base="http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/10/24/leetcode-224.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh0&quot;&gt;题目概述&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh1&quot;&gt;波兰计数法&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh2&quot;&gt;抽象语法树&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh3&quot;&gt;初步解法&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh4&quot;&gt;栈调用过深了&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh5&quot;&gt;通过的代码&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh6&quot;&gt;总结&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;题目概述&quot;&gt;题目概述&lt;a name=&quot;hh0&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt; 
  
@@ -1050,7 +1245,7 @@ not unary) +, -, or * between the digits so they evaluate to the target value.&l
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;h2 id=&quot;波兰计数法&quot;&gt;波兰计数法&lt;/h2&gt;
+&lt;h2 id=&quot;波兰计数法&quot;&gt;波兰计数法&lt;a name=&quot;hh1&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt; 
  
@@ -1061,7 +1256,7 @@ not unary) +, -, or * between the digits so they evaluate to the target value.&l
 &lt;code class=&quot;highlighter-rouge&quot;&gt;postfix&lt;/code&gt;表达式。所以需要一种把&lt;code class=&quot;highlighter-rouge&quot;&gt;infix expression&lt;/code&gt;转换成&lt;code class=&quot;highlighter-rouge&quot;&gt;postfix expression&lt;/code&gt;
 。&lt;a href=&quot;https://en.wikipedia.org/wiki/Shunting-yard_algorithm&quot;&gt;转换方法&lt;/a&gt;&lt;/p&gt;
 
-&lt;h2 id=&quot;抽象语法树&quot;&gt;抽象语法树&lt;/h2&gt;
+&lt;h2 id=&quot;抽象语法树&quot;&gt;抽象语法树&lt;a name=&quot;hh2&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt; 
  
@@ -1092,7 +1287,7 @@ not unary) +, -, or * between the digits so they evaluate to the target value.&l
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;h2 id=&quot;初步解法&quot;&gt;初步解法&lt;/h2&gt;
+&lt;h2 id=&quot;初步解法&quot;&gt;初步解法&lt;a name=&quot;hh3&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt; 
  
@@ -1232,7 +1427,7 @@ not unary) +, -, or * between the digits so they evaluate to the target value.&l
 &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;compute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;h2 id=&quot;栈调用过深了&quot;&gt;栈调用过深了&lt;/h2&gt;
+&lt;h2 id=&quot;栈调用过深了&quot;&gt;栈调用过深了&lt;a name=&quot;hh4&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt; 
  
@@ -1433,7 +1628,7 @@ python默认的递归栈深度是10000。&lt;/p&gt;
 
         &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;h2 id=&quot;通过的代码&quot;&gt;通过的代码&lt;/h2&gt;
+&lt;h2 id=&quot;通过的代码&quot;&gt;通过的代码&lt;a name=&quot;hh5&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;binarytree&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Node&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;TreeNode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
@@ -1615,14 +1810,21 @@ python默认的递归栈深度是10000。&lt;/p&gt;
 &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;compute2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;h2 id=&quot;总结&quot;&gt;总结&lt;/h2&gt;
+&lt;h2 id=&quot;总结&quot;&gt;总结&lt;a name=&quot;hh6&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt; 
  
  
  
 虽然代码长了点，但是练习了一下如何生成一个&lt;code class=&quot;highlighter-rouge&quot;&gt;抽象语法树&lt;/code&gt;。并且练习了
-如何把一个调用自身的递归改成非递归。&lt;/p&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">题目概述</summary></entry><entry><title type="html">[leetcode 200]Number of Islands 原创解法</title><link href="http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/09/27/leetcode-200.html" rel="alternate" type="text/html" title="[leetcode 200]Number of Islands 原创解法" /><published>2016-09-27T00:00:00-04:00</published><updated>2016-09-27T00:00:00-04:00</updated><id>http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/09/27/leetcode-200</id><content type="html" xml:base="http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/09/27/leetcode-200.html">&lt;h2 id=&quot;题目概述&quot;&gt;题目概述&lt;/h2&gt;
+如何把一个调用自身的递归改成非递归。&lt;/p&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">[leetcode 200]Number of Islands 原创解法</title><link href="http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/09/27/leetcode-201.html" rel="alternate" type="text/html" title="[leetcode 200]Number of Islands 原创解法" /><published>2016-09-27T00:00:00-04:00</published><updated>2016-09-27T00:00:00-04:00</updated><id>http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/09/27/leetcode-201</id><content type="html" xml:base="http://localhost:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/09/27/leetcode-201.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh0&quot;&gt;题目概述&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh1&quot;&gt;最终解法&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;题目概述&quot;&gt;题目概述&lt;a name=&quot;hh0&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt; 
  
@@ -1652,7 +1854,7 @@ Answer: 3
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;h2 id=&quot;最终解法&quot;&gt;最终解法&lt;/h2&gt;
+&lt;h2 id=&quot;最终解法&quot;&gt;最终解法&lt;a name=&quot;hh1&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt; 
  
@@ -1673,11 +1875,15 @@ Answer: 3
         &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
 
         &lt;span class=&quot;n&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;h_pre&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;   &lt;span class=&quot;c&quot;&gt;# key : 是 “i,j” 字符串。value =》 [accumulator] ，一个list包含了岛的索引。&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;h_curr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# 当前行&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# 保存的是一个个的list，list的长度是1，值对应岛的索引。&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;h_pre&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;   &lt;span class=&quot;c&quot;&gt;# key : 是 “i,j” 字符串。value =》 [accumulator] ，一个list包含了岛的索引。
+&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;h_curr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# 当前行
+&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# 保存的是一个个的list，list的长度是1，值对应岛的索引。
+&lt;/span&gt;
         &lt;span class=&quot;n&quot;&gt;debug&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;accumulator&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# 表示岛的自增索引，每当发现一个新的岛，自增。&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;accumulator&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# 表示岛的自增索引，每当发现一个新的岛，自增。
+&lt;/span&gt;
         &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
             &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;and&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'1'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
                 &lt;span class=&quot;n&quot;&gt;h_curr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'0,'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;accumulator&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
@@ -1713,12 +1919,14 @@ Answer: 3
                         &lt;span class=&quot;n&quot;&gt;above&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h_pre&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;','&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)]&lt;/span&gt;
 
                         &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pre&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;above&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]:&lt;/span&gt;
-                            &lt;span class=&quot;c&quot;&gt;# 对pre的值进行更新&lt;/span&gt;
+                            &lt;span class=&quot;c&quot;&gt;# 对pre的值进行更新
+&lt;/span&gt;
                             &lt;span class=&quot;n&quot;&gt;h_curr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;','&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pre&lt;/span&gt;
                         &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
                             &lt;span class=&quot;n&quot;&gt;h_curr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;','&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;above&lt;/span&gt;
                             &lt;span class=&quot;n&quot;&gt;v1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pre&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-                            &lt;span class=&quot;n&quot;&gt;v2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;above&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# z这里一定要换成静态的值，否则的话当a[k]的值进行更新时，会影响到pre的值。&lt;/span&gt;
+                            &lt;span class=&quot;n&quot;&gt;v2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;above&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# z这里一定要换成静态的值，否则的话当a[k]的值进行更新时，会影响到pre的值。
+&lt;/span&gt;
                             &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)):&lt;/span&gt;
                                 &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
                                     &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v2&lt;/span&gt;
@@ -1745,11 +1953,13 @@ Answer: 3
     &lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;11000&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
             &lt;span class=&quot;s&quot;&gt;&quot;11000&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
             &lt;span class=&quot;s&quot;&gt;&quot;00100&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-            &lt;span class=&quot;s&quot;&gt;&quot;00011&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# 3&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&quot;00011&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# 3
+&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Solution&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;numIslands&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;10111&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
             &lt;span class=&quot;s&quot;&gt;&quot;10101&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-            &lt;span class=&quot;s&quot;&gt;&quot;11101&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# 1&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&quot;11101&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# 1
+&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Solution&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;numIslands&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;1111111&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
             &lt;span class=&quot;s&quot;&gt;&quot;0000001&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
@@ -1757,7 +1967,8 @@ Answer: 3
             &lt;span class=&quot;s&quot;&gt;&quot;1000101&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
             &lt;span class=&quot;s&quot;&gt;&quot;1010101&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
             &lt;span class=&quot;s&quot;&gt;&quot;1011101&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-            &lt;span class=&quot;s&quot;&gt;&quot;1111111&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# 1&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&quot;1111111&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# 1
+&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Solution&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;numIslands&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
 
 
@@ -1780,5 +1991,182 @@ Answer: 3
             &lt;span class=&quot;s&quot;&gt;&quot;10100000010001010000&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
             &lt;span class=&quot;s&quot;&gt;&quot;01100011101010111100&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
             &lt;span class=&quot;s&quot;&gt;&quot;01000011001010010011&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-            &lt;span class=&quot;s&quot;&gt;&quot;00000011110100011000&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# 58&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Solution&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;numIslands&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">题目概述</summary></entry></feed>
+            &lt;span class=&quot;s&quot;&gt;&quot;00000011110100011000&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# 58
+&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Solution&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;numIslands&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录
+
+
+  题目概述
+  最终解法
+
+
+题目概述
+
+ 
+ 
+ 
+ 
+原题链接
+
+
+  Given a 2d grid map of ‘1’s (land) and ‘0’s (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+
+
+Example 1:
+
+11110
+11010
+11000
+00000
+Answer: 1
+
+Example 2:
+
+11000
+11000
+00100
+00011
+Answer: 3
+
+
+
+最终解法
+
+ 
+ 
+ 
+ 
+解法的代码先贴出来了，解题思路后补啊。总体来说，就是一行一行的扫描。
+是个不错的离线算法。呵呵。
+
+class Solution(object):
+    def numIslands(self, grid):
+        &quot;&quot;&quot;
+        基本思路，一行一行的扫描。
+        :type grid: List[List[str]]
+        :rtype: int
+        &quot;&quot;&quot;
+        print(&quot;====&quot;)
+        n = len(grid)
+        if n == 0: return 0
+
+        length = len(grid[0])
+        h_pre = {}   # key : 是 “i,j” 字符串。value =》 [accumulator] ，一个list包含了岛的索引。
+
+        h_curr = {}  # 当前行
+
+        a = []  # 保存的是一个个的list，list的长度是1，值对应岛的索引。
+
+        debug = []
+        accumulator = 1 # 表示岛的自增索引，每当发现一个新的岛，自增。
+
+        for i in range(0, length):
+            if i == 0 and grid[0][i] == '1':
+                h_curr['0,' + str(i)] = [accumulator]
+                a.append(h_curr['0,' + str(i)])
+                debug.append('0,' + str(i))
+            elif i &amp;gt; 0 and grid[0][i] == '1':
+                if grid[0][i - 1] == '1':
+                    h_curr[str(0) + ',' + str(i)] = h_curr[str(0) + ',' + str(i - 1)]
+                else:
+                    accumulator += 1
+                    h_curr['0,' + str(i)] = [accumulator]
+                    a.append(h_curr['0,' + str(i)])
+                    debug.append('0,' + str(i))
+
+        for i in range(1, n):
+            h_pre = h_curr
+            h_curr = {}
+            for j in range(0, length):
+                if j == 0 and grid[i][j] == '1':
+
+                    if grid[i - 1][j] == '1':
+                        h_curr[str(i) + ',' + str(j)] = h_pre[str(i - 1) + ',' + str(j)]
+                    else:
+                        accumulator += 1
+                        h_curr[str(i) + ',' + str(j)] = [accumulator]
+                        a.append(h_curr[str(i) + ',' + str(j)])
+                        debug.append(str(i) + ',' + str(j))
+
+                elif j &amp;gt; 0 and grid[i][j] == '1':
+
+                    if grid[i - 1][j] == '1' and grid[i][j - 1] == '1':
+                        pre = h_curr[str(i) + ',' + str(j - 1)]
+                        above = h_pre[str(i - 1) + ',' + str(j)]
+
+                        if pre[0] == above[0]:
+                            # 对pre的值进行更新
+
+                            h_curr[str(i) + ',' + str(j)] = pre
+                        else :
+                            h_curr[str(i) + ',' + str(j)] = above
+                            v1 = pre[0]
+                            v2 = above[0]  # z这里一定要换成静态的值，否则的话当a[k]的值进行更新时，会影响到pre的值。
+
+                            for k in range(0, len(a)):
+                                if a[k][0] == v1:
+                                    a[k][0] = v2
+
+
+                    elif grid[i][j - 1] == '1' and grid[i - 1][j] != '1':
+                        pre = h_curr[str(i) + ',' + str(j - 1)]
+                        h_curr[str(i) + ',' + str(j)] = pre
+                    elif grid[i][j - 1] != '1' and grid[i - 1][j] == '1':
+                        above = h_pre[str(i - 1) + ',' + str(j)]
+                        h_curr[str(i) + ',' + str(j)] = above
+                    else:
+                        accumulator += 1
+                        h_curr[str(i) + ',' + str(j)] = [accumulator]
+                        a.append(h_curr[str(i) + ',' + str(j)])
+                        debug.append(str(i) + ',' + str(j))
+        s = set()
+        for item in a:
+            s.add(item[0])
+        return len(s)
+
+
+if __name__ == &quot;__main__&quot;:
+    grid = [&quot;11000&quot;,
+            &quot;11000&quot;,
+            &quot;00100&quot;,
+            &quot;00011&quot;]  # 3
+
+    print(Solution().numIslands(grid))
+    grid = [&quot;10111&quot;,
+            &quot;10101&quot;,
+            &quot;11101&quot;]  # 1
+
+    print(Solution().numIslands(grid))
+    grid = [&quot;1111111&quot;,
+            &quot;0000001&quot;,
+            &quot;1111101&quot;,
+            &quot;1000101&quot;,
+            &quot;1010101&quot;,
+            &quot;1011101&quot;,
+            &quot;1111111&quot;]  # 1
+
+    print(Solution().numIslands(grid))
+
+
+    grid = [&quot;10011101100000000000&quot;,
+            &quot;10011001000101010010&quot;,
+            &quot;00011110101100001010&quot;,
+            &quot;00011001000111001001&quot;,
+            &quot;00000001110000000000&quot;,
+            &quot;10000101011000000101&quot;,
+            &quot;00010001010101010101&quot;,
+            &quot;00010100110101101110&quot;,
+            &quot;00001001100001000101&quot;,
+            &quot;00100100000100100010&quot;,
+            &quot;10010000000100101010&quot;,
+            &quot;01000101011011101100&quot;,
+            &quot;11010000100000010001&quot;,
+            &quot;01001110001111101000&quot;,
+            &quot;00111000110001010000&quot;,
+            &quot;10010100001000101011&quot;,
+            &quot;10100000010001010000&quot;,
+            &quot;01100011101010111100&quot;,
+            &quot;01000011001010010011&quot;,
+            &quot;00000011110100011000&quot;]  # 58
+
+    print(Solution().numIslands(grid))</summary></entry></feed>
