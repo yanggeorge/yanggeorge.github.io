@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-01-19T06:35:11+00:00</updated><id>http://localhost:4000//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">解决python3使用system-site-packages创建虚拟环境时没有pip的问题</title><link href="http://localhost:4000/python3/venv/2017/01/18/venv-no-pip.html" rel="alternate" type="text/html" title="解决python3使用system-site-packages创建虚拟环境时没有pip的问题" /><published>2017-01-18T00:00:00+00:00</published><updated>2017-01-18T00:00:00+00:00</updated><id>http://localhost:4000/python3/venv/2017/01/18/venv-no-pip</id><content type="html" xml:base="http://localhost:4000/python3/venv/2017/01/18/venv-no-pip.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-01-19T06:39:32+00:00</updated><id>http://localhost:4000//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">解决python3使用system-site-packages创建虚拟环境时没有pip的问题</title><link href="http://localhost:4000/python3/venv/2017/01/18/venv-no-pip.html" rel="alternate" type="text/html" title="解决python3使用system-site-packages创建虚拟环境时没有pip的问题" /><published>2017-01-18T00:00:00+00:00</published><updated>2017-01-18T00:00:00+00:00</updated><id>http://localhost:4000/python3/venv/2017/01/18/venv-no-pip</id><content type="html" xml:base="http://localhost:4000/python3/venv/2017/01/18/venv-no-pip.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;#hh0&quot;&gt;python虚拟环境&lt;/a&gt;&lt;/li&gt;
@@ -301,7 +301,7 @@ cython fib : 0.00059495s
   &lt;li&gt;&lt;a href=&quot;#hh0&quot;&gt;题目概述&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#hh1&quot;&gt;O(N^2)解法&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#hh2&quot;&gt;死亡凝视&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#hh3&quot;&gt;通过的代码　&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#hh3&quot;&gt;通过的代码&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#hh4&quot;&gt;总结&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -325,7 +325,7 @@ The three ranges are : [0, 0], [2, 2], [0, 2] and their respective sums are: -2,
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;h2 id=&quot;-on2解法&quot;&gt;&lt;a name=&quot;hh1&quot;&gt;&lt;/a&gt; O(N^2)解法&lt;/h2&gt;
+&lt;h2 id=&quot;on2解法&quot;&gt;&lt;a name=&quot;hh1&quot;&gt;&lt;/a&gt;O(N^2)解法&lt;/h2&gt;
 
 &lt;p&gt; 
  
@@ -352,7 +352,7 @@ The three ranges are : [0, 0], [2, 2], [0, 2] and their respective sums are: -2,
                     &lt;span class=&quot;n&quot;&gt;sums&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;append&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
         &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;h2 id=&quot;-死亡凝视&quot;&gt;&lt;a name=&quot;hh2&quot;&gt;&lt;/a&gt; 死亡凝视&lt;/h2&gt;
+&lt;h2 id=&quot;死亡凝视&quot;&gt;&lt;a name=&quot;hh2&quot;&gt;&lt;/a&gt;死亡凝视&lt;/h2&gt;
 
 &lt;p&gt; 
  
@@ -429,7 +429,7 @@ The three ranges are : [0, 0], [2, 2], [0, 2] and their respective sums are: -2,
 但是，别着急，还是有问题，我们需要在计算第二列的个数的之前，把第一列的数字中的&lt;code class=&quot;highlighter-rouge&quot;&gt;5&lt;/code&gt;排除掉。
 否则的话，如果区间是&lt;code class=&quot;highlighter-rouge&quot;&gt;[-100,100]&lt;/code&gt;，那么我们就多计算了。&lt;/p&gt;
 
-&lt;h2 id=&quot;-通过的代码&quot;&gt;&lt;a name=&quot;hh3&quot;&gt;&lt;/a&gt; 通过的代码　&lt;/h2&gt;
+&lt;h2 id=&quot;通过的代码&quot;&gt;&lt;a name=&quot;hh3&quot;&gt;&lt;/a&gt;通过的代码&lt;/h2&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;c&quot;&gt;# python3.5&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Solution4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
