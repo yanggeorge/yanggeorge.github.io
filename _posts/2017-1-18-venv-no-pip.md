@@ -4,7 +4,6 @@ title: 解决python3使用system-site-packages创建虚拟环境时没有pip的�
 categories: Python3 venv
 author: alenym@qq.com
 ---
-
 ## 目录 ##
 
 - [python虚拟环境](#hh0) 
@@ -12,7 +11,9 @@ author: alenym@qq.com
 - [Linux下的解决办法](#hh2) 
 - [可能的解决办法](#hh3) 
 
-## python虚拟环境<a name="hh0"></a> ##
+
+
+## <a name="hh0"></a> python虚拟环境 ##
 
 &nbsp;
 &nbsp;
@@ -41,7 +42,7 @@ author: alenym@qq.com
 两种方式，我们都希望能够独立使用pip来管理包。但是第二种方式发现并没有pip
 文件。
 
-## WIN下的解决办法<a name="hh1"></a> ##
+## <a name="hh1"></a> WIN下的解决办法 ##
 
 
 &nbsp;
@@ -57,7 +58,7 @@ author: alenym@qq.com
 ![env-2]({{site.url}}/assets/env-2.png)
 
 
-## Linux下的解决办法<a name="hh2"></a> ##
+## <a name="hh2"></a> Linux下的解决办法 ##
 
 
 &nbsp;
@@ -130,7 +131,7 @@ author: alenym@qq.com
 &nbsp;
 嗯成功了。
 
-## 可能的解决办法<a name="hh3"></a> ##
+## <a name="hh3"></a> 可能的解决办法 ##
 
 
 &nbsp;

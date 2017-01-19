@@ -69,14 +69,14 @@
     <h2 id="目录">目录</h2>
 
 <ul>
-  <li><a href="#hh1">题目概述</a></li>
-  <li><a href="#hh2">O(N^2)解法</a></li>
-  <li><a href="#hh3">死亡凝视</a></li>
-  <li><a href="#hh4">通过的代码</a></li>
-  <li><a href="#hh5">总结</a></li>
+  <li><a href="#hh0">题目概述<a name="hh1"></a></a></li>
+  <li><a href="#hh1">O(N^2)解法 <a name="hh2"></a></a></li>
+  <li><a href="#hh2">死亡凝视<a name="hh3"></a></a></li>
+  <li><a href="#hh3">通过的代码<a name="hh4"></a>　</a></li>
+  <li><a href="#hh4">总结<a name="hh5"></a></a></li>
 </ul>
 
-<h2 id="题目概述">题目概述<a name="hh1"></a></h2>
+<h2 id="-题目概述"><a name="hh0"></a> 题目概述<a name="hh1"></a></h2>
 
 <p> 
  
@@ -96,7 +96,7 @@ The three ranges are : [0, 0], [2, 2], [0, 2] and their respective sums are: -2,
 </code></pre>
 </div>
 
-<h2 id="on2解法-">O(N^2)解法 <a name="hh2"></a></h2>
+<h2 id="-on2解法-"><a name="hh1"></a> O(N^2)解法 <a name="hh2"></a></h2>
 
 <p> 
  
@@ -123,7 +123,7 @@ The three ranges are : [0, 0], [2, 2], [0, 2] and their respective sums are: -2,
                     <span class="n">sums</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">sums</span><span class="p">)</span></code></pre></figure>
 
-<h2 id="死亡凝视">死亡凝视<a name="hh3"></a></h2>
+<h2 id="-死亡凝视"><a name="hh2"></a> 死亡凝视<a name="hh3"></a></h2>
 
 <p> 
  
@@ -200,7 +200,7 @@ The three ranges are : [0, 0], [2, 2], [0, 2] and their respective sums are: -2,
 但是，别着急，还是有问题，我们需要在计算第二列的个数的之前，把第一列的数字中的<code class="highlighter-rouge">5</code>排除掉。
 否则的话，如果区间是<code class="highlighter-rouge">[-100,100]</code>，那么我们就多计算了。</p>
 
-<h2 id="通过的代码">通过的代码<a name="hh4"></a>　</h2>
+<h2 id="-通过的代码"><a name="hh3"></a> 通过的代码<a name="hh4"></a>　</h2>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># python3.5</span>
 <span class="k">class</span> <span class="nc">Solution4</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -290,7 +290,7 @@ The three ranges are : [0, 0], [2, 2], [0, 2] and their respective sums are: -2,
                 <span class="n">mid</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="k">return</span> <span class="n">mid</span> <span class="k">if</span> <span class="n">nums</span><span class="p">[</span><span class="n">mid</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">upper</span> <span class="k">else</span> <span class="n">mid</span> <span class="o">-</span> <span class="mi">1</span></code></pre></figure>
 
-<h2 id="总结">总结<a name="hh5"></a></h2>
+<h2 id="-总结"><a name="hh4"></a> 总结<a name="hh5"></a></h2>
 
 <p> 
  

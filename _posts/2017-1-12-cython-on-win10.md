@@ -11,7 +11,8 @@ author: alenym@qq.com
 - [跟着Cython的tutorial走](#hh2) 
 - [与python代码进行测试比较](#hh3) 
 
-## Cython<a name="hh0"></a> ##
+
+## <a name="hh0"></a> Cython ##
 
 &nbsp;
 &nbsp;
@@ -21,7 +22,7 @@ author: alenym@qq.com
 据说一般达到30x。一会我们来看看是不是真的。这个技术对老鸟来说已经是好多
 年前的了。但是很多情况下python用户真的用不上，所以不知道也无妨。
 
-## 软件安装<a name="hh1"></a> ##
+## <a name="hh1"></a> 软件安装 ##
 
 &nbsp;
 &nbsp;
@@ -33,7 +34,7 @@ author: alenym@qq.com
 1.  安装Visual C++ Build Tools 2015
 2.  安装Anaconda3
 
-## 跟着Cython的tutorial走<a name="hh2"></a> ##
+## <a name="hh2"></a> 跟着Cython的tutorial走 ##
 
 
 &nbsp;
@@ -102,7 +103,7 @@ setup(
 再想导入helloworld则是不行的。怎么回事，我们不是已经setup了么。
 原因在于`--inplace`这个参数，它表示只生成动态链接库。
 
-## 与python代码进行测试比较<a name="hh3"></a> ##
+## <a name="hh3"></a> 与python代码进行测试比较 ##
 
 &nbsp;&nbsp;&nbsp;&nbsp;
 我们还在那个目录下创建一个`test.py`文件。
