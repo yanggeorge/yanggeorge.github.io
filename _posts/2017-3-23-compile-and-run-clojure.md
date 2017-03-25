@@ -18,7 +18,7 @@ author: alenym@qq.com
 &nbsp;
 为啥要做这件事情呢？
 
-1. Clojure是一们jvm语言，使用了asm。
+1. Clojure是一门jvm语言，使用了asm。
 2. branch 20081217是最初的版本便于研究。
 
 ## <a name="hh1"></a> 下载branch 20081217 ##

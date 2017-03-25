@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-03-23T08:14:17+00:00</updated><id>http://localhost:4000//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">编译和运行Clojure分支20081217源码</title><link href="http://localhost:4000/java/clojure/jvm/2017/03/23/compile-and-run-clojure.html" rel="alternate" type="text/html" title="编译和运行Clojure分支20081217源码" /><published>2017-03-23T00:00:00+00:00</published><updated>2017-03-23T00:00:00+00:00</updated><id>http://localhost:4000/java/clojure/jvm/2017/03/23/compile-and-run-clojure</id><content type="html" xml:base="http://localhost:4000/java/clojure/jvm/2017/03/23/compile-and-run-clojure.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-03-25T06:58:57+00:00</updated><id>http://localhost:4000//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">编译和运行Clojure分支20081217源码</title><link href="http://localhost:4000/java/clojure/jvm/2017/03/23/compile-and-run-clojure.html" rel="alternate" type="text/html" title="编译和运行Clojure分支20081217源码" /><published>2017-03-23T00:00:00+00:00</published><updated>2017-03-23T00:00:00+00:00</updated><id>http://localhost:4000/java/clojure/jvm/2017/03/23/compile-and-run-clojure</id><content type="html" xml:base="http://localhost:4000/java/clojure/jvm/2017/03/23/compile-and-run-clojure.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;#hh0&quot;&gt;Clojure branch 20081217&lt;/a&gt;&lt;/li&gt;
@@ -15,7 +15,7 @@
 为啥要做这件事情呢？&lt;/p&gt;
 
 &lt;ol&gt;
-  &lt;li&gt;Clojure是一们jvm语言，使用了asm。&lt;/li&gt;
+  &lt;li&gt;Clojure是一门jvm语言，使用了asm。&lt;/li&gt;
   &lt;li&gt;branch 20081217是最初的版本便于研究。&lt;/li&gt;
 &lt;/ol&gt;
 
