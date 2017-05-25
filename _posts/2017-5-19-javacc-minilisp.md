@@ -35,7 +35,7 @@ author: alenym@qq.com
 &nbsp;
 &nbsp;
 &nbsp;
-在我看来真是麻雀虽小五脏俱全啊。这是一个非常值得研究的项目。
+在本人看来真是麻雀虽小五脏俱全啊。这是一个非常值得研究的项目。
 
 ## <a name="hh1"></a> JavaCC是什么？ ##
 
@@ -60,7 +60,7 @@ author: alenym@qq.com
 &nbsp;
 &nbsp;
 &nbsp;
-没关系，既然是Lisp方言，那么我们先看看传统的Lisp的BNF语法是什么。这里有一个简单的BNF版本
+没关系，既然是Lisp方言，那么本人们先看看传统的Lisp的BNF语法是什么。这里有一个简单的BNF版本
 [BNF rules of LISP](http://cui.unige.ch/isi/bnf/LISP/BNFlisp.html)
 
 	s_expression = atomic_symbol \
@@ -88,7 +88,7 @@ author: alenym@qq.com
 &nbsp;
 &nbsp;
 &nbsp;
-JavaCC有很多使用的技巧，我掌握的并不好，所以也就不乱讲了。以下是用JavaCC生成MiniLisp
+JavaCC有很多使用的技巧，本人掌握的并不好，所以也就不乱讲了。以下是用JavaCC生成MiniLisp
  Parser的jj文件。
 
 {% highlight java linenos %}
@@ -753,5 +753,4 @@ public class TestParser extends TestCase {
     }
 }
 {% endhighlight %}
-
 
