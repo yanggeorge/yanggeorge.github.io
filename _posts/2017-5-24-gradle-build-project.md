@@ -4,8 +4,13 @@ title: "Gradle脚本实现web开发框架的一键构建"
 categories: java gradle build 
 author: alenym@qq.com
 ---
+## 目录 ##
 
-## 问题 ##
+- [问题](#hh0) 
+- [何谓一键构建](#hh1) 
+- [build.gradle文件内容](#hh2) 
+
+## <a name="hh0"></a> 问题 ##
 
 &nbsp;&nbsp;&nbsp;&nbsp;
 Java世界里构建项目用什么工具呢，ant，maven和gradle。maven非常流行，
@@ -17,7 +22,7 @@ maven仓库的思想所以笔者认为未来是属于gradle的。
 特别是最近在搭建springmvc-jpa-mysql开发框架的时候，发现怎么也找不到一个
 archetype可以做到一键构建demo project。
 
-## 何谓一键构建 ##
+## <a name="hh1"></a> 何谓一键构建 ##
 
 &nbsp;&nbsp;&nbsp;&nbsp;
 何谓一键构建呢，有人说我用maven也可以很快搭建一个，况且通常我们可以把之前的
@@ -40,7 +45,7 @@ archetype可以做到一键构建demo project。
 以下导入IDEA中后所示的文件结构。
 ![gradle-project-structure]({{site.url}}/assets/2017-5-24-2.jpg)
 
-## build.gradle文件内容 ##
+## <a name="hh2"></a> build.gradle文件内容 ##
 
 
 &nbsp;&nbsp;&nbsp;&nbsp;
