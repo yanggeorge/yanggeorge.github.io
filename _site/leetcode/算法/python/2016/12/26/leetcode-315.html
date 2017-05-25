@@ -10,7 +10,7 @@
   <meta name="description" content="目录">
 
   <link rel="stylesheet" href="/assets/main.css">
-  <link rel="canonical" href="http://0.0.0.0:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/26/leetcode-315.html">
+  <link rel="canonical" href="http://192.168.56.101:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/26/leetcode-315.html">
   <link rel="alternate" type="application/rss+xml" title="3.λ｜形而下技术博客" href="/feed.xml">
   
   
@@ -148,7 +148,7 @@ Return the array [2, 1, 1, 0].
 于是我就画了这样一个图表。这是对数组<code class="highlighter-rouge">[5,1,6,7,2,3]</code>画的表格。横轴表示数组的index，
 纵轴表示大小。</p>
 
-<p><img src="http://0.0.0.0:4000/assets/2016-12-26-1.png" alt="2016-12-26-1" /></p>
+<p><img src="http://192.168.56.101:4000/assets/2016-12-26-1.png" alt="2016-12-26-1" /></p>
 
 <p>    我把它画在纸上，盯着看了半小时。呵呵，真的有这么长时间。
 因为我一直还是老思路，总想着根据第一个数字把剩下的数组分成大小两批。
@@ -168,7 +168,7 @@ Return the array [2, 1, 1, 0].
 而数组的长度为<code class="highlighter-rouge">6</code>，那么<code class="highlighter-rouge">smaller_num("7") = 6 - 4 = 2</code>。然后不考虑该数字<code class="highlighter-rouge">7</code>。
 对<code class="highlighter-rouge">7</code>右侧的<code class="highlighter-rouge">2</code>和<code class="highlighter-rouge">3</code>同时向左移动，同时令数组的长度减一。然后依次这样操作。</p>
 
-<p><img src="http://0.0.0.0:4000/assets/2016-12-26-2.png" alt="2016-12-26-2" /></p>
+<p><img src="http://192.168.56.101:4000/assets/2016-12-26-2.png" alt="2016-12-26-2" /></p>
 
 <p>    这样我们就可以写出一个新的算法。而对于步骤5则
 使用了简单实现，遍历整个数组，对所有<code class="highlighter-rouge">index &gt; index(Nmax)</code>数的索引进行

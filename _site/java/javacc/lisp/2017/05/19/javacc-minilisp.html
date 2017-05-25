@@ -10,7 +10,7 @@
   <meta name="description" content="目录">
 
   <link rel="stylesheet" href="/assets/main.css">
-  <link rel="canonical" href="http://0.0.0.0:4000/java/javacc/lisp/2017/05/19/javacc-minilisp.html">
+  <link rel="canonical" href="http://192.168.56.101:4000/java/javacc/lisp/2017/05/19/javacc-minilisp.html">
   <link rel="alternate" type="application/rss+xml" title="3.λ｜形而下技术博客" href="/feed.xml">
   
   
@@ -101,7 +101,7 @@
  
  
  
-在我看来真是麻雀虽小五脏俱全啊。这是一个非常值得研究的项目。</p>
+在笔者看来真是麻雀虽小五脏俱全啊。这是一个非常值得研究的项目。</p>
 
 <h2 id="-javacc是什么"><a name="hh1"></a> JavaCC是什么？</h2>
 
@@ -111,7 +111,7 @@
  
 <a href="https://javacc.org/">JavaCC</a>据说是一个非常易用好理解的<code class="highlighter-rouge">LL(k)</code>的Parser生成工具。
 说它好理解是指它生成的Java代码要比<code class="highlighter-rouge">LR</code>类型的容易理解。毕竟<code class="highlighter-rouge">LL</code>是<code class="highlighter-rouge">Top-Down Parser</code>呀。
-本人以前只用过<code class="highlighter-rouge">LR(1)</code>类型的工具，<code class="highlighter-rouge">JavaCC</code>则从来没用过。</p>
+笔者以前只用过<code class="highlighter-rouge">LR(1)</code>类型的工具，<code class="highlighter-rouge">JavaCC</code>则从来没用过。</p>
 
 <h2 id="-minilisp的bnf语法描述没有怎么办"><a name="hh2"></a> MiniLisp的BNF语法描述没有怎么办？</h2>
 
@@ -126,7 +126,7 @@
  
  
  
-没关系，既然是Lisp方言，那么我们先看看传统的Lisp的BNF语法是什么。这里有一个简单的BNF版本
+没关系，既然是Lisp方言，那么笔者们先看看传统的Lisp的BNF语法是什么。这里有一个简单的BNF版本
 <a href="http://cui.unige.ch/isi/bnf/LISP/BNFlisp.html">BNF rules of LISP</a></p>
 
 <div class="highlighter-rouge"><pre class="highlight"><code>s_expression = atomic_symbol \
@@ -155,7 +155,7 @@ empty = " "
  
  
  
-JavaCC有很多使用的技巧，我掌握的并不好，所以也就不乱讲了。以下是用JavaCC生成MiniLisp
+JavaCC有很多使用的技巧，笔者掌握的并不好，所以也就不乱讲了。以下是用JavaCC生成MiniLisp
  Parser的jj文件。</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
