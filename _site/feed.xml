@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://192.168.56.101:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://192.168.56.101:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://192.168.56.101:4000/" rel="alternate" type="text/html" /><updated>2017-05-25T02:54:26+00:00</updated><id>http://192.168.56.101:4000//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">Gradle脚本实现web开发框架的一键构建</title><link href="http://192.168.56.101:4000/java/gradle/build/2017/05/24/gradle-build-project.html" rel="alternate" type="text/html" title="Gradle脚本实现web开发框架的一键构建" /><published>2017-05-24T00:00:00+00:00</published><updated>2017-05-24T00:00:00+00:00</updated><id>http://192.168.56.101:4000/java/gradle/build/2017/05/24/gradle-build-project</id><content type="html" xml:base="http://192.168.56.101:4000/java/gradle/build/2017/05/24/gradle-build-project.html">&lt;h2 id=&quot;问题&quot;&gt;问题&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://192.168.56.101:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://192.168.56.101:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://192.168.56.101:4000/" rel="alternate" type="text/html" /><updated>2017-05-25T03:12:24+00:00</updated><id>http://192.168.56.101:4000//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">Gradle脚本实现web开发框架的一键构建</title><link href="http://192.168.56.101:4000/java/gradle/build/2017/05/24/gradle-build-project.html" rel="alternate" type="text/html" title="Gradle脚本实现web开发框架的一键构建" /><published>2017-05-24T00:00:00+00:00</published><updated>2017-05-24T00:00:00+00:00</updated><id>http://192.168.56.101:4000/java/gradle/build/2017/05/24/gradle-build-project</id><content type="html" xml:base="http://192.168.56.101:4000/java/gradle/build/2017/05/24/gradle-build-project.html">&lt;h2 id=&quot;问题&quot;&gt;问题&lt;/h2&gt;
 
 &lt;p&gt;    
 Java世界里构建项目用什么工具呢，ant，maven和gradle。maven非常流行，
@@ -6,7 +6,8 @@ Java世界里构建项目用什么工具呢，ant，maven和gradle。maven非常
 因为ant展示了所有的操作。gradle拥有基于groovy语言的DSL语言且继承了
 maven仓库的思想所以笔者认为未来是属于gradle的。&lt;/p&gt;
 
-&lt;p&gt;特别是最近在搭建springmvc-jpa-mysql开发框架的时候，发现怎么也找不到一个
+&lt;p&gt;    
+特别是最近在搭建springmvc-jpa-mysql开发框架的时候，发现怎么也找不到一个
 archetype可以做到一键构建demo project。&lt;/p&gt;
 
 &lt;h2 id=&quot;何谓一键构建&quot;&gt;何谓一键构建&lt;/h2&gt;
@@ -25,7 +26,8 @@ gradle run
 
 &lt;p&gt;    
 就可以在浏览器里访问&lt;code class=&quot;highlighter-rouge&quot;&gt;http://localhost:8080/greeting?name=GoodJob&lt;/code&gt;链接了。
-以下是过程展示。
+以下是过程展示。当然了因为jar包都已经下载过了，所以似乎还比较快。
+如果你的网速不行，那不怪笔者。
 &lt;img src=&quot;http://192.168.56.101:4000/assets/2017-5-24-1.gif&quot; alt=&quot;gradle-build-process&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;    

@@ -13,6 +13,7 @@ Java世界里构建项目用什么工具呢，ant，maven和gradle。maven非常
 因为ant展示了所有的操作。gradle拥有基于groovy语言的DSL语言且继承了
 maven仓库的思想所以笔者认为未来是属于gradle的。
 
+&nbsp;&nbsp;&nbsp;&nbsp;
 特别是最近在搭建springmvc-jpa-mysql开发框架的时候，发现怎么也找不到一个
 archetype可以做到一键构建demo project。
 
@@ -30,7 +31,8 @@ archetype可以做到一键构建demo project。
 
 &nbsp;&nbsp;&nbsp;&nbsp;
 就可以在浏览器里访问`http://localhost:8080/greeting?name=GoodJob`链接了。
-以下是过程展示。
+以下是过程展示。当然了因为jar包都已经下载过了，所以似乎还比较快。
+如果你的网速不行，那不怪笔者。
 ![gradle-build-process]({{site.url}}/assets/2017-5-24-1.gif)
 
 
