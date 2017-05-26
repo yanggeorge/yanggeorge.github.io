@@ -89,13 +89,12 @@ author: alenym@qq.com
 &nbsp;
 &nbsp;
 JavaCC有很多使用的技巧，笔者掌握的并不好，所以也就不乱讲了。以下是用JavaCC生成MiniLisp
- Parser的jj文件。
+ Parser的jj文件。用javacc编译之后，会报一个警告`117和118发生conflict`。但是笔者已经加上`LOOKAHEAD(2)`了。
+不知道为甚么还警告，而且也单独对这部分进行了解析检验，完全没有问题。这个生成的Parser并没有构造AST。
+
 
 {% highlight java linenos %}
 options {
-  LOOKAHEAD = 1;
-  CHOICE_AMBIGUITY_CHECK = 4;
-  OTHER_AMBIGUITY_CHECK = 1;
   STATIC = false;
   DEBUG_PARSER = true;
   DEBUG_LOOKAHEAD = true;
@@ -116,6 +115,9 @@ PARSER_BEGIN(MiniLisp)
 
 package ym.minilisp;
 
+import ym.minilisp.node.*;
+import java.util.*;
+
 public class MiniLisp {
 
   /** Main entry point. */
@@ -130,25 +132,25 @@ PARSER_END(MiniLisp)
 
 TOKEN :
 {
-    < EMPTY: [" ","\t","\n","\r"] ([" ","\t","\n","\r"])* >
-    |< LP: "(">
-    |< RP: ")" >
-    |< DOT: "." >
-    |< MINUS: "-">
+      <EMPTY: [" ","\t","\n","\r"] ([" ","\t","\n","\r"])*>
+    | <LP: "(">
+    | <RP: ")">
+    | <DOT: ".">
+    | <MINUS: "-">
     | <PLUS: "+">
     | <EQ: "=">
     | <AND: "and">
     | <NOT: "not">
     | <OR: "or">
     | <GT: ">">
-    | <LT: "<" >
+    | <LT: "<">
     | <LE: "<=">
     | <GE: ">=">
     | <SQUOTE: "'">
     | <QUOTE: "quote">
-    |< NUM: ["1"-"9"] ( ["0"-"9"] )* | "0">
-    | < ID: (~["\n","\r"," ","(",")","\t","#",";","{","}","[","]","0"-"9"]) (~["\n","\r"," ","(",")","\t","#",";","{","}","[","]"])* >
-    | < COMMENT: ([";"])([";"])* (~["\n","\r"])* ["\n","\r"] >
+    | <NUM: ["1"-"9"] ( ["0"-"9"] )* | "0">
+    | <ID: (["a"-"z","A"-"Z","_","@","?","$","%","*"]) (~["\n","\r"," ","(",")","\t","#",";","{","}","[","]"])* >
+    | <COMMENT: ([";"])(~["\n","\r"])* ["\n","\r"]>
 }
 
 
@@ -156,13 +158,13 @@ TOKEN :
 void Input() :
 {}
 {
-    ( Expr() )* <EOF>
+    ( Expr() )*  <EOF>
 }
 
 void Expr():
 {}
 {
-    NonSExpr()
+      NonSExpr()
     | SExpr()
 }
 
@@ -178,10 +180,8 @@ void NonSExpr():
 void SExpr() :
 {}
 {
-
-    SymbolExpr()
-    | LOOKAHEAD(<LP> (NonSExpr())* (SExpr())+ (NonSExpr())* <DOT>) <LP> (NonSExpr())* (SExpr())+ (NonSExpr())* <DOT> (NonSExpr())* (SExpr())+ (NonSExpr())* <RP>
-    | List()
+      SymbolExpr()
+    | <LP> (NonSExpr())* (SExpr() (NonSExpr())* )*  [<DOT> (NonSExpr())*  (SExpr() (NonSExpr())* )*] <RP>
     | SQuoteExpr()
 }
 
@@ -191,47 +191,30 @@ void SQuoteExpr():
     <SQUOTE> SExpr()
 }
 
-void List():
-{}
-{
-   <LP>(NonSExpr())* ( SExpr() (NonSExpr())* )* <RP>
-}
 
 void SymbolExpr():
 {}
 {
-    LOOKAHEAD(Symbol() (NonSExpr())+) Symbol() (NonSExpr())+
-    |Symbol() LOOKAHEAD({
-        getToken(1).kind == LP
-        || getToken(1).kind == RP
-        || getToken(1).kind == DOT
-    })
+    Symbol() LOOKAHEAD({ getToken(1).kind == LP || getToken(1).kind == RP|| getToken(1).kind == DOT || getToken(1).kind == COMMENT || getToken(1).kind == EMPTY })
 }
 
 void Symbol():
 {}
 {
-    <PLUS>
-    | <EQ>
-    | <AND>
-    | <NOT>
-    | <OR>
-    | <GT>
-    | <LT>
-    | <LE>
-    | <GE>
-    | LOOKAHEAD(Integer()) Integer()
-    | <MINUS>
-    | <ID>
-
+       <PLUS>
+    |  <EQ>
+    |  <AND>
+    |  <NOT>
+    |  <OR>
+    |  <GT>
+    |  <LT>
+    |  <LE>
+    |  <GE>
+    |  LOOKAHEAD(2) <MINUS> <NUM>
+    |  <MINUS>
+    |  <NUM>
+    |  <ID>
 }
-
-void Integer():
-{}
-{
-    [<MINUS>] <NUM>
-}
-
 {% endhighlight %}
 
 

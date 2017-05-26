@@ -156,7 +156,8 @@ empty = " "
  
  
 JavaCC有很多使用的技巧，笔者掌握的并不好，所以也就不乱讲了。以下是用JavaCC生成MiniLisp
- Parser的jj文件。</p>
+ Parser的jj文件。用javacc编译之后，会报一个警告<code class="highlighter-rouge">117和118发生conflict</code>。但是笔者已经加上<code class="highlighter-rouge">LOOKAHEAD(2)</code>了。
+不知道为甚么还警告，而且也单独对这部分进行了解析检验，完全没有问题。这个生成的Parser并没有构造AST。</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
 2
@@ -278,28 +279,7 @@ JavaCC有很多使用的技巧，笔者掌握的并不好，所以也就不乱�
 118
 119
 120
-121
-122
-123
-124
-125
-126
-127
-128
-129
-130
-131
-132
-133
-134
-135
-136
-137
-138
-139</pre></td><td class="code"><pre><span class="n">options</span> <span class="o">{</span>
-  <span class="n">LOOKAHEAD</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
-  <span class="n">CHOICE_AMBIGUITY_CHECK</span> <span class="o">=</span> <span class="mi">4</span><span class="o">;</span>
-  <span class="n">OTHER_AMBIGUITY_CHECK</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+121</pre></td><td class="code"><pre><span class="n">options</span> <span class="o">{</span>
   <span class="n">STATIC</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
   <span class="n">DEBUG_PARSER</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
   <span class="n">DEBUG_LOOKAHEAD</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
@@ -320,6 +300,9 @@ JavaCC有很多使用的技巧，笔者掌握的并不好，所以也就不乱�
 
 <span class="kn">package</span> <span class="n">ym</span><span class="o">.</span><span class="na">minilisp</span><span class="o">;</span>
 
+<span class="kn">import</span> <span class="nn">ym.minilisp.node.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
+
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">MiniLisp</span> <span class="o">{</span>
 
   <span class="cm">/** Main entry point. */</span>
@@ -334,25 +317,25 @@ JavaCC有很多使用的技巧，笔者掌握的并不好，所以也就不乱�
 
 <span class="n">TOKEN</span> <span class="o">:</span>
 <span class="o">{</span>
-    <span class="o">&lt;</span> <span class="nl">EMPTY:</span> <span class="o">[</span><span class="s">" "</span><span class="o">,</span><span class="s">"\t"</span><span class="o">,</span><span class="s">"\n"</span><span class="o">,</span><span class="s">"\r"</span><span class="o">]</span> <span class="o">([</span><span class="s">" "</span><span class="o">,</span><span class="s">"\t"</span><span class="o">,</span><span class="s">"\n"</span><span class="o">,</span><span class="s">"\r"</span><span class="o">])*</span> <span class="o">&gt;</span>
-    <span class="o">|&lt;</span> <span class="nl">LP:</span> <span class="s">"("</span><span class="o">&gt;</span>
-    <span class="o">|&lt;</span> <span class="nl">RP:</span> <span class="s">")"</span> <span class="o">&gt;</span>
-    <span class="o">|&lt;</span> <span class="nl">DOT:</span> <span class="s">"."</span> <span class="o">&gt;</span>
-    <span class="o">|&lt;</span> <span class="nl">MINUS:</span> <span class="s">"-"</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="nl">EMPTY:</span> <span class="o">[</span><span class="s">" "</span><span class="o">,</span><span class="s">"\t"</span><span class="o">,</span><span class="s">"\n"</span><span class="o">,</span><span class="s">"\r"</span><span class="o">]</span> <span class="o">([</span><span class="s">" "</span><span class="o">,</span><span class="s">"\t"</span><span class="o">,</span><span class="s">"\n"</span><span class="o">,</span><span class="s">"\r"</span><span class="o">])*&gt;</span>
+    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">LP:</span> <span class="s">"("</span><span class="o">&gt;</span>
+    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">RP:</span> <span class="s">")"</span><span class="o">&gt;</span>
+    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">DOT:</span> <span class="s">"."</span><span class="o">&gt;</span>
+    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">MINUS:</span> <span class="s">"-"</span><span class="o">&gt;</span>
     <span class="o">|</span> <span class="o">&lt;</span><span class="nl">PLUS:</span> <span class="s">"+"</span><span class="o">&gt;</span>
     <span class="o">|</span> <span class="o">&lt;</span><span class="nl">EQ:</span> <span class="s">"="</span><span class="o">&gt;</span>
     <span class="o">|</span> <span class="o">&lt;</span><span class="nl">AND:</span> <span class="s">"and"</span><span class="o">&gt;</span>
     <span class="o">|</span> <span class="o">&lt;</span><span class="nl">NOT:</span> <span class="s">"not"</span><span class="o">&gt;</span>
     <span class="o">|</span> <span class="o">&lt;</span><span class="nl">OR:</span> <span class="s">"or"</span><span class="o">&gt;</span>
     <span class="o">|</span> <span class="o">&lt;</span><span class="nl">GT:</span> <span class="s">"&gt;"</span><span class="o">&gt;</span>
-    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">LT:</span> <span class="s">"&lt;"</span> <span class="o">&gt;</span>
+    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">LT:</span> <span class="s">"&lt;"</span><span class="o">&gt;</span>
     <span class="o">|</span> <span class="o">&lt;</span><span class="nl">LE:</span> <span class="s">"&lt;="</span><span class="o">&gt;</span>
     <span class="o">|</span> <span class="o">&lt;</span><span class="nl">GE:</span> <span class="s">"&gt;="</span><span class="o">&gt;</span>
     <span class="o">|</span> <span class="o">&lt;</span><span class="nl">SQUOTE:</span> <span class="s">"'"</span><span class="o">&gt;</span>
     <span class="o">|</span> <span class="o">&lt;</span><span class="nl">QUOTE:</span> <span class="s">"quote"</span><span class="o">&gt;</span>
-    <span class="o">|&lt;</span> <span class="nl">NUM:</span> <span class="o">[</span><span class="s">"1"</span><span class="o">-</span><span class="s">"9"</span><span class="o">]</span> <span class="o">(</span> <span class="o">[</span><span class="s">"0"</span><span class="o">-</span><span class="s">"9"</span><span class="o">]</span> <span class="o">)*</span> <span class="o">|</span> <span class="s">"0"</span><span class="o">&gt;</span>
-    <span class="o">|</span> <span class="o">&lt;</span> <span class="nl">ID:</span> <span class="o">(~[</span><span class="s">"\n"</span><span class="o">,</span><span class="s">"\r"</span><span class="o">,</span><span class="s">" "</span><span class="o">,</span><span class="s">"("</span><span class="o">,</span><span class="s">")"</span><span class="o">,</span><span class="s">"\t"</span><span class="o">,</span><span class="s">"#"</span><span class="o">,</span><span class="s">";"</span><span class="o">,</span><span class="s">"{"</span><span class="o">,</span><span class="s">"}"</span><span class="o">,</span><span class="s">"["</span><span class="o">,</span><span class="s">"]"</span><span class="o">,</span><span class="s">"0"</span><span class="o">-</span><span class="s">"9"</span><span class="o">])</span> <span class="o">(~[</span><span class="s">"\n"</span><span class="o">,</span><span class="s">"\r"</span><span class="o">,</span><span class="s">" "</span><span class="o">,</span><span class="s">"("</span><span class="o">,</span><span class="s">")"</span><span class="o">,</span><span class="s">"\t"</span><span class="o">,</span><span class="s">"#"</span><span class="o">,</span><span class="s">";"</span><span class="o">,</span><span class="s">"{"</span><span class="o">,</span><span class="s">"}"</span><span class="o">,</span><span class="s">"["</span><span class="o">,</span><span class="s">"]"</span><span class="o">])*</span> <span class="o">&gt;</span>
-    <span class="o">|</span> <span class="o">&lt;</span> <span class="nl">COMMENT:</span> <span class="o">([</span><span class="s">";"</span><span class="o">])([</span><span class="s">";"</span><span class="o">])*</span> <span class="o">(~[</span><span class="s">"\n"</span><span class="o">,</span><span class="s">"\r"</span><span class="o">])*</span> <span class="o">[</span><span class="s">"\n"</span><span class="o">,</span><span class="s">"\r"</span><span class="o">]</span> <span class="o">&gt;</span>
+    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">NUM:</span> <span class="o">[</span><span class="s">"1"</span><span class="o">-</span><span class="s">"9"</span><span class="o">]</span> <span class="o">(</span> <span class="o">[</span><span class="s">"0"</span><span class="o">-</span><span class="s">"9"</span><span class="o">]</span> <span class="o">)*</span> <span class="o">|</span> <span class="s">"0"</span><span class="o">&gt;</span>
+    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">ID:</span> <span class="o">([</span><span class="s">"a"</span><span class="o">-</span><span class="s">"z"</span><span class="o">,</span><span class="s">"A"</span><span class="o">-</span><span class="s">"Z"</span><span class="o">,</span><span class="s">"_"</span><span class="o">,</span><span class="s">"@"</span><span class="o">,</span><span class="s">"?"</span><span class="o">,</span><span class="s">"$"</span><span class="o">,</span><span class="s">"%"</span><span class="o">,</span><span class="s">"*"</span><span class="o">])</span> <span class="o">(~[</span><span class="s">"\n"</span><span class="o">,</span><span class="s">"\r"</span><span class="o">,</span><span class="s">" "</span><span class="o">,</span><span class="s">"("</span><span class="o">,</span><span class="s">")"</span><span class="o">,</span><span class="s">"\t"</span><span class="o">,</span><span class="s">"#"</span><span class="o">,</span><span class="s">";"</span><span class="o">,</span><span class="s">"{"</span><span class="o">,</span><span class="s">"}"</span><span class="o">,</span><span class="s">"["</span><span class="o">,</span><span class="s">"]"</span><span class="o">])*</span> <span class="o">&gt;</span>
+    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">COMMENT:</span> <span class="o">([</span><span class="s">";"</span><span class="o">])(~[</span><span class="s">"\n"</span><span class="o">,</span><span class="s">"\r"</span><span class="o">])*</span> <span class="o">[</span><span class="s">"\n"</span><span class="o">,</span><span class="s">"\r"</span><span class="o">]&gt;</span>
 <span class="o">}</span>
 
 
@@ -360,13 +343,13 @@ JavaCC有很多使用的技巧，笔者掌握的并不好，所以也就不乱�
 <span class="kt">void</span> <span class="nf">Input</span><span class="o">()</span> <span class="o">:</span>
 <span class="o">{}</span>
 <span class="o">{</span>
-    <span class="o">(</span> <span class="n">Expr</span><span class="o">()</span> <span class="o">)*</span> <span class="o">&lt;</span><span class="n">EOF</span><span class="o">&gt;</span>
+    <span class="o">(</span> <span class="n">Expr</span><span class="o">()</span> <span class="o">)*</span>  <span class="o">&lt;</span><span class="n">EOF</span><span class="o">&gt;</span>
 <span class="o">}</span>
 
 <span class="kt">void</span> <span class="nf">Expr</span><span class="o">():</span>
 <span class="o">{}</span>
 <span class="o">{</span>
-    <span class="n">NonSExpr</span><span class="o">()</span>
+      <span class="n">NonSExpr</span><span class="o">()</span>
     <span class="o">|</span> <span class="n">SExpr</span><span class="o">()</span>
 <span class="o">}</span>
 
@@ -382,10 +365,8 @@ JavaCC有很多使用的技巧，笔者掌握的并不好，所以也就不乱�
 <span class="kt">void</span> <span class="nf">SExpr</span><span class="o">()</span> <span class="o">:</span>
 <span class="o">{}</span>
 <span class="o">{</span>
-
-    <span class="n">SymbolExpr</span><span class="o">()</span>
-    <span class="o">|</span> <span class="n">LOOKAHEAD</span><span class="o">(&lt;</span><span class="n">LP</span><span class="o">&gt;</span> <span class="o">(</span><span class="n">NonSExpr</span><span class="o">())*</span> <span class="o">(</span><span class="n">SExpr</span><span class="o">())+</span> <span class="o">(</span><span class="n">NonSExpr</span><span class="o">())*</span> <span class="o">&lt;</span><span class="n">DOT</span><span class="o">&gt;)</span> <span class="o">&lt;</span><span class="n">LP</span><span class="o">&gt;</span> <span class="o">(</span><span class="n">NonSExpr</span><span class="o">())*</span> <span class="o">(</span><span class="n">SExpr</span><span class="o">())+</span> <span class="o">(</span><span class="n">NonSExpr</span><span class="o">())*</span> <span class="o">&lt;</span><span class="n">DOT</span><span class="o">&gt;</span> <span class="o">(</span><span class="n">NonSExpr</span><span class="o">())*</span> <span class="o">(</span><span class="n">SExpr</span><span class="o">())+</span> <span class="o">(</span><span class="n">NonSExpr</span><span class="o">())*</span> <span class="o">&lt;</span><span class="n">RP</span><span class="o">&gt;</span>
-    <span class="o">|</span> <span class="n">List</span><span class="o">()</span>
+      <span class="n">SymbolExpr</span><span class="o">()</span>
+    <span class="o">|</span> <span class="o">&lt;</span><span class="n">LP</span><span class="o">&gt;</span> <span class="o">(</span><span class="n">NonSExpr</span><span class="o">())*</span> <span class="o">(</span><span class="n">SExpr</span><span class="o">()</span> <span class="o">(</span><span class="n">NonSExpr</span><span class="o">())*</span> <span class="o">)*</span>  <span class="o">[&lt;</span><span class="n">DOT</span><span class="o">&gt;</span> <span class="o">(</span><span class="n">NonSExpr</span><span class="o">())*</span>  <span class="o">(</span><span class="n">SExpr</span><span class="o">()</span> <span class="o">(</span><span class="n">NonSExpr</span><span class="o">())*</span> <span class="o">)*]</span> <span class="o">&lt;</span><span class="n">RP</span><span class="o">&gt;</span>
     <span class="o">|</span> <span class="n">SQuoteExpr</span><span class="o">()</span>
 <span class="o">}</span>
 
@@ -395,45 +376,29 @@ JavaCC有很多使用的技巧，笔者掌握的并不好，所以也就不乱�
     <span class="o">&lt;</span><span class="n">SQUOTE</span><span class="o">&gt;</span> <span class="nf">SExpr</span><span class="o">()</span>
 <span class="o">}</span>
 
-<span class="kt">void</span> <span class="nf">List</span><span class="o">():</span>
-<span class="o">{}</span>
-<span class="o">{</span>
-   <span class="o">&lt;</span><span class="n">LP</span><span class="o">&gt;(</span><span class="n">NonSExpr</span><span class="o">())*</span> <span class="o">(</span> <span class="n">SExpr</span><span class="o">()</span> <span class="o">(</span><span class="n">NonSExpr</span><span class="o">())*</span> <span class="o">)*</span> <span class="o">&lt;</span><span class="n">RP</span><span class="o">&gt;</span>
-<span class="o">}</span>
 
 <span class="kt">void</span> <span class="nf">SymbolExpr</span><span class="o">():</span>
 <span class="o">{}</span>
 <span class="o">{</span>
-    <span class="n">LOOKAHEAD</span><span class="o">(</span><span class="n">Symbol</span><span class="o">()</span> <span class="o">(</span><span class="n">NonSExpr</span><span class="o">())+)</span> <span class="n">Symbol</span><span class="o">()</span> <span class="o">(</span><span class="n">NonSExpr</span><span class="o">())+</span>
-    <span class="o">|</span><span class="n">Symbol</span><span class="o">()</span> <span class="n">LOOKAHEAD</span><span class="o">({</span>
-        <span class="n">getToken</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">kind</span> <span class="o">==</span> <span class="n">LP</span>
-        <span class="o">||</span> <span class="n">getToken</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">kind</span> <span class="o">==</span> <span class="n">RP</span>
-        <span class="o">||</span> <span class="n">getToken</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">kind</span> <span class="o">==</span> <span class="n">DOT</span>
-    <span class="o">})</span>
+    <span class="n">Symbol</span><span class="o">()</span> <span class="n">LOOKAHEAD</span><span class="o">({</span> <span class="n">getToken</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">kind</span> <span class="o">==</span> <span class="n">LP</span> <span class="o">||</span> <span class="n">getToken</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">kind</span> <span class="o">==</span> <span class="n">RP</span><span class="o">||</span> <span class="n">getToken</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">kind</span> <span class="o">==</span> <span class="n">DOT</span> <span class="o">||</span> <span class="n">getToken</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">kind</span> <span class="o">==</span> <span class="n">COMMENT</span> <span class="o">||</span> <span class="n">getToken</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">kind</span> <span class="o">==</span> <span class="n">EMPTY</span> <span class="o">})</span>
 <span class="o">}</span>
 
 <span class="kt">void</span> <span class="nf">Symbol</span><span class="o">():</span>
 <span class="o">{}</span>
 <span class="o">{</span>
-    <span class="o">&lt;</span><span class="n">PLUS</span><span class="o">&gt;</span>
-    <span class="o">|</span> <span class="o">&lt;</span><span class="n">EQ</span><span class="o">&gt;</span>
-    <span class="o">|</span> <span class="o">&lt;</span><span class="n">AND</span><span class="o">&gt;</span>
-    <span class="o">|</span> <span class="o">&lt;</span><span class="n">NOT</span><span class="o">&gt;</span>
-    <span class="o">|</span> <span class="o">&lt;</span><span class="n">OR</span><span class="o">&gt;</span>
-    <span class="o">|</span> <span class="o">&lt;</span><span class="n">GT</span><span class="o">&gt;</span>
-    <span class="o">|</span> <span class="o">&lt;</span><span class="n">LT</span><span class="o">&gt;</span>
-    <span class="o">|</span> <span class="o">&lt;</span><span class="n">LE</span><span class="o">&gt;</span>
-    <span class="o">|</span> <span class="o">&lt;</span><span class="n">GE</span><span class="o">&gt;</span>
-    <span class="o">|</span> <span class="n">LOOKAHEAD</span><span class="o">(</span><span class="n">Integer</span><span class="o">())</span> <span class="n">Integer</span><span class="o">()</span>
-    <span class="o">|</span> <span class="o">&lt;</span><span class="n">MINUS</span><span class="o">&gt;</span>
-    <span class="o">|</span> <span class="o">&lt;</span><span class="n">ID</span><span class="o">&gt;</span>
-
-<span class="o">}</span>
-
-<span class="kt">void</span> <span class="nf">Integer</span><span class="o">():</span>
-<span class="o">{}</span>
-<span class="o">{</span>
-    <span class="o">[&lt;</span><span class="n">MINUS</span><span class="o">&gt;]</span> <span class="o">&lt;</span><span class="n">NUM</span><span class="o">&gt;</span>
+       <span class="o">&lt;</span><span class="n">PLUS</span><span class="o">&gt;</span>
+    <span class="o">|</span>  <span class="o">&lt;</span><span class="n">EQ</span><span class="o">&gt;</span>
+    <span class="o">|</span>  <span class="o">&lt;</span><span class="n">AND</span><span class="o">&gt;</span>
+    <span class="o">|</span>  <span class="o">&lt;</span><span class="n">NOT</span><span class="o">&gt;</span>
+    <span class="o">|</span>  <span class="o">&lt;</span><span class="n">OR</span><span class="o">&gt;</span>
+    <span class="o">|</span>  <span class="o">&lt;</span><span class="n">GT</span><span class="o">&gt;</span>
+    <span class="o">|</span>  <span class="o">&lt;</span><span class="n">LT</span><span class="o">&gt;</span>
+    <span class="o">|</span>  <span class="o">&lt;</span><span class="n">LE</span><span class="o">&gt;</span>
+    <span class="o">|</span>  <span class="o">&lt;</span><span class="n">GE</span><span class="o">&gt;</span>
+    <span class="o">|</span>  <span class="n">LOOKAHEAD</span><span class="o">(</span><span class="mi">2</span><span class="o">)</span> <span class="o">&lt;</span><span class="n">MINUS</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">NUM</span><span class="o">&gt;</span>
+    <span class="o">|</span>  <span class="o">&lt;</span><span class="n">MINUS</span><span class="o">&gt;</span>
+    <span class="o">|</span>  <span class="o">&lt;</span><span class="n">NUM</span><span class="o">&gt;</span>
+    <span class="o">|</span>  <span class="o">&lt;</span><span class="n">ID</span><span class="o">&gt;</span>
 <span class="o">}</span><span class="w">
 </span></pre></td></tr></tbody></table></code></pre></figure>
 
