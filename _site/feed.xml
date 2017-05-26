@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://192.168.56.101:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://192.168.56.101:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://192.168.56.101:4000/" rel="alternate" type="text/html" /><updated>2017-05-26T08:10:24+00:00</updated><id>http://192.168.56.101:4000//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">Gradle脚本实现web开发框架的一键构建</title><link href="http://192.168.56.101:4000/java/gradle/build/2017/05/24/gradle-build-project.html" rel="alternate" type="text/html" title="Gradle脚本实现web开发框架的一键构建" /><published>2017-05-24T00:00:00+00:00</published><updated>2017-05-24T00:00:00+00:00</updated><id>http://192.168.56.101:4000/java/gradle/build/2017/05/24/gradle-build-project</id><content type="html" xml:base="http://192.168.56.101:4000/java/gradle/build/2017/05/24/gradle-build-project.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://192.168.56.101:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://192.168.56.101:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://192.168.56.101:4000/" rel="alternate" type="text/html" /><updated>2017-05-26T08:13:41+00:00</updated><id>http://192.168.56.101:4000//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">Gradle脚本实现web开发框架的一键构建</title><link href="http://192.168.56.101:4000/java/gradle/build/2017/05/24/gradle-build-project.html" rel="alternate" type="text/html" title="Gradle脚本实现web开发框架的一键构建" /><published>2017-05-24T00:00:00+00:00</published><updated>2017-05-24T00:00:00+00:00</updated><id>http://192.168.56.101:4000/java/gradle/build/2017/05/24/gradle-build-project</id><content type="html" xml:base="http://192.168.56.101:4000/java/gradle/build/2017/05/24/gradle-build-project.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;#hh0&quot;&gt;问题&lt;/a&gt;&lt;/li&gt;
@@ -936,9 +936,9 @@ empty = &quot; &quot;
  
  
  
-JavaCC有很多使用的技巧，笔者掌握的并不好，所以也就不乱讲了。以下是用JavaCC生成MiniLisp
- Parser的jj文件。用javacc编译之后，会报一个警告&lt;code class=&quot;highlighter-rouge&quot;&gt;117和118发生conflict&lt;/code&gt;。但是笔者已经加上&lt;code class=&quot;highlighter-rouge&quot;&gt;LOOKAHEAD(2)&lt;/code&gt;了。
-不知道为甚么还警告，而且也单独对这部分进行了解析检验，完全没有问题。这个生成的Parser并没有构造AST。&lt;/p&gt;
+以下是用JavaCC生成MiniLisp
+ Parser的jj文件。用javacc编译之后，会报一个警告&lt;code class=&quot;highlighter-rouge&quot;&gt;117行和118行发生conflict&lt;/code&gt;。但是笔者已经加上&lt;code class=&quot;highlighter-rouge&quot;&gt;LOOKAHEAD(2)&lt;/code&gt;了。
+不知道为什么还警告，而且也单独对这部分进行了测试，完全没有问题。另外，这个生成的Parser并没有构造AST。&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2

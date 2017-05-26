@@ -88,9 +88,9 @@ author: alenym@qq.com
 &nbsp;
 &nbsp;
 &nbsp;
-JavaCC有很多使用的技巧，笔者掌握的并不好，所以也就不乱讲了。以下是用JavaCC生成MiniLisp
- Parser的jj文件。用javacc编译之后，会报一个警告`117和118发生conflict`。但是笔者已经加上`LOOKAHEAD(2)`了。
-不知道为甚么还警告，而且也单独对这部分进行了解析检验，完全没有问题。这个生成的Parser并没有构造AST。
+以下是用JavaCC生成MiniLisp
+ Parser的jj文件。用javacc编译之后，会报一个警告`117行和118行发生conflict`。但是笔者已经加上`LOOKAHEAD(2)`了。
+不知道为什么还警告，而且也单独对这部分进行了测试，完全没有问题。另外，这个生成的Parser并没有构造AST。
 
 
 {% highlight java linenos %}
