@@ -25,9 +25,9 @@ archetype可以做到一键构建demo project。
 ## <a name="hh1"></a> 何谓一键构建 ##
 
 &nbsp;&nbsp;&nbsp;&nbsp;
-何谓一键构建呢，有人说我用maven也可以很快搭建一个，况且通常我们可以把之前的
-项目复制一份修改一下不久好了么，哪里有那么麻烦。嗯，但是笔者觉得还是执行一行命令，
-回车一下就构建完成了，更加让人舒心。如图所示，创建一个空项目dir，然后把build.gradle
+何谓一键构建呢，有人用maven也可以很快搭建一个，通常可以把之前的
+项目复制一份修改一下，似乎没有那么麻烦。但笔者还是觉得执行几个命令，
+回车一下就构建完成，更加让人舒心。如图所示，创建一个空项目dir，然后把build.gradle
 放入该路径下，执行
 
 	gradle init
@@ -37,7 +37,7 @@ archetype可以做到一键构建demo project。
 &nbsp;&nbsp;&nbsp;&nbsp;
 就可以在浏览器里访问`http://localhost:8080/greeting?name=GoodJob`链接了。
 以下是过程展示。当然了因为jar包都已经下载过了，所以似乎还比较快。
-如果你的网速不行，那不怪笔者。
+否则的话一定会联网下载jar包的。
 ![gradle-build-process]({{site.url}}/assets/2017-5-24-1.gif)
 
 

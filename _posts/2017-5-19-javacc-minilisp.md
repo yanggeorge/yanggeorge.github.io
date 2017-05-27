@@ -60,7 +60,7 @@ author: alenym@qq.com
 &nbsp;
 &nbsp;
 &nbsp;
-没关系，既然是Lisp方言，那么笔者们先看看传统的Lisp的BNF语法是什么。这里有一个简单的BNF版本
+没关系，既然是Lisp方言，那么先看看传统的Lisp的BNF语法是什么。这里有一个简单的BNF版本
 [BNF rules of LISP](http://cui.unige.ch/isi/bnf/LISP/BNFlisp.html)
 
 	s_expression = atomic_symbol \

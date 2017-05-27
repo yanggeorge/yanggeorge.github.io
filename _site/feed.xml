@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://192.168.56.101:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://192.168.56.101:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://192.168.56.101:4000/" rel="alternate" type="text/html" /><updated>2017-05-26T08:13:41+00:00</updated><id>http://192.168.56.101:4000//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">Gradle脚本实现web开发框架的一键构建</title><link href="http://192.168.56.101:4000/java/gradle/build/2017/05/24/gradle-build-project.html" rel="alternate" type="text/html" title="Gradle脚本实现web开发框架的一键构建" /><published>2017-05-24T00:00:00+00:00</published><updated>2017-05-24T00:00:00+00:00</updated><id>http://192.168.56.101:4000/java/gradle/build/2017/05/24/gradle-build-project</id><content type="html" xml:base="http://192.168.56.101:4000/java/gradle/build/2017/05/24/gradle-build-project.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://192.168.56.101:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://192.168.56.101:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://192.168.56.101:4000/" rel="alternate" type="text/html" /><updated>2017-05-27T06:21:15+00:00</updated><id>http://192.168.56.101:4000//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">Gradle脚本实现web开发框架的一键构建</title><link href="http://192.168.56.101:4000/java/gradle/build/2017/05/24/gradle-build-project.html" rel="alternate" type="text/html" title="Gradle脚本实现web开发框架的一键构建" /><published>2017-05-24T00:00:00+00:00</published><updated>2017-05-24T00:00:00+00:00</updated><id>http://192.168.56.101:4000/java/gradle/build/2017/05/24/gradle-build-project</id><content type="html" xml:base="http://192.168.56.101:4000/java/gradle/build/2017/05/24/gradle-build-project.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;#hh0&quot;&gt;问题&lt;/a&gt;&lt;/li&gt;
@@ -21,9 +21,9 @@ archetype可以做到一键构建demo project。&lt;/p&gt;
 &lt;h2 id=&quot;-何谓一键构建&quot;&gt;&lt;a name=&quot;hh1&quot;&gt;&lt;/a&gt; 何谓一键构建&lt;/h2&gt;
 
 &lt;p&gt;    
-何谓一键构建呢，有人说我用maven也可以很快搭建一个，况且通常我们可以把之前的
-项目复制一份修改一下不久好了么，哪里有那么麻烦。嗯，但是笔者觉得还是执行一行命令，
-回车一下就构建完成了，更加让人舒心。如图所示，创建一个空项目dir，然后把build.gradle
+何谓一键构建呢，有人用maven也可以很快搭建一个，通常可以把之前的
+项目复制一份修改一下，似乎没有那么麻烦。但笔者还是觉得执行几个命令，
+回车一下就构建完成，更加让人舒心。如图所示，创建一个空项目dir，然后把build.gradle
 放入该路径下，执行&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;gradle init
@@ -35,7 +35,7 @@ gradle run
 &lt;p&gt;    
 就可以在浏览器里访问&lt;code class=&quot;highlighter-rouge&quot;&gt;http://localhost:8080/greeting?name=GoodJob&lt;/code&gt;链接了。
 以下是过程展示。当然了因为jar包都已经下载过了，所以似乎还比较快。
-如果你的网速不行，那不怪笔者。
+否则的话一定会联网下载jar包的。
 &lt;img src=&quot;http://192.168.56.101:4000/assets/2017-5-24-1.gif&quot; alt=&quot;gradle-build-process&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;    
@@ -907,7 +907,7 @@ spring.jpa.properties.hibernate.hbm2ddl.auto=create
  
  
  
-没关系，既然是Lisp方言，那么笔者们先看看传统的Lisp的BNF语法是什么。这里有一个简单的BNF版本
+没关系，既然是Lisp方言，那么先看看传统的Lisp的BNF语法是什么。这里有一个简单的BNF版本
 &lt;a href=&quot;http://cui.unige.ch/isi/bnf/LISP/BNFlisp.html&quot;&gt;BNF rules of LISP&lt;/a&gt;&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;s_expression = atomic_symbol \
