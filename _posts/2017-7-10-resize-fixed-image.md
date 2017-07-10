@@ -11,7 +11,7 @@ author: alenym@qq.com
 - [解决最后的小问题](#hh2) 
 
 
-## <a name="hh0" ></a> 问题 ##
+## <a name="hh0" onclick="ga('send', 'event', 'anchor', 'click', 'title-ym');"></a> 问题 ##
 
 &nbsp;&nbsp;&nbsp;&nbsp;如何更改镜像文件的大小呢，尤其是如何把一个固定大小的镜像变大，并且之前的内容完全不改变。
 我尝试了一些方法，比如下面的几个步骤。1.查看信息，2.克隆新的vdi，3.调整大小，4.再查看信息。
