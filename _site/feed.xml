@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://192.168.56.101:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://192.168.56.101:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://192.168.56.101:4000/" rel="alternate" type="text/html" /><updated>2017-07-10T03:47:50+00:00</updated><id>http://192.168.56.101:4000//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">How to resize VirtualBox fixed image size and keep contents unchanged ?</title><link href="http://192.168.56.101:4000/image/resize/virutalbox/2017/07/10/resize-fixed-image.html" rel="alternate" type="text/html" title="How to resize VirtualBox fixed image size and keep contents unchanged ?" /><published>2017-07-10T00:00:00+00:00</published><updated>2017-07-10T00:00:00+00:00</updated><id>http://192.168.56.101:4000/image/resize/virutalbox/2017/07/10/resize-fixed-image</id><content type="html" xml:base="http://192.168.56.101:4000/image/resize/virutalbox/2017/07/10/resize-fixed-image.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2017-07-10T07:53:39+00:00</updated><id>//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">How to resize VirtualBox fixed image size and keep contents unchanged ?</title><link href="/image/resize/virutalbox/2017/07/10/resize-fixed-image.html" rel="alternate" type="text/html" title="How to resize VirtualBox fixed image size and keep contents unchanged ?" /><published>2017-07-10T00:00:00+00:00</published><updated>2017-07-10T00:00:00+00:00</updated><id>/image/resize/virutalbox/2017/07/10/resize-fixed-image</id><content type="html" xml:base="/image/resize/virutalbox/2017/07/10/resize-fixed-image.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;#hh0&quot;&gt;问题&lt;/a&gt;&lt;/li&gt;
@@ -26,7 +26,7 @@ VBoxManage showhdinfo mydiskClone.vdi&lt;/p&gt;
 
 &lt;p&gt;    幸运的是有人给出了详细的方法。&lt;/p&gt;
 &lt;blockquote&gt;
-  &lt;p&gt;&lt;img src=&quot;http://192.168.56.101:4000/assets/20170710-1.jpg&quot; alt=&quot;resize-method&quot; /&gt;&lt;/p&gt;
+  &lt;p&gt;&lt;img src=&quot;/assets/20170710-1.jpg&quot; alt=&quot;resize-method&quot; /&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 
 &lt;p&gt;    我来解释一下，其中最核心的就是&lt;/p&gt;
@@ -67,9 +67,9 @@ VBoxManage showhdinfo mydiskClone.vdi&lt;/p&gt;
 Replace the swap UUID with the new one (run sudo blkid to find it) after the primary partition resizing.&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.56.101:4000/assets/20170710-2.jpg&quot; alt=&quot;reset-swap-uuid&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/20170710-2.jpg&quot; alt=&quot;reset-swap-uuid&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;    重启，问题解决了。&lt;/p&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">Gradle脚本实现web开发框架的一键构建</title><link href="http://192.168.56.101:4000/java/gradle/build/2017/05/24/gradle-build-project.html" rel="alternate" type="text/html" title="Gradle脚本实现web开发框架的一键构建" /><published>2017-05-24T00:00:00+00:00</published><updated>2017-05-24T00:00:00+00:00</updated><id>http://192.168.56.101:4000/java/gradle/build/2017/05/24/gradle-build-project</id><content type="html" xml:base="http://192.168.56.101:4000/java/gradle/build/2017/05/24/gradle-build-project.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
+&lt;p&gt;    重启，问题解决了。&lt;/p&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">Gradle脚本实现web开发框架的一键构建</title><link href="/java/gradle/build/2017/05/24/gradle-build-project.html" rel="alternate" type="text/html" title="Gradle脚本实现web开发框架的一键构建" /><published>2017-05-24T00:00:00+00:00</published><updated>2017-05-24T00:00:00+00:00</updated><id>/java/gradle/build/2017/05/24/gradle-build-project</id><content type="html" xml:base="/java/gradle/build/2017/05/24/gradle-build-project.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;#hh0&quot;&gt;问题&lt;/a&gt;&lt;/li&gt;
@@ -107,11 +107,11 @@ gradle run
 就可以在浏览器里访问&lt;code class=&quot;highlighter-rouge&quot;&gt;http://localhost:8080/greeting?name=GoodJob&lt;/code&gt;链接了。
 以下是过程展示。当然了因为jar包都已经下载过了，所以似乎还比较快。
 否则的话一定会联网下载jar包的。
-&lt;img src=&quot;http://192.168.56.101:4000/assets/2017-5-24-1.gif&quot; alt=&quot;gradle-build-process&quot; /&gt;&lt;/p&gt;
+&lt;img src=&quot;/assets/2017-5-24-1.gif&quot; alt=&quot;gradle-build-process&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;    
 以下导入IDEA中后所示的文件结构。
-&lt;img src=&quot;http://192.168.56.101:4000/assets/2017-5-24-2.jpg&quot; alt=&quot;gradle-project-structure&quot; /&gt;&lt;/p&gt;
+&lt;img src=&quot;/assets/2017-5-24-2.jpg&quot; alt=&quot;gradle-project-structure&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;-buildgradle文件内容&quot;&gt;&lt;a name=&quot;hh2&quot;&gt;&lt;/a&gt; build.gradle文件内容&lt;/h2&gt;
 
@@ -918,7 +918,7 @@ spring.jpa.properties.hibernate.hbm2ddl.auto=create
 
     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">Write a simple parser for MiniLisp by using JavaCC</title><link href="http://192.168.56.101:4000/java/javacc/lisp/2017/05/19/javacc-minilisp.html" rel="alternate" type="text/html" title="Write a simple parser for MiniLisp by using JavaCC" /><published>2017-05-19T00:00:00+00:00</published><updated>2017-05-19T00:00:00+00:00</updated><id>http://192.168.56.101:4000/java/javacc/lisp/2017/05/19/javacc-minilisp</id><content type="html" xml:base="http://192.168.56.101:4000/java/javacc/lisp/2017/05/19/javacc-minilisp.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">Write a simple parser for MiniLisp by using JavaCC</title><link href="/java/javacc/lisp/2017/05/19/javacc-minilisp.html" rel="alternate" type="text/html" title="Write a simple parser for MiniLisp by using JavaCC" /><published>2017-05-19T00:00:00+00:00</published><updated>2017-05-19T00:00:00+00:00</updated><id>/java/javacc/lisp/2017/05/19/javacc-minilisp</id><content type="html" xml:base="/java/javacc/lisp/2017/05/19/javacc-minilisp.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;#hh0&quot;&gt;MiniLisp是什么？&lt;/a&gt;&lt;/li&gt;
@@ -2275,7 +2275,7 @@ MiniLisp项目下的life.lisp和nqueens.lisp文件内容完整解析测试。
         &lt;span class=&quot;n&quot;&gt;parser&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;Input&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">编译和运行Clojure分支20081217源码</title><link href="http://192.168.56.101:4000/java/clojure/jvm/2017/03/23/compile-and-run-clojure.html" rel="alternate" type="text/html" title="编译和运行Clojure分支20081217源码" /><published>2017-03-23T00:00:00+00:00</published><updated>2017-03-23T00:00:00+00:00</updated><id>http://192.168.56.101:4000/java/clojure/jvm/2017/03/23/compile-and-run-clojure</id><content type="html" xml:base="http://192.168.56.101:4000/java/clojure/jvm/2017/03/23/compile-and-run-clojure.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">编译和运行Clojure分支20081217源码</title><link href="/java/clojure/jvm/2017/03/23/compile-and-run-clojure.html" rel="alternate" type="text/html" title="编译和运行Clojure分支20081217源码" /><published>2017-03-23T00:00:00+00:00</published><updated>2017-03-23T00:00:00+00:00</updated><id>/java/clojure/jvm/2017/03/23/compile-and-run-clojure</id><content type="html" xml:base="/java/clojure/jvm/2017/03/23/compile-and-run-clojure.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;#hh0&quot;&gt;Clojure branch 20081217&lt;/a&gt;&lt;/li&gt;
@@ -2397,7 +2397,7 @@ hello world
  
  
  
-成功了。&lt;/p&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">[leetcode 329]Longest Increasing Path in a Matrix 原创解法</title><link href="http://192.168.56.101:4000/leetcode/%E7%AE%97%E6%B3%95/python/2017/03/12/leetcode-329.html" rel="alternate" type="text/html" title="[leetcode 329]Longest Increasing Path in a Matrix 原创解法" /><published>2017-03-12T00:00:00+00:00</published><updated>2017-03-12T00:00:00+00:00</updated><id>http://192.168.56.101:4000/leetcode/%E7%AE%97%E6%B3%95/python/2017/03/12/leetcode-329</id><content type="html" xml:base="http://192.168.56.101:4000/leetcode/%E7%AE%97%E6%B3%95/python/2017/03/12/leetcode-329.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
+成功了。&lt;/p&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">[leetcode 329]Longest Increasing Path in a Matrix 原创解法</title><link href="/leetcode/%E7%AE%97%E6%B3%95/python/2017/03/12/leetcode-329.html" rel="alternate" type="text/html" title="[leetcode 329]Longest Increasing Path in a Matrix 原创解法" /><published>2017-03-12T00:00:00+00:00</published><updated>2017-03-12T00:00:00+00:00</updated><id>/leetcode/%E7%AE%97%E6%B3%95/python/2017/03/12/leetcode-329</id><content type="html" xml:base="/leetcode/%E7%AE%97%E6%B3%95/python/2017/03/12/leetcode-329.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;#hh0&quot;&gt;题目概述&lt;/a&gt;&lt;/li&gt;
@@ -2791,7 +2791,7 @@ return 4
 
 &lt;p&gt;    这里我们在１６行使用一个dict来代替之前的memo，
 这样就可以把一个&lt;code class=&quot;highlighter-rouge&quot;&gt;O(N^2)&lt;/code&gt;改成一个&lt;code class=&quot;highlighter-rouge&quot;&gt;O(N)&lt;/code&gt;的了。
-测试一下，幸运的通过了。不过只打败了&lt;code class=&quot;highlighter-rouge&quot;&gt;1.7%&lt;/code&gt;。&lt;/p&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">How to call java code in Grails 3.2.6</title><link href="http://192.168.56.101:4000/java/grails/gradle/2017/03/06/grails-call-java.html" rel="alternate" type="text/html" title="How to call java code in Grails 3.2.6" /><published>2017-03-06T00:00:00+00:00</published><updated>2017-03-06T00:00:00+00:00</updated><id>http://192.168.56.101:4000/java/grails/gradle/2017/03/06/grails-call-java</id><content type="html" xml:base="http://192.168.56.101:4000/java/grails/gradle/2017/03/06/grails-call-java.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
+测试一下，幸运的通过了。不过只打败了&lt;code class=&quot;highlighter-rouge&quot;&gt;1.7%&lt;/code&gt;。&lt;/p&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">How to call java code in Grails 3.2.6</title><link href="/java/grails/gradle/2017/03/06/grails-call-java.html" rel="alternate" type="text/html" title="How to call java code in Grails 3.2.6" /><published>2017-03-06T00:00:00+00:00</published><updated>2017-03-06T00:00:00+00:00</updated><id>/java/grails/gradle/2017/03/06/grails-call-java</id><content type="html" xml:base="/java/grails/gradle/2017/03/06/grails-call-java.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;#hh0&quot;&gt;解决方法&lt;/a&gt;&lt;/li&gt;
@@ -2915,7 +2915,7 @@ D:\work\grails&amp;gt;
     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 
 &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">[leetcode 295]Find Median from Data Stream 原创解法</title><link href="http://192.168.56.101:4000/leetcode/%E7%AE%97%E6%B3%95/python/2017/01/31/leetcode-295.html" rel="alternate" type="text/html" title="[leetcode 295]Find Median from Data Stream 原创解法" /><published>2017-01-31T00:00:00+00:00</published><updated>2017-01-31T00:00:00+00:00</updated><id>http://192.168.56.101:4000/leetcode/%E7%AE%97%E6%B3%95/python/2017/01/31/leetcode-295</id><content type="html" xml:base="http://192.168.56.101:4000/leetcode/%E7%AE%97%E6%B3%95/python/2017/01/31/leetcode-295.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">[leetcode 295]Find Median from Data Stream 原创解法</title><link href="/leetcode/%E7%AE%97%E6%B3%95/python/2017/01/31/leetcode-295.html" rel="alternate" type="text/html" title="[leetcode 295]Find Median from Data Stream 原创解法" /><published>2017-01-31T00:00:00+00:00</published><updated>2017-01-31T00:00:00+00:00</updated><id>/leetcode/%E7%AE%97%E6%B3%95/python/2017/01/31/leetcode-295</id><content type="html" xml:base="/leetcode/%E7%AE%97%E6%B3%95/python/2017/01/31/leetcode-295.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;#hh0&quot;&gt;题目概述&lt;/a&gt;&lt;/li&gt;
@@ -3498,7 +3498,7 @@ python的&lt;code class=&quot;highlighter-rouge&quot;&gt;list&lt;/code&gt;而是
  
  python只默认实现了一个最小堆。想要一个最大堆，还得像第&lt;code class=&quot;highlighter-rouge&quot;&gt;23&lt;/code&gt;行
 代码那样使用一种取负数技巧。虽然&lt;code class=&quot;highlighter-rouge&quot;&gt;heapq&lt;/code&gt;模块里有一个构造最大堆的方法
-&lt;code class=&quot;highlighter-rouge&quot;&gt;_heapify_max()&lt;/code&gt;但是却没有&lt;code class=&quot;highlighter-rouge&quot;&gt;_heappushpop_max&lt;/code&gt;这样的方法。真是无语啊。&lt;/p&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">解决python3使用system-site-packages创建虚拟环境时没有pip的问题</title><link href="http://192.168.56.101:4000/python3/venv/2017/01/18/venv-no-pip.html" rel="alternate" type="text/html" title="解决python3使用system-site-packages创建虚拟环境时没有pip的问题" /><published>2017-01-18T00:00:00+00:00</published><updated>2017-01-18T00:00:00+00:00</updated><id>http://192.168.56.101:4000/python3/venv/2017/01/18/venv-no-pip</id><content type="html" xml:base="http://192.168.56.101:4000/python3/venv/2017/01/18/venv-no-pip.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;_heapify_max()&lt;/code&gt;但是却没有&lt;code class=&quot;highlighter-rouge&quot;&gt;_heappushpop_max&lt;/code&gt;这样的方法。真是无语啊。&lt;/p&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">解决python3使用system-site-packages创建虚拟环境时没有pip的问题</title><link href="/python3/venv/2017/01/18/venv-no-pip.html" rel="alternate" type="text/html" title="解决python3使用system-site-packages创建虚拟环境时没有pip的问题" /><published>2017-01-18T00:00:00+00:00</published><updated>2017-01-18T00:00:00+00:00</updated><id>/python3/venv/2017/01/18/venv-no-pip</id><content type="html" xml:base="/python3/venv/2017/01/18/venv-no-pip.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;#hh0&quot;&gt;python虚拟环境&lt;/a&gt;&lt;/li&gt;
@@ -3546,11 +3546,11 @@ python的&lt;code class=&quot;highlighter-rouge&quot;&gt;list&lt;/code&gt;而是
  
 因为我一般都是用神器&lt;code class=&quot;highlighter-rouge&quot;&gt;pycharm&lt;/code&gt;，幸运的是&lt;code class=&quot;highlighter-rouge&quot;&gt;pycharm&lt;/code&gt;提供了一个简单的方法。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.56.101:4000/assets/env-1.png&quot; alt=&quot;env-1&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/env-1.png&quot; alt=&quot;env-1&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;可以看到目录下是有pip的。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.56.101:4000/assets/env-2.png&quot; alt=&quot;env-2&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/env-2.png&quot; alt=&quot;env-2&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;-linux下的解决办法&quot;&gt;&lt;a name=&quot;hh2&quot;&gt;&lt;/a&gt; Linux下的解决办法&lt;/h2&gt;
 
@@ -3636,7 +3636,7 @@ setuptools 28.8.0
  
 虽然第二种办法很好。但是需要修改源代码。可是服务器上的代码是不能修改的呀。
 那可以尝试自己写一个venv.Builder，对其中的create方法进行覆盖，这个方法
-我没有尝试。如果你尝试了，也可以发邮件告诉我结果。&lt;/p&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">在WIN10下使用Cython</title><link href="http://192.168.56.101:4000/cython/python/2017/01/12/cython-on-win10.html" rel="alternate" type="text/html" title="在WIN10下使用Cython" /><published>2017-01-12T00:00:00+00:00</published><updated>2017-01-12T00:00:00+00:00</updated><id>http://192.168.56.101:4000/cython/python/2017/01/12/cython-on-win10</id><content type="html" xml:base="http://192.168.56.101:4000/cython/python/2017/01/12/cython-on-win10.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
+我没有尝试。如果你尝试了，也可以发邮件告诉我结果。&lt;/p&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">在WIN10下使用Cython</title><link href="/cython/python/2017/01/12/cython-on-win10.html" rel="alternate" type="text/html" title="在WIN10下使用Cython" /><published>2017-01-12T00:00:00+00:00</published><updated>2017-01-12T00:00:00+00:00</updated><id>/cython/python/2017/01/12/cython-on-win10</id><content type="html" xml:base="/cython/python/2017/01/12/cython-on-win10.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;#hh0&quot;&gt;Cython&lt;/a&gt;&lt;/li&gt;
@@ -3795,7 +3795,7 @@ cython fib : 0.00059495s
 &lt;/div&gt;
 
 &lt;p&gt;    
-真是不错哦，诚不我欺，100x。&lt;/p&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">[leetcode 327]Count of Range Sum 原创解法</title><link href="http://192.168.56.101:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/31/leetcode-327.html" rel="alternate" type="text/html" title="[leetcode 327]Count of Range Sum 原创解法" /><published>2016-12-31T00:00:00+00:00</published><updated>2016-12-31T00:00:00+00:00</updated><id>http://192.168.56.101:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/31/leetcode-327</id><content type="html" xml:base="http://192.168.56.101:4000/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/31/leetcode-327.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
+真是不错哦，诚不我欺，100x。&lt;/p&gt;</content><author><name>alenym@qq.com</name></author><summary type="html">目录</summary></entry><entry><title type="html">[leetcode 327]Count of Range Sum 原创解法</title><link href="/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/31/leetcode-327.html" rel="alternate" type="text/html" title="[leetcode 327]Count of Range Sum 原创解法" /><published>2016-12-31T00:00:00+00:00</published><updated>2016-12-31T00:00:00+00:00</updated><id>/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/31/leetcode-327</id><content type="html" xml:base="/leetcode/%E7%AE%97%E6%B3%95/python/2016/12/31/leetcode-327.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;#hh0&quot;&gt;题目概述&lt;/a&gt;&lt;/li&gt;
@@ -3874,7 +3874,7 @@ The three ranges are : [0, 0], [2, 2], [0, 2] and their respective sums are: -2,
 只好画一个二维图吧。下图是对数组&lt;code class=&quot;highlighter-rouge&quot;&gt;[5,7,8,-2,1]&lt;/code&gt;画的二维表格。格子
 中的数字就是&lt;code class=&quot;highlighter-rouge&quot;&gt;s(i,j)&lt;/code&gt;。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.56.101:4000/assets/327-1.png&quot; alt=&quot;327-1&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/327-1.png&quot; alt=&quot;327-1&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt; 
  
@@ -3884,7 +3884,7 @@ The three ranges are : [0, 0], [2, 2], [0, 2] and their respective sums are: -2,
 个名字——&lt;code class=&quot;highlighter-rouge&quot;&gt;死亡凝视&lt;/code&gt;。看过&lt;code class=&quot;highlighter-rouge&quot;&gt;The Big Bang&lt;/code&gt;的朋友可能记得&lt;code class=&quot;highlighter-rouge&quot;&gt;Sheldon&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;Raj&lt;/code&gt;一起
 工作的样子，就是一动不动的看着黑板上的公式，看上一整天。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.56.101:4000/assets/327-2.jpg&quot; alt=&quot;327-2&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/327-2.jpg&quot; alt=&quot;327-2&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt; 
  
@@ -3893,7 +3893,7 @@ The three ranges are : [0, 0], [2, 2], [0, 2] and their respective sums are: -2,
 嘿嘿，你们不要笑啊，我的方式差不多。只不过是盯着表格。这样的表格
 其实我画了很多。但是只有这个我看出了规律。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.56.101:4000/assets/327-3.png&quot; alt=&quot;327-3&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/327-3.png&quot; alt=&quot;327-3&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt; 
  
@@ -3908,7 +3908,7 @@ The three ranges are : [0, 0], [2, 2], [0, 2] and their respective sums are: -2,
  
 如果没有看出来。我再画一个图。看看这三列数字和蓝色数字的关系。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.56.101:4000/assets/327-4.png&quot; alt=&quot;327-4&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/327-4.png&quot; alt=&quot;327-4&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt; 
  

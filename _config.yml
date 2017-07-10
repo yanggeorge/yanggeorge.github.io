@@ -23,6 +23,7 @@ timezone: '+0800'
 host: 192.168.56.101
 post: 4000
 
+google_analytics: UA-102303390-1
 # Build settings
 markdown: kramdown
 theme: minima
