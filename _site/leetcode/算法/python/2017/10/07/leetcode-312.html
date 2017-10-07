@@ -199,16 +199,21 @@ coins =  3*1*5      +  3*5*8    +  1*3*8      + 1*8*1   = 167
 以上的方法无疑会超时，但是它是我们理解问题，验证其它算法的基础。
 我们希望能够得到一个多项式时间的解法，按照以往的经验，我们如果能够找到一个贪心算法是最好的，
 但是如果我们能够有一个贪心算法，那么也一定能够有一个动态规划方法。<code class="highlighter-rouge">CRLS</code>对贪心和动态规划做了清楚的
-描述，核心都是要找到最优子结构。</p>
+描述，核心都是要找到最优子结构，并且证明存在最优子结构——这其实也是最难的部分，<code class="highlighter-rouge">因为动态规划方法从来只是一个思想，本质上不过是
+递归的一种优化而已</code>。</p>
 
 <p> 
  
  
  
-<code class="highlighter-rouge">CRLS</code>中在动态规划一章中用了几个例子来详细展示动态规划方法。第二个例子就是矩阵链的问题。例如如果有一个
+<code class="highlighter-rouge">CRLS</code>中在动态规划一章中用了几个例子来详细展示动态规划方法。其中第二个例子就是矩阵链问题————如果有一个
 矩阵链<code class="highlighter-rouge">A1*A2*A3*A4</code>，其中A1是1x5的矩阵，A2是5x1的矩阵，A3是1x5的矩阵，A4是5x1的矩阵。那么先计算<code class="highlighter-rouge">A1*A2</code>和<code class="highlighter-rouge">A3*A4</code>
-则是比较好的。而<code class="highlighter-rouge">A2*A3</code>则是比较糟糕的，因为<code class="highlighter-rouge">A2*A3</code>的计算代价是<code class="highlighter-rouge">5x1x5=25</code>。对给定的两个矩阵相乘<code class="highlighter-rouge">A_ik*A_kl</code>,
-计算的代价是<code class="highlighter-rouge">i*k*l</code>。</p>
+则是比较好的，代价较小都是<code class="highlighter-rouge">1x5x1=5</code>。而<code class="highlighter-rouge">A2*A3</code>则是比较糟糕的，因为<code class="highlighter-rouge">A2*A3</code>的计算代价是<code class="highlighter-rouge">5x1x5=25</code>。</p>
+
+<blockquote>
+  <p>对给定的两个矩阵相乘<code class="highlighter-rouge">A_ik*A_kj</code>,
+计算的代价是<code class="highlighter-rouge">i*k*j</code>。</p>
+</blockquote>
 
 <h2 id="-等价转换"><a name="hh3"></a> 等价转换</h2>
 
@@ -216,11 +221,13 @@ coins =  3*1*5      +  3*5*8    +  1*3*8      + 1*8*1   = 167
  
  
  
-那么与我们的问题进行比较会发现相似之处。对于三个数字<code class="highlighter-rouge">5·1·5</code>，如果戳破第一个数字，则代价是1x5x1，如果戳破第二个数字
-代价是5x1x5，戳破第三个数字代价是1x5x1。因此可以大胆的猜测两个问题是等价的。只不过一个是求解最小的代价，一个是求解
-最大的代价。</p>
+矩阵链中计算的代价是三个数相乘，而我们这里也是三个数字相乘。对于三个气球（数字）<code class="highlighter-rouge">5·1·5</code>，如果戳破第一个气球（数字），则得分（代价）是1x5x1，如果戳破第二个气球（数字）
+得分（代价）是5x1x5，戳破第三个气球（数字）得分（代价）是1x5x1。对于1x5x1可以转换为1x5的矩阵和5x1的矩阵的代价。
+5x1x5，可以转换为5x1的矩阵和1x5的矩阵的代价。最终，三个数字<code class="highlighter-rouge">5·1·5</code>可以等价转换为求解四个矩阵
+<code class="highlighter-rouge">A1*A2*A3*A4</code>的最大计算代价的问题。所以第一步就是把n个数字转换为n+1个矩阵表示，第二步就是把矩阵链问题的递归求解中
+的min改成max。如果这两个问题是等价的，那么我们的解法一定可以通过测试。并且似乎也不用去证明了。（其实这是最难的部分。）</p>
 
-<p>以下是通过的<code class="highlighter-rouge">memoization</code>解法：</p>
+<p>以下是通过的<code class="highlighter-rouge">memoization</code>解法，算法的复杂度是O(n^2)，与矩阵链问题的复杂度一样：</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
 2
@@ -268,10 +275,10 @@ coins =  3*1*5      +  3*5*8    +  1*3*8      + 1*8*1   = 167
         :rtype: int
         """</span>
         <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nums</span><span class="p">)</span>
-        <span class="nb">list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nums</span><span class="p">)</span>
+        <span class="nb">list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nums</span><span class="p">)</span> <span class="c"># 转换为n+1个矩阵的表示。每个pair tuple对应矩阵的长和宽。</span>
         <span class="k">print</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
         <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">m</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">n</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">n</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span> <span class="c"># 声明一个子问题空间是n^2的记忆体</span>
         <span class="k">print</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
             <span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
