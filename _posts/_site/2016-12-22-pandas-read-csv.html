@@ -1,0 +1,64 @@
+<h2 id="目录">目录</h2>
+
+<ul>
+  <li><a href="#hh0">问题</a></li>
+  <li><a href="#hh1">解决问题</a></li>
+</ul>
+
+<h2 id="-问题"><a name="hh0"></a> 问题</h2>
+
+<p>    以下Python代码实现对<code class="highlighter-rouge">Excel</code>转存的csv文件进行读取。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_path</span> <span class="o">+</span> <span class="n">file_name</span> <span class="o">+</span> <span class="s">".csv"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s">"gbk"</span><span class="p">)</span></code></pre></figure>
+
+<p>    把<code class="highlighter-rouge">csv</code>文件入库是一件脏活。表面上看<code class="highlighter-rouge">csv</code>文件是一个非常简单的
+逗号分隔符文件。但是其实不然。<code class="highlighter-rouge">Excel</code>转存的<code class="highlighter-rouge">csv</code>文件并不是标准的以逗号作为分隔符，
+并且对所有的项用双引号包裹。现在我就遇到了从<code class="highlighter-rouge">Oracle</code>导出的<code class="highlighter-rouge">csv</code>文件，以上的代码
+不起作用了。</p>
+
+<h2 id="-解决问题"><a name="hh1"></a> 解决问题</h2>
+
+<p>    究竟怎么回事呢，找了一圈也没有发现使用<code class="highlighter-rouge">pandas.read_csv()</code>读取
+这种标准csv文件的方法。还是先把问题简化一下，看看<code class="highlighter-rouge">Python</code>的<code class="highlighter-rouge">csv模块</code>是如何读取的吧。
+简单的查找就可以找到答案。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">csv</span>
+<span class="n">csv</span><span class="o">.</span><span class="n">register_dialect</span><span class="p">(</span>
+    <span class="s">'mydialect'</span><span class="p">,</span>
+    <span class="n">delimiter</span> <span class="o">=</span> <span class="s">','</span><span class="p">,</span>
+    <span class="n">quotechar</span> <span class="o">=</span> <span class="s">'"'</span><span class="p">,</span>
+    <span class="n">doublequote</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+    <span class="n">skipinitialspace</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+    <span class="n">lineterminator</span> <span class="o">=</span> <span class="s">'</span><span class="se">\r\n</span><span class="s">'</span><span class="p">,</span>
+    <span class="n">quoting</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">QUOTE_MINIMAL</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s"> Output from an iterable object created from the csv file'</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">'smallsample.csv'</span><span class="p">,</span> <span class="s">'rb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">mycsvfile</span><span class="p">:</span>
+    <span class="n">thedata</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">mycsvfile</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="s">'mydialect'</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">thedata</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s">"</span><span class="se">\t</span><span class="s"> </span><span class="se">\t</span><span class="s">"</span><span class="o">+</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="s">"</span><span class="se">\t</span><span class="s"> </span><span class="se">\t</span><span class="s">"</span><span class="o">+</span><span class="n">row</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span></code></pre></figure>
+
+<p>    好的，<code class="highlighter-rouge">pandas.read_csv()</code>肯定是要调用csv模块的，那么看看
+它的方法参数表吧。</p>
+
+<blockquote>
+  <p>pandas.read_csv(filepath_or_buffer, sep=’, ‘, delimiter=None, header=’infer’, names=None, index_col=None, usecols=None, squeeze=False, prefix=None, mangle_dupe_cols=True, dtype=None, engine=None, converters=None, true_values=None, false_values=None, skipinitialspace=False, skiprows=None, nrows=None, na_values=None, keep_default_na=True, na_filter=True, verbose=False, skip_blank_lines=True, parse_dates=False, infer_datetime_format=False, keep_date_col=False, date_parser=None, dayfirst=False, iterator=False, chunksize=None, compression=’infer’, thousands=None, decimal=’.’, lineterminator=None, quotechar=’”’, quoting=0, escapechar=None, comment=None, encoding=None, <strong>dialect=None</strong>, tupleize_cols=False, error_bad_lines=True, warn_bad_lines=True, skipfooter=0, skip_footer=0, doublequote=True, delim_whitespace=False, as_recarray=False, compact_ints=False, use_unsigned=False, low_memory=True, buffer_lines=None, memory_map=False, float_precision=None)[source]¶</p>
+</blockquote>
+
+<p>    真是够长的，还是搜一下有没有<code class="highlighter-rouge">dialect=</code>，呵呵，果然有。</p>
+
+<blockquote>
+  <p>dialect : str or csv.Dialect instance, default None  <br />
+                 If None defaults to Excel dialect. Ignored if sep longer than 1 char See csv.Dialect documentation for more details</p>
+</blockquote>
+
+<p>    那么问题解决了。把第一段代码改改吧。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_path</span> <span class="o">+</span> <span class="n">file_name</span> <span class="o">+</span> <span class="s">".csv"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s">"gbk"</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="s">'mydialect'</span><span class="p">)</span></code></pre></figure>
+
+<p>    一运行还是报错，这是怎么回事呢，编码换成<code class="highlighter-rouge">utf8</code>，也不行。最后才发现
+需要使用<code class="highlighter-rouge">gb18030</code>才行。即使使用<code class="highlighter-rouge">chardet</code>的编码探测模块，也不一定能探测出来，因为整个文档
+只有少数字符是超出了<code class="highlighter-rouge">gbk</code>，所以不可能既高效又准确的解决这个问题。</p>
+

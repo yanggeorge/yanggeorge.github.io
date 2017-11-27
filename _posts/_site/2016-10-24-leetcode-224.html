@@ -1,0 +1,615 @@
+<h2 id="目录">目录</h2>
+
+<ul>
+  <li><a href="#hh0">题目概述</a></li>
+  <li><a href="#hh1">波兰计数法</a></li>
+  <li><a href="#hh2">抽象语法树</a></li>
+  <li><a href="#hh3">初步解法</a></li>
+  <li><a href="#hh4">栈调用过深了</a></li>
+  <li><a href="#hh5">通过的代码</a></li>
+  <li><a href="#hh6">总结</a></li>
+</ul>
+
+<h2 id="-题目概述"><a name="hh0"></a> 题目概述</h2>
+
+<p> 
+ 
+ 
+ 
+<a href="https://leetcode.com/problems/basic-calculator/">224原题链接</a></p>
+
+<p> 
+ 
+ 
+ 
+<a href="https://leetcode.com/problems/basic-calculator-ii/">227原题链接</a></p>
+
+<blockquote>
+  <p>Implement a basic calculator to evaluate a simple expression string.</p>
+</blockquote>
+
+<p>这两道题可以使用一种通用的解法来解。所以就放在一起了。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>"1 + 1" = 2
+" 2-1 + 2 " = 3
+"(1+(4+5+2)-3)+(6+8)" = 23
+
+"3+2*2" = 7
+" 3/2 " = 1
+" 3+5 / 2 " = 5
+</code></pre>
+</div>
+
+<h2 id="-波兰计数法"><a name="hh1"></a> 波兰计数法</h2>
+
+<p> 
+ 
+ 
+ 
+<code class="highlighter-rouge">波兰计数法</code>是一种非常巧妙的方法，只使用一个栈结构就能计算表达式。
+但是呢，我们常用的表达式是一种<code class="highlighter-rouge">infix</code>表达式，而<code class="highlighter-rouge">波兰计数法</code>是一种
+<code class="highlighter-rouge">postfix</code>表达式。所以需要一种把<code class="highlighter-rouge">infix expression</code>转换成<code class="highlighter-rouge">postfix expression</code>
+。<a href="https://en.wikipedia.org/wiki/Shunting-yard_algorithm">转换方法</a></p>
+
+<h2 id="-抽象语法树"><a name="hh2"></a> 抽象语法树</h2>
+
+<p> 
+ 
+ 
+ 
+我还是想用抽象语法树的形式来解。也就是说先把表达式转换成一棵二叉树。
+然后再计算这棵树。思路很简单，所以呢，为了直观的看到树状结构。
+我发现<code class="highlighter-rouge">Python</code>下有一个不错的包<code class="highlighter-rouge">binarytree</code>，这个包可以打印树状图。
+我们先来看看打印的结果吧。是不是很不错。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>0-(1+2)*3*(4-3/5/5)+1+1
+
+                                __+  
+                               /   \ 
+    __________________________+     1
+   /                           \     
+  -__________                   1    
+ /           \                       
+0           __*__                    
+           /     \                   
+        __*       -______            
+       /   \     /       \           
+      +     3   4       __/          
+     / \               /   \         
+    1   2             /     5        
+                     / \             
+                    3   5  
+</code></pre>
+</div>
+
+<h2 id="-初步解法"><a name="hh3"></a> 初步解法</h2>
+
+<p> 
+ 
+ 
+ 
+根据以上的思路，我们首先定义一个<code class="highlighter-rouge">Tree</code>，继承自<code class="highlighter-rouge">binarytree</code>的<code class="highlighter-rouge">Node</code>。
+然后就先对字符串处理成<code class="highlighter-rouge">token</code>流，其实这题没这个要求。简单的去掉
+空格就行了。也没有复杂的数字。下面给出了生成<code class="highlighter-rouge">AST</code>的初步代码。
+算是递归下降法吧。
+然后再计算树的值。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># python2</span>
+<span class="kn">from</span> <span class="nn">binarytree</span> <span class="kn">import</span> <span class="n">Node</span>
+
+<span class="k">class</span> <span class="nc">TreeNode</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TreeNode</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">root</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">root</span><span class="o">.</span><span class="n">left</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">root</span><span class="o">.</span><span class="n">right</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="n">left</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">left</span><span class="p">)</span>
+                <span class="n">right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">right</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="n">char</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">value</span>
+                <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="s">"+"</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">+</span> <span class="n">right</span>
+                <span class="k">elif</span> <span class="n">char</span> <span class="o">==</span> <span class="s">"-"</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">-</span> <span class="n">right</span>
+                <span class="k">elif</span> <span class="n">char</span> <span class="o">==</span> <span class="s">"*"</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">*</span> <span class="n">right</span>
+                <span class="k">elif</span> <span class="n">char</span> <span class="o">==</span> <span class="s">"/"</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">/</span> <span class="n">right</span>
+
+                <span class="k">return</span> <span class="n">result</span>
+
+<span class="k">class</span> <span class="nc">Test</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">s</span> <span class="o">+</span> <span class="s">"$"</span><span class="p">)</span>
+        <span class="c"># print(self.s)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">precedences</span> <span class="o">=</span> <span class="p">{</span><span class="s">'+'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s">'-'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s">'*'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">'/'</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">tokenize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="s">""</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+            <span class="n">char</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="s">' '</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="ow">in</span> <span class="s">'+-*/()$'</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">tmp</span><span class="p">:</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+                    <span class="n">tmp</span> <span class="o">=</span> <span class="s">""</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)]:</span>
+                <span class="n">tmp</span> <span class="o">+=</span> <span class="n">char</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="s">'$'</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parse_expr</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span>
+
+    <span class="k">def</span> <span class="nf">parse_expr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">char</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="ow">in</span> <span class="s">'$)'</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">elif</span> <span class="n">char</span> <span class="ow">in</span> <span class="s">'('</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_expr</span><span class="p">()</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">c</span> <span class="o">!=</span> <span class="s">")"</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="nb">Exception</span><span class="p">(</span><span class="s">"{0} shoud be )"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">char</span> <span class="ow">in</span> <span class="s">"+-"</span><span class="p">:</span>
+                <span class="n">lhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_binary_operator</span><span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">precedences</span><span class="p">[</span><span class="n">char</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">char</span> <span class="ow">in</span> <span class="s">"*/"</span><span class="p">:</span>
+                <span class="n">lhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_binary_operator</span><span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">precedences</span><span class="p">[</span><span class="n">char</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_term</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span>
+
+    <span class="k">def</span> <span class="nf">parse_term</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="s">"("</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_expr</span><span class="p">()</span>
+            <span class="c"># print(t)</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="o">!=</span> <span class="s">")"</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="nb">Exception</span><span class="p">(</span><span class="s">"{0} shoud be )"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">return</span> <span class="n">t</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">TreeNode</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="n">t</span>
+
+    <span class="k">def</span> <span class="nf">parse_binary_operator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lhs</span><span class="p">,</span> <span class="n">precedence</span><span class="p">):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">oper</span> <span class="o">=</span> <span class="n">TreeNode</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">oper</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">lhs</span>
+        <span class="n">rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_term</span><span class="p">()</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">lookahead</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">lookahead</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s">"$)"</span><span class="p">:</span>
+                <span class="n">lookahead_precedence</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">precedences</span><span class="p">[</span><span class="n">lookahead</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">lookahead_precedence</span> <span class="o">&gt;</span> <span class="n">precedence</span><span class="p">:</span>
+                    <span class="n">rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_binary_operator</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span> <span class="n">lookahead_precedence</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">oper</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">rhs</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">oper</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">rhs</span>
+                <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">oper</span>
+<span class="c">#测试</span>
+<span class="n">s</span> <span class="o">=</span> <span class="s">"0-(1+2)*3*(4-3/5/5)+1+1"</span>
+<span class="k">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">Test</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">t</span><span class="p">))</span></code></pre></figure>
+
+<h2 id="-栈调用过深了"><a name="hh4"></a> 栈调用过深了</h2>
+
+<p> 
+ 
+ 
+ 
+以上的解法中生成语法树的过程因为使用了多个递归，结果调用的栈过深，结果
+出错了。因为
+python默认的递归栈深度是10000。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>RecursionError: maximum recursion depth exceeded while calling a Python object
+</code></pre>
+</div>
+
+<p> 
+ 
+ 
+ 
+怎么办呢，想办法把递归改成非递归吧。但是看了又看还是没有发现如何改，
+因为存在两个函数相互调用的嵌套递归。不管怎样，先减少一个递归函数吧。
+去掉了<code class="highlighter-rouge">parse_term</code>函数。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">Test2</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="s">"""
+    并没有完全把递归改成stack方式。但是因为比Test少了一个parse_term所以减少了递归栈的深度，
+    从而侥幸没有栈溢出。
+    """</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">s</span> <span class="o">+</span> <span class="s">"$"</span><span class="p">)</span>
+        <span class="c"># print(self.s)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">precedences</span> <span class="o">=</span> <span class="p">{</span><span class="s">'+'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s">'-'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s">'*'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">'/'</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">tokenize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="s">""</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+            <span class="n">char</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="s">' '</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="ow">in</span> <span class="s">'+-*/()$'</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">tmp</span><span class="p">:</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+                    <span class="n">tmp</span> <span class="o">=</span> <span class="s">""</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)]:</span>
+                <span class="n">tmp</span> <span class="o">+=</span> <span class="n">char</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_expr</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">parse_expr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">char</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="ow">in</span> <span class="s">'$)'</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">elif</span> <span class="n">char</span> <span class="ow">in</span> <span class="s">'('</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_expr</span><span class="p">()</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">c</span> <span class="o">!=</span> <span class="s">")"</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="nb">Exception</span><span class="p">(</span><span class="s">"{0} shoud be )"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">char</span> <span class="ow">in</span> <span class="s">"+-"</span><span class="p">:</span>
+                <span class="n">lhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_binary_operator</span><span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">precedences</span><span class="p">[</span><span class="n">char</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">char</span> <span class="ow">in</span> <span class="s">"*/"</span><span class="p">:</span>
+                <span class="n">lhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_binary_operator</span><span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">precedences</span><span class="p">[</span><span class="n">char</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">t</span> <span class="o">=</span> <span class="n">TreeNode</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="n">t</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span>
+
+    <span class="k">def</span> <span class="nf">parse_binary_operator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lhs</span><span class="p">,</span> <span class="n">precedence</span><span class="p">):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">oper</span> <span class="o">=</span> <span class="n">TreeNode</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">oper</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">lhs</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">rhs</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="s">"("</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_expr</span><span class="p">()</span>
+            <span class="c"># print(t)</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="o">!=</span> <span class="s">")"</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="nb">Exception</span><span class="p">(</span><span class="s">"{0} shoud be )"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">rhs</span> <span class="o">=</span> <span class="n">t</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">TreeNode</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">rhs</span> <span class="o">=</span> <span class="n">t</span>
+
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">lookahead</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">lookahead</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s">"$)"</span><span class="p">:</span>
+                <span class="n">lookahead_precedence</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">precedences</span><span class="p">[</span><span class="n">lookahead</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">lookahead_precedence</span> <span class="o">&gt;</span> <span class="n">precedence</span><span class="p">:</span>
+                    <span class="n">rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_binary_operator</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span> <span class="n">lookahead_precedence</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">oper</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">rhs</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">oper</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">rhs</span>
+                <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">oper</span></code></pre></figure>
+
+<p> 
+ 
+ 
+ 
+居然不出现栈溢出了。呵呵。<code class="highlighter-rouge">(其实还是存在这个问题，只是能够通过leetcode测试了)</code>
+但是计算的过程<code class="highlighter-rouge">TreeNode::compute</code>还是出现了调用过深的错误<code class="highlighter-rouge">RecursionError</code>。
+这个没关系啊，我们可以改成<code class="highlighter-rouge">非递归的栈模拟方式</code>。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">TreeNode</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TreeNode</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">root</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">root</span><span class="o">.</span><span class="n">left</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">root</span><span class="o">.</span><span class="n">right</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="n">left</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">left</span><span class="p">)</span>
+                <span class="n">right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">right</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="n">char</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">value</span>
+                <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="s">"+"</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">+</span> <span class="n">right</span>
+                <span class="k">elif</span> <span class="n">char</span> <span class="o">==</span> <span class="s">"-"</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">-</span> <span class="n">right</span>
+                <span class="k">elif</span> <span class="n">char</span> <span class="o">==</span> <span class="s">"*"</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">*</span> <span class="n">right</span>
+                <span class="k">elif</span> <span class="n">char</span> <span class="o">==</span> <span class="s">"/"</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">/</span> <span class="n">right</span>
+
+                <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">compute2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+        <span class="c"># compute的非递归形式。</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">prog</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">left</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">right</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">tup</span> <span class="o">=</span> <span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">q</span><span class="p">:</span>
+            <span class="n">prog</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">prog</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">root</span><span class="o">.</span><span class="n">left</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">root</span><span class="o">.</span><span class="n">right</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">prog</span> <span class="o">=</span> <span class="mi">2</span>
+            <span class="k">if</span> <span class="n">prog</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">tup</span> <span class="o">=</span> <span class="p">(</span><span class="n">prog</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+                <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
+                <span class="n">tup_new</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">root</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+                <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tup_new</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">prog</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">left</span> <span class="o">=</span> <span class="n">result</span>
+                <span class="n">prog</span> <span class="o">=</span> <span class="mi">4</span>
+            <span class="k">if</span> <span class="n">prog</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="n">tup</span> <span class="o">=</span> <span class="p">(</span><span class="n">prog</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+                <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
+                <span class="n">tup_new</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">root</span><span class="o">.</span><span class="n">right</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+                <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tup_new</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">prog</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+                <span class="n">right</span> <span class="o">=</span> <span class="n">result</span>
+                <span class="n">char</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">value</span>
+                <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="s">"+"</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">+</span> <span class="n">right</span>
+                <span class="k">elif</span> <span class="n">char</span> <span class="o">==</span> <span class="s">"-"</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">-</span> <span class="n">right</span>
+                <span class="k">elif</span> <span class="n">char</span> <span class="o">==</span> <span class="s">"*"</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">*</span> <span class="n">right</span>
+                <span class="k">elif</span> <span class="n">char</span> <span class="o">==</span> <span class="s">"/"</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">/</span> <span class="n">right</span>
+
+        <span class="k">return</span> <span class="n">result</span></code></pre></figure>
+
+<h2 id="-通过的代码"><a name="hh5"></a> 通过的代码</h2>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">binarytree</span> <span class="kn">import</span> <span class="n">Node</span>
+<span class="k">class</span> <span class="nc">TreeNode</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TreeNode</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">root</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">root</span><span class="o">.</span><span class="n">left</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">root</span><span class="o">.</span><span class="n">right</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="n">left</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">left</span><span class="p">)</span>
+                <span class="n">right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">right</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="n">char</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">value</span>
+                <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="s">"+"</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">+</span> <span class="n">right</span>
+                <span class="k">elif</span> <span class="n">char</span> <span class="o">==</span> <span class="s">"-"</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">-</span> <span class="n">right</span>
+                <span class="k">elif</span> <span class="n">char</span> <span class="o">==</span> <span class="s">"*"</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">*</span> <span class="n">right</span>
+                <span class="k">elif</span> <span class="n">char</span> <span class="o">==</span> <span class="s">"/"</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">/</span> <span class="n">right</span>
+
+                <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">compute2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+        <span class="c"># compute的非递归形式。</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">prog</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">left</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">right</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">tup</span> <span class="o">=</span> <span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">q</span><span class="p">:</span>
+            <span class="n">prog</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">prog</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">root</span><span class="o">.</span><span class="n">left</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">root</span><span class="o">.</span><span class="n">right</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">prog</span> <span class="o">=</span> <span class="mi">2</span>
+            <span class="k">if</span> <span class="n">prog</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">tup</span> <span class="o">=</span> <span class="p">(</span><span class="n">prog</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+                <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
+                <span class="n">tup_new</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">root</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+                <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tup_new</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">prog</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">left</span> <span class="o">=</span> <span class="n">result</span>
+                <span class="n">prog</span> <span class="o">=</span> <span class="mi">4</span>
+            <span class="k">if</span> <span class="n">prog</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="n">tup</span> <span class="o">=</span> <span class="p">(</span><span class="n">prog</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+                <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
+                <span class="n">tup_new</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">root</span><span class="o">.</span><span class="n">right</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+                <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tup_new</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">prog</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+                <span class="n">right</span> <span class="o">=</span> <span class="n">result</span>
+                <span class="n">char</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">value</span>
+                <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="s">"+"</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">+</span> <span class="n">right</span>
+                <span class="k">elif</span> <span class="n">char</span> <span class="o">==</span> <span class="s">"-"</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">-</span> <span class="n">right</span>
+                <span class="k">elif</span> <span class="n">char</span> <span class="o">==</span> <span class="s">"*"</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">*</span> <span class="n">right</span>
+                <span class="k">elif</span> <span class="n">char</span> <span class="o">==</span> <span class="s">"/"</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">/</span> <span class="n">right</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">class</span> <span class="nc">Test2</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="s">"""
+    并没有完全把递归改成stack方式。但是因为比Test少了一个parse_term所以减少了递归栈的深度，
+    从而侥幸没有栈溢出。
+    """</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">s</span> <span class="o">+</span> <span class="s">"$"</span><span class="p">)</span>
+        <span class="c"># print(self.s)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">precedences</span> <span class="o">=</span> <span class="p">{</span><span class="s">'+'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s">'-'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s">'*'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">'/'</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">tokenize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="s">""</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+            <span class="n">char</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="s">' '</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="ow">in</span> <span class="s">'+-*/()$'</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">tmp</span><span class="p">:</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+                    <span class="n">tmp</span> <span class="o">=</span> <span class="s">""</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)]:</span>
+                <span class="n">tmp</span> <span class="o">+=</span> <span class="n">char</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_expr</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">parse_expr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">char</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="ow">in</span> <span class="s">'$)'</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">elif</span> <span class="n">char</span> <span class="ow">in</span> <span class="s">'('</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_expr</span><span class="p">()</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">c</span> <span class="o">!=</span> <span class="s">")"</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="nb">Exception</span><span class="p">(</span><span class="s">"{0} shoud be )"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">char</span> <span class="ow">in</span> <span class="s">"+-"</span><span class="p">:</span>
+                <span class="n">lhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_binary_operator</span><span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">precedences</span><span class="p">[</span><span class="n">char</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">char</span> <span class="ow">in</span> <span class="s">"*/"</span><span class="p">:</span>
+                <span class="n">lhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_binary_operator</span><span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">precedences</span><span class="p">[</span><span class="n">char</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">t</span> <span class="o">=</span> <span class="n">TreeNode</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="n">t</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span>
+
+    <span class="k">def</span> <span class="nf">parse_binary_operator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lhs</span><span class="p">,</span> <span class="n">precedence</span><span class="p">):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">oper</span> <span class="o">=</span> <span class="n">TreeNode</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">oper</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">lhs</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">rhs</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="s">"("</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_expr</span><span class="p">()</span>
+            <span class="c"># print(t)</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="o">!=</span> <span class="s">")"</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="nb">Exception</span><span class="p">(</span><span class="s">"{0} shoud be )"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">rhs</span> <span class="o">=</span> <span class="n">t</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">TreeNode</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">rhs</span> <span class="o">=</span> <span class="n">t</span>
+
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">lookahead</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">lookahead</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s">"$)"</span><span class="p">:</span>
+                <span class="n">lookahead_precedence</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">precedences</span><span class="p">[</span><span class="n">lookahead</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">lookahead_precedence</span> <span class="o">&gt;</span> <span class="n">precedence</span><span class="p">:</span>
+                    <span class="n">rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_binary_operator</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span> <span class="n">lookahead_precedence</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">oper</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">rhs</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">oper</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">rhs</span>
+                <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">oper</span>
+
+<span class="c"># 测试</span>
+<span class="n">s</span> <span class="o">=</span> <span class="s">"0-(1+2)*3*(4-3/5/5)+1+1"</span>
+<span class="k">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">Test2</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">compute2</span><span class="p">(</span><span class="n">t</span><span class="p">))</span></code></pre></figure>
+
+<h2 id="-总结"><a name="hh6"></a> 总结</h2>
+
+<p> 
+ 
+ 
+ 
+虽然代码长了点，但是练习了一下如何生成一个<code class="highlighter-rouge">抽象语法树</code>。并且练习了
+如何把一个调用自身的递归改成非递归。</p>

@@ -1,0 +1,168 @@
+<h2 id="目录">目录</h2>
+
+<ul>
+  <li><a href="#hh0">题目概述</a></li>
+  <li><a href="#hh1">最终解法</a></li>
+</ul>
+
+<h2 id="-题目概述"><a name="hh0"></a> 题目概述</h2>
+
+<p> 
+ 
+ 
+ 
+<a href="https://leetcode.com/problems/number-of-islands/">原题链接</a></p>
+
+<blockquote>
+  <p>Given a 2d grid map of ‘1’s (land) and ‘0’s (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.</p>
+</blockquote>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Example 1:
+
+11110
+11010
+11000
+00000
+Answer: 1
+
+Example 2:
+
+11000
+11000
+00100
+00011
+Answer: 3
+</code></pre>
+</div>
+
+<h2 id="-最终解法"><a name="hh1"></a> 最终解法</h2>
+
+<p> 
+ 
+ 
+ 
+解法的代码先贴出来了，解题思路后补啊。总体来说，就是一行一行的扫描。
+是个不错的<code class="highlighter-rouge">在线算法</code>，也就是说如果数据量非常大也没关系，呵呵。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">Solution</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">numIslands</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">):</span>
+        <span class="s">"""
+        基本思路，一行一行的扫描。
+        :type grid: List[List[str]]
+        :rtype: int
+        """</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"===="</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">h_pre</span> <span class="o">=</span> <span class="p">{}</span>   <span class="c"># key : 是 “i,j” 字符串。value =》 [accumulator] ，一个list包含了岛的索引。</span>
+        <span class="n">h_curr</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c"># 当前行</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c"># 保存的是一个个的list，list的长度是1，值对应岛的索引。</span>
+        <span class="n">debug</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">accumulator</span> <span class="o">=</span> <span class="mi">1</span> <span class="c"># 表示岛的自增索引，每当发现一个新的岛，自增。</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">length</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s">'1'</span><span class="p">:</span>
+                <span class="n">h_curr</span><span class="p">[</span><span class="s">'0,'</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="p">[</span><span class="n">accumulator</span><span class="p">]</span>
+                <span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h_curr</span><span class="p">[</span><span class="s">'0,'</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)])</span>
+                <span class="n">debug</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'0,'</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s">'1'</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">'1'</span><span class="p">:</span>
+                    <span class="n">h_curr</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="s">','</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="n">h_curr</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="s">','</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">accumulator</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">h_curr</span><span class="p">[</span><span class="s">'0,'</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="p">[</span><span class="n">accumulator</span><span class="p">]</span>
+                    <span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h_curr</span><span class="p">[</span><span class="s">'0,'</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)])</span>
+                    <span class="n">debug</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'0,'</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+            <span class="n">h_pre</span> <span class="o">=</span> <span class="n">h_curr</span>
+            <span class="n">h_curr</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">length</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="s">'1'</span><span class="p">:</span>
+
+                    <span class="k">if</span> <span class="n">grid</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="s">'1'</span><span class="p">:</span>
+                        <span class="n">h_curr</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s">','</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)]</span> <span class="o">=</span> <span class="n">h_pre</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s">','</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">accumulator</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="n">h_curr</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s">','</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)]</span> <span class="o">=</span> <span class="p">[</span><span class="n">accumulator</span><span class="p">]</span>
+                        <span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h_curr</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s">','</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)])</span>
+                        <span class="n">debug</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s">','</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">))</span>
+
+                <span class="k">elif</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="s">'1'</span><span class="p">:</span>
+
+                    <span class="k">if</span> <span class="n">grid</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="s">'1'</span> <span class="ow">and</span> <span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">'1'</span><span class="p">:</span>
+                        <span class="n">pre</span> <span class="o">=</span> <span class="n">h_curr</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s">','</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+                        <span class="n">above</span> <span class="o">=</span> <span class="n">h_pre</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s">','</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)]</span>
+
+                        <span class="k">if</span> <span class="n">pre</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">above</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                            <span class="c"># 对pre的值进行更新</span>
+                            <span class="n">h_curr</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s">','</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)]</span> <span class="o">=</span> <span class="n">pre</span>
+                        <span class="k">else</span> <span class="p">:</span>
+                            <span class="n">h_curr</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s">','</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)]</span> <span class="o">=</span> <span class="n">above</span>
+                            <span class="n">v1</span> <span class="o">=</span> <span class="n">pre</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                            <span class="n">v2</span> <span class="o">=</span> <span class="n">above</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c"># z这里一定要换成静态的值，否则的话当a[k]的值进行更新时，会影响到pre的值。</span>
+                            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)):</span>
+                                <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">v1</span><span class="p">:</span>
+                                    <span class="n">a</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">v2</span>
+
+
+                    <span class="k">elif</span> <span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">'1'</span> <span class="ow">and</span> <span class="n">grid</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">!=</span> <span class="s">'1'</span><span class="p">:</span>
+                        <span class="n">pre</span> <span class="o">=</span> <span class="n">h_curr</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s">','</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+                        <span class="n">h_curr</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s">','</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)]</span> <span class="o">=</span> <span class="n">pre</span>
+                    <span class="k">elif</span> <span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s">'1'</span> <span class="ow">and</span> <span class="n">grid</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="s">'1'</span><span class="p">:</span>
+                        <span class="n">above</span> <span class="o">=</span> <span class="n">h_pre</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s">','</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)]</span>
+                        <span class="n">h_curr</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s">','</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)]</span> <span class="o">=</span> <span class="n">above</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">accumulator</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="n">h_curr</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s">','</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)]</span> <span class="o">=</span> <span class="p">[</span><span class="n">accumulator</span><span class="p">]</span>
+                        <span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h_curr</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s">','</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)])</span>
+                        <span class="n">debug</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s">','</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">))</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">a</span><span class="p">:</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="p">[</span><span class="s">"11000"</span><span class="p">,</span>
+            <span class="s">"11000"</span><span class="p">,</span>
+            <span class="s">"00100"</span><span class="p">,</span>
+            <span class="s">"00011"</span><span class="p">]</span>  <span class="c"># 3</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">Solution</span><span class="p">()</span><span class="o">.</span><span class="n">numIslands</span><span class="p">(</span><span class="n">grid</span><span class="p">))</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="p">[</span><span class="s">"10111"</span><span class="p">,</span>
+            <span class="s">"10101"</span><span class="p">,</span>
+            <span class="s">"11101"</span><span class="p">]</span>  <span class="c"># 1</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">Solution</span><span class="p">()</span><span class="o">.</span><span class="n">numIslands</span><span class="p">(</span><span class="n">grid</span><span class="p">))</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="p">[</span><span class="s">"1111111"</span><span class="p">,</span>
+            <span class="s">"0000001"</span><span class="p">,</span>
+            <span class="s">"1111101"</span><span class="p">,</span>
+            <span class="s">"1000101"</span><span class="p">,</span>
+            <span class="s">"1010101"</span><span class="p">,</span>
+            <span class="s">"1011101"</span><span class="p">,</span>
+            <span class="s">"1111111"</span><span class="p">]</span>  <span class="c"># 1</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">Solution</span><span class="p">()</span><span class="o">.</span><span class="n">numIslands</span><span class="p">(</span><span class="n">grid</span><span class="p">))</span>
+
+
+    <span class="n">grid</span> <span class="o">=</span> <span class="p">[</span><span class="s">"10011101100000000000"</span><span class="p">,</span>
+            <span class="s">"10011001000101010010"</span><span class="p">,</span>
+            <span class="s">"00011110101100001010"</span><span class="p">,</span>
+            <span class="s">"00011001000111001001"</span><span class="p">,</span>
+            <span class="s">"00000001110000000000"</span><span class="p">,</span>
+            <span class="s">"10000101011000000101"</span><span class="p">,</span>
+            <span class="s">"00010001010101010101"</span><span class="p">,</span>
+            <span class="s">"00010100110101101110"</span><span class="p">,</span>
+            <span class="s">"00001001100001000101"</span><span class="p">,</span>
+            <span class="s">"00100100000100100010"</span><span class="p">,</span>
+            <span class="s">"10010000000100101010"</span><span class="p">,</span>
+            <span class="s">"01000101011011101100"</span><span class="p">,</span>
+            <span class="s">"11010000100000010001"</span><span class="p">,</span>
+            <span class="s">"01001110001111101000"</span><span class="p">,</span>
+            <span class="s">"00111000110001010000"</span><span class="p">,</span>
+            <span class="s">"10010100001000101011"</span><span class="p">,</span>
+            <span class="s">"10100000010001010000"</span><span class="p">,</span>
+            <span class="s">"01100011101010111100"</span><span class="p">,</span>
+            <span class="s">"01000011001010010011"</span><span class="p">,</span>
+            <span class="s">"00000011110100011000"</span><span class="p">]</span>  <span class="c"># 58</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">Solution</span><span class="p">()</span><span class="o">.</span><span class="n">numIslands</span><span class="p">(</span><span class="n">grid</span><span class="p">))</span></code></pre></figure>
+

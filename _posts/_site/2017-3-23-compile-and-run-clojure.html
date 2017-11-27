@@ -1,0 +1,124 @@
+<h2 id="目录">目录</h2>
+
+<ul>
+  <li><a href="#hh0">Clojure branch 20081217</a></li>
+  <li><a href="#hh1">下载branch 20081217</a></li>
+  <li><a href="#hh2">编译环境配置</a></li>
+  <li><a href="#hh3">运行　</a></li>
+</ul>
+
+<h2 id="-clojure-branch-20081217"><a name="hh0"></a> Clojure branch 20081217</h2>
+<p> 
+ 
+ 
+ 
+为啥要做这件事情呢？</p>
+
+<ol>
+  <li>Clojure是一门jvm语言，使用了asm。</li>
+  <li>branch 20081217是最初的版本便于研究。</li>
+</ol>
+
+<h2 id="-下载branch-20081217"><a name="hh1"></a> 下载branch 20081217</h2>
+
+<p> 
+ 
+ 
+ 
+本来直接这样一条语句很简单的事情，但是由于网络太慢。我只好
+直接下载这个分支的源码zip包。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>git clone https://github.com/clojure/clojure.git
+git checkout 20081217
+</code></pre>
+</div>
+
+<h2 id="-编译环境配置"><a name="hh2"></a> 编译环境配置</h2>
+
+<p> 
+ 
+ 
+ 
+虽然有<code class="highlighter-rouge">pom.xml</code>文件但是简单的导入到<code class="highlighter-rouge">IDEA</code>并不起作用。
+还是按照官方说明来搞吧，用<code class="highlighter-rouge">ant</code>编译。
+下载最新的ant版本1.10，并使用jdk1.8是会出错的。
+想想十年前的情况。找到ant-1.7和jdk1.5进行编译才行。
+以下是编译的结果，最后在根目录下生成了<code class="highlighter-rouge">clojure.jar</code>。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>d:\work\idea\clojure-20081217&gt;ant
+Buildfile: build.xml
+
+clean:
+   [delete] Deleting directory d:\work\idea\clojure-20081217\classes
+
+init:
+    [mkdir] Created dir: d:\work\idea\clojure-20081217\classes
+
+compile_java:
+    [javac] Compiling 113 source files to d:\work\idea\clojure-20081217\classes
+    [javac] 注意：某些输入文件使用了未经检查或不安全的操作。
+    [javac] 注意：要了解详细信息，请使用 -Xlint:unchecked 重新编译。
+
+compile_clojure:
+     [java] Compiling clojure.core to d:\work\idea\clojure-20081217\classes
+     [java] Compiling clojure.main to d:\work\idea\clojure-20081217\classes
+     [java] Compiling clojure.set to d:\work\idea\clojure-20081217\classes
+     [java] Compiling clojure.xml to d:\work\idea\clojure-20081217\classes
+     [java] Compiling clojure.zip to d:\work\idea\clojure-20081217\classes
+     [java] Compiling clojure.inspector to d:\work\idea\clojure-20081217\classes
+
+jar:
+      [jar] Building jar: d:\work\idea\clojure-20081217\clojure.jar
+
+BUILD SUCCESSFUL
+Total time: 13 seconds
+</code></pre>
+</div>
+
+<h2 id="-运行"><a name="hh3"></a> 运行　</h2>
+
+<p> 
+ 
+ 
+ 
+官方<code class="highlighter-rouge">readme</code>给出了办法来证明运行成功。执行<code class="highlighter-rouge">java -cp clojure.jar clojure.lang.Repl</code>
+，这样就可以进入clojure的repl环境。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>d:\work\idea\clojure-20081217&gt;java -cp clojure.jar clojure.lang.Repl
+Clojure
+user=&gt; (def n 2)
+#'user/n
+user=&gt; (* n 2)
+4
+user=&gt;
+</code></pre>
+</div>
+
+<p> 
+ 
+ 
+ 
+如何运行一个clj文件呢？可以这样做。</p>
+
+<ul>
+  <li>在根路径下创建一个hello.clj文件，内容为<code class="highlighter-rouge">(print "hello world")</code></li>
+  <li>运行命令<code class="highlighter-rouge">java -cp clojure.jar clojure.lang.Script hello.clj</code></li>
+</ul>
+
+<p> 
+ 
+ 
+ 
+如下所示。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>d:\work\idea\clojure-20081217&gt;java -cp clojure.jar clojure.lang.Script hello_world.clj
+hello world
+</code></pre>
+</div>
+
+<p> 
+ 
+ 
+ 
+成功了。</p>
+

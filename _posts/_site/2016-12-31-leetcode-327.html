@@ -1,0 +1,239 @@
+<h2 id="目录">目录</h2>
+
+<ul>
+  <li><a href="#hh0">题目概述</a></li>
+  <li><a href="#hh1">O(N^2)解法</a></li>
+  <li><a href="#hh2">死亡凝视</a></li>
+  <li><a href="#hh3">通过的代码</a></li>
+  <li><a href="#hh4">总结</a></li>
+</ul>
+
+<h2 id="-题目概述"><a name="hh0"></a> 题目概述</h2>
+
+<p> 
+ 
+ 
+ 
+<a href="https://leetcode.com/problems/count-of-range-sum/">原题链接</a></p>
+
+<blockquote>
+  <p>Given an integer array nums, return the number of range sums that lie in [lower, upper] inclusive.
+Range sum S(i, j) is defined as the sum of the elements in nums between indices i and j (i ≤ j), inclusive.</p>
+</blockquote>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Example:
+Given nums = [-2, 5, -1], lower = -2, upper = 2,
+Return 3.
+The three ranges are : [0, 0], [2, 2], [0, 2] and their respective sums are: -2, -1, 2.
+</code></pre>
+</div>
+
+<h2 id="on2解法"><a name="hh1"></a>O(N^2)解法</h2>
+
+<p> 
+ 
+ 
+ 
+最直接的想法当然就是遍历求和了。但是这样是无法通过测试的。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">Solution3</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">countRangeSum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nums</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">):</span>
+        <span class="s">"""
+        :type nums: List[int]
+        :type lower: int
+        :type upper: int
+        :rtype: int
+        """</span>
+
+        <span class="n">sums</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nums</span><span class="p">)):</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">nums</span><span class="p">)):</span>
+                <span class="n">s</span> <span class="o">+=</span> <span class="n">nums</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">lower</span> <span class="o">&lt;=</span> <span class="n">s</span> <span class="o">&lt;=</span> <span class="n">upper</span><span class="p">:</span>
+                    <span class="n">sums</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">sums</span><span class="p">)</span></code></pre></figure>
+
+<h2 id="死亡凝视"><a name="hh2"></a>死亡凝视</h2>
+
+<p> 
+ 
+ 
+ 
+必须要想出复杂度是<code class="highlighter-rouge">Nlog(N)</code>的算法才行。但是问题也很明显，
+要想找出所有的<code class="highlighter-rouge">s(i,j) for 0 &lt;= i &lt;= j &lt; n　and lower &lt;= s(i,j) &lt;= upper</code>
+那必须要进行遍历啊，因此时间复杂度必须是<code class="highlighter-rouge">N^2</code>。
+啊啊，实在想不出来了。</p>
+
+<p>第二天，既然要求时间复杂度为<code class="highlighter-rouge">NlogN</code>那么就必然不能遍历求出<code class="highlighter-rouge">s(i,j)</code>，但是
+题目要求的是求出<code class="highlighter-rouge">Num(s(i,j)) for 0 &lt;= i &lt;= j &lt; n　and lower &lt;= s(i,j) &lt;= upper</code>
+，也就是说给出个数就行，因此确实不一定要给出所有的<code class="highlighter-rouge">s(i,j)</code>。嗯，有点进展了。</p>
+
+<p>第三天，排序算法的复杂度是<code class="highlighter-rouge">NlogN</code>，怎么才能依靠排序算法求出呢。难道对所有的
+<code class="highlighter-rouge">s(i,j)</code>进行排序么？这样肯定不行。
+能否使用老办法画图呢？这样好观察一下。但是仔细想了想，这是一个三维图。
+纸上画不出来。
+只好画一个二维图吧。下图是对数组<code class="highlighter-rouge">[5,7,8,-2,1]</code>画的二维表格。格子
+中的数字就是<code class="highlighter-rouge">s(i,j)</code>。</p>
+
+<p><img src="http://localhost:4000/assets/327-1.png" alt="327-1" /></p>
+
+<p> 
+ 
+ 
+ 
+我仔细的盯着看。我给这种解决问题的方式，起了
+个名字——<code class="highlighter-rouge">死亡凝视</code>。看过<code class="highlighter-rouge">The Big Bang</code>的朋友可能记得<code class="highlighter-rouge">Sheldon</code>和<code class="highlighter-rouge">Raj</code>一起
+工作的样子，就是一动不动的看着黑板上的公式，看上一整天。</p>
+
+<p><img src="http://localhost:4000/assets/327-2.jpg" alt="327-2" /></p>
+
+<p> 
+ 
+ 
+ 
+嘿嘿，你们不要笑啊，我的方式差不多。只不过是盯着表格。这样的表格
+其实我画了很多。但是只有这个我看出了规律。</p>
+
+<p><img src="http://localhost:4000/assets/327-3.png" alt="327-3" /></p>
+
+<p> 
+ 
+ 
+ 
+看出来了么，三列带颜色的数字。是不是发现它们有相同的趋势呢？
+是的它们有相同的趋势。</p>
+
+<p> 
+ 
+ 
+ 
+如果没有看出来。我再画一个图。看看这三列数字和蓝色数字的关系。</p>
+
+<p><img src="http://localhost:4000/assets/327-4.png" alt="327-4" /></p>
+
+<p> 
+ 
+ 
+ 
+是的。<code class="highlighter-rouge">20 - 5 = 15</code>，<code class="highlighter-rouge">18 - 5 = 13</code>，<code class="highlighter-rouge">19 - 5 = 14</code>。
+假如上下区间为<code class="highlighter-rouge">[12,18]</code>，那么对于排序后的第一列<code class="highlighter-rouge">[5,12,18,19,20]</code>，
+可以使用二分查找法找出上限的位置是2，下限的位置为1，个数为2。
+那么第二列<code class="highlighter-rouge">[7,15,13,14]</code>在<code class="highlighter-rouge">[12,18]</code>的数字的个数为3。
+怎么根据第一列排序后的数字求出呢。嗯，很简单。
+我们把上下限加上5，变成<code class="highlighter-rouge">17, 23</code>，这样就可以发现<code class="highlighter-rouge">[5,12,18,19,20]</code>找出
+个数为3。嗯，哈哈。真是不错。这样子，就不需要求出所有的<code class="highlighter-rouge">s(i,j)</code>了。</p>
+
+<p> 
+ 
+ 
+ 
+但是，别着急，还是有问题，我们需要在计算第二列的个数的之前，把第一列的数字中的<code class="highlighter-rouge">5</code>排除掉。
+否则的话，如果区间是<code class="highlighter-rouge">[-100,100]</code>，那么我们就多计算了。</p>
+
+<h2 id="通过的代码"><a name="hh3"></a>通过的代码</h2>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># python3.5</span>
+<span class="k">class</span> <span class="nc">Solution4</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">countRangeSum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nums</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">):</span>
+        <span class="s">"""
+        思路：对 list0 = [s(0,j) for j in (0,n)]先进行排序。
+         list1 = [s(1,j) for j in (1,n)]，可以由 list0生成。
+
+        :type nums: List[int]
+        :type lower: int
+        :type upper: int
+        :rtype: int
+        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">nums</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nums</span><span class="p">)</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">l2</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="nb">sum</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+                <span class="nb">sum</span> <span class="o">+=</span> <span class="n">nums</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">sum</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span>
+                <span class="n">l2</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">sum</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">lower</span> <span class="o">+=</span> <span class="n">nums</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="n">upper</span> <span class="o">+=</span> <span class="n">nums</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">lower_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_lower</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">lower</span><span class="p">)</span>
+                <span class="n">upper_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_uppper</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">upper</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">lower_pos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">upper_pos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">+=</span> <span class="n">upper_pos</span> <span class="o">-</span> <span class="n">lower_pos</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_lower</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">l2</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">l</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span> <span class="c"># &lt;-- 这里是个接近O(N)的操作</span>
+
+            <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nums</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nums</span><span class="p">)</span>
+
+        <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">n</span>
+        <span class="n">mid</span> <span class="o">=</span> <span class="n">n</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">new_mid</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">while</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">mid</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">nums</span><span class="p">[</span><span class="n">mid</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">target</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">elif</span> <span class="n">nums</span><span class="p">[</span><span class="n">mid</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">target</span> <span class="ow">and</span> <span class="n">mid</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="ow">and</span> <span class="n">nums</span><span class="p">[</span><span class="n">mid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">target</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">elif</span> <span class="n">nums</span><span class="p">[</span><span class="n">mid</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">target</span><span class="p">:</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="n">mid</span>
+                <span class="n">new_mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">start</span> <span class="o">+</span> <span class="n">end</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+            <span class="k">elif</span> <span class="n">nums</span><span class="p">[</span><span class="n">mid</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">target</span><span class="p">:</span>
+                <span class="n">end</span> <span class="o">=</span> <span class="n">mid</span>
+                <span class="n">new_mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">start</span> <span class="o">+</span> <span class="n">end</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+            <span class="k">if</span> <span class="n">new_mid</span> <span class="o">==</span> <span class="n">mid</span><span class="p">:</span>
+                <span class="n">mid</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mid</span> <span class="o">=</span> <span class="n">new_mid</span>
+
+        <span class="k">return</span> <span class="n">mid</span> <span class="k">if</span> <span class="n">nums</span><span class="p">[</span><span class="n">mid</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">target</span> <span class="k">else</span> <span class="n">mid</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">find_lower</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nums</span><span class="p">,</span> <span class="n">lower</span><span class="p">):</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nums</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">lower</span> <span class="o">&gt;</span> <span class="n">nums</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">elif</span> <span class="n">lower</span> <span class="o">&lt;</span> <span class="n">nums</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">nums</span><span class="p">,</span> <span class="n">lower</span><span class="p">)</span>
+            <span class="k">while</span> <span class="n">mid</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">nums</span><span class="p">[</span><span class="n">mid</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">lower</span><span class="p">:</span>
+                <span class="n">mid</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="n">mid</span>
+
+    <span class="k">def</span> <span class="nf">find_uppper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nums</span><span class="p">,</span> <span class="n">upper</span><span class="p">):</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nums</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">upper</span> <span class="o">&gt;</span> <span class="n">nums</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">upper</span> <span class="o">&lt;</span> <span class="n">nums</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">nums</span><span class="p">,</span> <span class="n">upper</span><span class="p">)</span>
+            <span class="k">while</span> <span class="n">mid</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">nums</span><span class="p">[</span><span class="n">mid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">upper</span><span class="p">:</span>
+                <span class="n">mid</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="n">mid</span> <span class="k">if</span> <span class="n">nums</span><span class="p">[</span><span class="n">mid</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">upper</span> <span class="k">else</span> <span class="n">mid</span> <span class="o">-</span> <span class="mi">1</span></code></pre></figure>
+
+<h2 id="-总结"><a name="hh4"></a> 总结</h2>
+
+<p> 
+ 
+ 
+ 排序操作的时间复杂度是<code class="highlighter-rouge">O(NlogN)</code>，而找出每列一列的个数的时间复杂度是<code class="highlighter-rouge">O(logN)</code>
+因为一共有N列，所以时间复杂度为<code class="highlighter-rouge">O(NlogN)</code>，另外
+我们在代码中使用了对<code class="highlighter-rouge">List</code>数据的非尾部的<code class="highlighter-rouge">pop</code>操作，这个操作的时间
+复杂度接近<code class="highlighter-rouge">O(N)</code>，严格来说，我们的代码的时间复杂度还是<code class="highlighter-rouge">O(N^2)</code>。如果能够不使用这个操作。
+我们的代码速度会更快。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>l.pop(pos) # &lt;-- 这里是个接近O(N)的操作
+</code></pre>
+</div>
+

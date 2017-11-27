@@ -1,0 +1,126 @@
+<h2 id="目录">目录</h2>
+
+<ul>
+  <li><a href="#hh0">解决方法</a></li>
+  <li><a href="#hh1">第一步</a></li>
+  <li><a href="#hh2">第二步</a></li>
+  <li><a href="#hh3">第三步</a></li>
+  <li><a href="#hh4">第四步</a></li>
+  <li><a href="#hh5">第五步</a></li>
+</ul>
+
+<h2 id="-解决方法"><a name="hh0"></a> 解决方法</h2>
+
+<p> 
+ 
+ 
+ 
+我的<code class="highlighter-rouge">Grails</code>的环境是</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>grails -v
+| Grails Version: 3.2.6
+| Groovy Version: 2.4.7
+| JVM Version: 1.8.0_71
+</code></pre>
+</div>
+
+<p>grails 3.2.6是用gradle进行构建的。所以如果要添加java类，
+就需要修改<code class="highlighter-rouge">build.gradle</code>。</p>
+
+<h2 id="-第一步"><a name="hh1"></a> 第一步</h2>
+
+<p> 
+ 
+ 
+ 
+创建<code class="highlighter-rouge">src/main/java</code>目录。对于<code class="highlighter-rouge">com.yanggeorge.XMLtest</code>类，
+则要创建<code class="highlighter-rouge">src/main/java/com/yanggeorge/</code>目录，并把XMLtest.java放在该
+路径下。</p>
+
+<h2 id="-第二步"><a name="hh2"></a> 第二步</h2>
+
+<p> 
+ 
+ 
+ 
+在<code class="highlighter-rouge">build.gradle</code>文件中添加如下代码</p>
+
+<figure class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s2">"java"</span>
+
+<span class="n">task</span> <span class="nf">compileOne</span> <span class="o">(</span><span class="nl">type:</span> <span class="n">JavaCompile</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">sourceSets</span><span class="o">.</span><span class="na">main</span><span class="o">.</span><span class="na">java</span><span class="o">.</span><span class="na">srcDirs</span>
+    <span class="n">include</span> <span class="s1">'com/yanggeorge/XMLtest.java'</span>
+    <span class="n">classpath</span> <span class="o">=</span> <span class="n">sourceSets</span><span class="o">.</span><span class="na">main</span><span class="o">.</span><span class="na">compileClasspath</span>
+    <span class="n">destinationDir</span> <span class="o">=</span> <span class="n">sourceSets</span><span class="o">.</span><span class="na">main</span><span class="o">.</span><span class="na">output</span><span class="o">.</span><span class="na">classesDir</span>
+<span class="o">}</span>
+
+<span class="n">compileOne</span><span class="o">.</span><span class="na">options</span><span class="o">.</span><span class="na">compilerArgs</span> <span class="o">=</span> <span class="o">[</span><span class="s2">"-sourcepath"</span><span class="o">,</span> <span class="s2">"$projectDir/src/main/java"</span><span class="o">]</span></code></pre></figure>
+
+<h2 id="-第三步"><a name="hh3"></a> 第三步</h2>
+
+<p>编译XMLtest.java。可以用<code class="highlighter-rouge">grails compile</code>进行编译。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>D:\work\grails&gt;grails compile
+:compileJava UP-TO-DATE
+:compileGroovy UP-TO-DATE
+:buildProperties
+:processResources UP-TO-DATE
+:classes UP-TO-DATE
+
+BUILD SUCCESSFUL
+
+Total time: 23.638 secs
+D:\work\grails&gt;
+</code></pre>
+</div>
+
+<h2 id="-第四步"><a name="hh4"></a> 第四步</h2>
+
+<p> 
+ 
+ 
+ 
+修改<code class="highlighter-rouge">grails-app/conf/spring/resources.groovy</code></p>
+
+<figure class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="kn">import</span> <span class="nn">com.yanggeorge.XMLtest</span>
+
+<span class="n">beans</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="n">myXMLtest</span><span class="o">(</span><span class="n">XMLtest</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<h2 id="-第五步"><a name="hh5"></a> 第五步</h2>
+
+<p> 
+ 
+ 
+ 
+已经可以使用<code class="highlighter-rouge">myXMLtest</code>了，例如创建一个service，<code class="highlighter-rouge">grails-app/services/rss/RssService.groovy</code>
+第６行就是依赖注入的bean。</p>
+
+<figure class="highlight"><pre><code class="language-groovy" data-lang="groovy"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13</pre></td><td class="code"><pre><span class="kn">import</span> <span class="nn">grails.transaction.Transactional</span>
+
+<span class="nd">@Transactional</span>
+<span class="kd">class</span> <span class="nc">RssService</span> <span class="o">{</span>
+
+    <span class="kt">def</span> <span class="n">myXMLtest</span>
+
+    <span class="kt">def</span> <span class="nf">serviceMethod</span><span class="o">(</span><span class="n">String</span> <span class="n">url</span><span class="o">,</span> <span class="n">String</span> <span class="n">keyword</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">def</span> <span class="n">items</span> <span class="o">=</span> <span class="n">myXMLtest</span><span class="o">.</span><span class="na">getAllItems</span><span class="o">(</span><span class="n">url</span><span class="o">)</span>
+
+    <span class="o">}</span>
+
+<span class="o">}</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
+
