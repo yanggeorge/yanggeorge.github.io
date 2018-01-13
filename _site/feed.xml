@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://192.168.56.101:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://192.168.56.101:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://192.168.56.101:4000/" rel="alternate" type="text/html" /><updated>2017-11-27T13:18:34+00:00</updated><id>http://192.168.56.101:4000//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">从大文件中找到出现次数最多的10个数</title><link href="http://192.168.56.101:4000/algorithm/java/trie/2017/11/27/find-top-n.html" rel="alternate" type="text/html" title="从大文件中找到出现次数最多的10个数" /><published>2017-11-27T00:00:00+00:00</published><updated>2017-11-27T00:00:00+00:00</updated><id>http://192.168.56.101:4000/algorithm/java/trie/2017/11/27/find-top-n</id><content type="html" xml:base="http://192.168.56.101:4000/algorithm/java/trie/2017/11/27/find-top-n.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://192.168.56.101:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://192.168.56.101:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://192.168.56.101:4000/" rel="alternate" type="text/html" /><updated>2017-11-28T03:56:20+00:00</updated><id>http://192.168.56.101:4000//</id><title type="html">3.λ｜形而下技术博客</title><subtitle>这里只关注技术实现，用代码说话。</subtitle><entry><title type="html">从大文件中找到出现次数最多的10个数</title><link href="http://192.168.56.101:4000/algorithm/java/trie/2017/11/27/find-top-n.html" rel="alternate" type="text/html" title="从大文件中找到出现次数最多的10个数" /><published>2017-11-27T00:00:00+00:00</published><updated>2017-11-27T00:00:00+00:00</updated><id>http://192.168.56.101:4000/algorithm/java/trie/2017/11/27/find-top-n</id><content type="html" xml:base="http://192.168.56.101:4000/algorithm/java/trie/2017/11/27/find-top-n.html">&lt;h2 id=&quot;目录&quot;&gt;目录&lt;/h2&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;#hh0&quot;&gt;问题&lt;/a&gt;&lt;/li&gt;
@@ -34,8 +34,10 @@
 &lt;h2 id=&quot;-用trie代替hashmap&quot;&gt;&lt;a name=&quot;hh1&quot;&gt;&lt;/a&gt; 用Trie代替Hashmap&lt;/h2&gt;
 
 &lt;p&gt;    如果内存很小，hashmap放不下怎么办呢？可以使用Trie来代替HashMap。
+但是我们这里的Trie在&lt;code class=&quot;highlighter-rouge&quot;&gt;insert&lt;/code&gt;一个串的时候会在叶子节点用一个count来计数。
+这里的叶子节点特指&lt;code class=&quot;highlighter-rouge&quot;&gt;isEnd&lt;/code&gt;为&lt;code class=&quot;highlighter-rouge&quot;&gt;true&lt;/code&gt;的TrieNode。
 通常Trie用于匹配字符串，会有&lt;code class=&quot;highlighter-rouge&quot;&gt;startsWith&lt;/code&gt;方法。但是我们这里不需要这个方法，而需要一个遍历
-所有叶子节点的方法。下面就是我们的&lt;code class=&quot;highlighter-rouge&quot;&gt;Trie&lt;/code&gt;class。&lt;/p&gt;
+所有叶子节点的方法&lt;code class=&quot;highlighter-rouge&quot;&gt;traverseLeaf&lt;/code&gt;。下面就是我们的&lt;code class=&quot;highlighter-rouge&quot;&gt;Trie&lt;/code&gt;class。&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2
@@ -273,6 +275,14 @@
 
 &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;    运行main的结果如下：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;2017-11-27 10:40:52 INFO  Trie:103	cde:2
+2017-11-27 10:40:52 INFO  Trie:103	ab:2
+2017-11-27 10:40:52 INFO  Trie:103	abc:1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h2 id=&quot;-用trie实现的java代码&quot;&gt;&lt;a name=&quot;hh2&quot;&gt;&lt;/a&gt; 用Trie实现的Java代码&lt;/h2&gt;
 

@@ -31,7 +31,7 @@ archetype可以做到一键构建demo project。
 放入该路径下，执行
 
 	gradle init
-	gradle build
+	gradle build -x test
 	gradle run
 
 &nbsp;&nbsp;&nbsp;&nbsp;

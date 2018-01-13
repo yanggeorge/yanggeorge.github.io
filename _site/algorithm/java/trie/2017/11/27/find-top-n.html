@@ -102,8 +102,10 @@
 <h2 id="-用trie代替hashmap"><a name="hh1"></a> 用Trie代替Hashmap</h2>
 
 <p>    如果内存很小，hashmap放不下怎么办呢？可以使用Trie来代替HashMap。
+但是我们这里的Trie在<code class="highlighter-rouge">insert</code>一个串的时候会在叶子节点用一个count来计数。
+这里的叶子节点特指<code class="highlighter-rouge">isEnd</code>为<code class="highlighter-rouge">true</code>的TrieNode。
 通常Trie用于匹配字符串，会有<code class="highlighter-rouge">startsWith</code>方法。但是我们这里不需要这个方法，而需要一个遍历
-所有叶子节点的方法。下面就是我们的<code class="highlighter-rouge">Trie</code>class。</p>
+所有叶子节点的方法<code class="highlighter-rouge">traverseLeaf</code>。下面就是我们的<code class="highlighter-rouge">Trie</code>class。</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
 2
@@ -341,6 +343,14 @@
 
 <span class="o">}</span><span class="w">
 </span></pre></td></tr></tbody></table></code></pre></figure>
+
+<p>    运行main的结果如下：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>2017-11-27 10:40:52 INFO  Trie:103	cde:2
+2017-11-27 10:40:52 INFO  Trie:103	ab:2
+2017-11-27 10:40:52 INFO  Trie:103	abc:1
+</code></pre>
+</div>
 
 <h2 id="-用trie实现的java代码"><a name="hh2"></a> 用Trie实现的Java代码</h2>
 
