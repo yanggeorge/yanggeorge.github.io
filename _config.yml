@@ -20,7 +20,7 @@ baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  yanggeorge
 timezone: '+0800'
-host: 192.168.56.101
+host: 169.254.123.121
 post: 4000
 google_analytics: UA-102303390-1
 
