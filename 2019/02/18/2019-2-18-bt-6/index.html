@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.4.2" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.4.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.4.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.2" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.4.2',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="Sniffer（嗅探器）实现一个简单的BT种子嗅探器才算是有点实际价值的吧。这样就可以把种子的metadata信息 缓存下来，提供按照文件名进行检索。">
+<meta name="keywords" content="bitTorrent,protocol,p2p">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BitTorrent协议（六）之种子嗅探器">
+<meta property="og:url" content="http://threelambda.com/2019/02/18/2019-2-18-bt-6/index.html">
+<meta property="og:site_name" content="3.λ.形而下技术博客">
+<meta property="og:description" content="Sniffer（嗅探器）实现一个简单的BT种子嗅探器才算是有点实际价值的吧。这样就可以把种子的metadata信息 缓存下来，提供按照文件名进行检索。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-06-22T02:14:48.275Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="BitTorrent协议（六）之种子嗅探器">
+<meta name="twitter:description" content="Sniffer（嗅探器）实现一个简单的BT种子嗅探器才算是有点实际价值的吧。这样就可以把种子的metadata信息 缓存下来，提供按照文件名进行检索。">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="3.λ.形而下技术博客" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="http://threelambda.com/2019/02/18/2019-2-18-bt-6/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>BitTorrent协议（六）之种子嗅探器 | 3.λ.形而下技术博客</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-102303390-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-102303390-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">3.λ.形而下技术博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">这里只关注技术实现，用代码说话。</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://threelambda.com/2019/02/18/2019-2-18-bt-6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="alenym@qq.com">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="3.λ.形而下技术博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">BitTorrent协议（六）之种子嗅探器
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-02-18 00:00:00" itemprop="dateCreated datePublished" datetime="2019-02-18T00:00:00+08:00">2019-02-18</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-06-22 10:14:48" itemprop="dateModified" datetime="2020-06-22T10:14:48+08:00">2020-06-22</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Sniffer（嗅探器）"><a href="#Sniffer（嗅探器）" class="headerlink" title="Sniffer（嗅探器）"></a>Sniffer（嗅探器）</h2><p>实现一个简单的BT种子嗅探器才算是有点实际价值的吧。这样就可以把种子的metadata信息
+缓存下来，提供按照文件名进行检索。</p>
+<a id="more"></a>
+<p>不过这里只是实现一个demo，有兴趣的话可以看看github上的<a href="https://github.com/shiyanhui/dht" target="_blank" rel="noopener">dht</a>项目。</p>
+<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><p>简单的说，就是把嗅探节点加入到其他节点的路由表中，等待其他节点发来的announce_peer请求，然后获取种子的metadata信息。</p>
+<p>我们根据以下的代码具体说明。</p>
+<ol>
+<li><p>89行代码，向路由节点发送<code>find_node</code>请求。这些路由节点。就是25行代码的3个地址。
+这样做的意义有两个，一方面，路由节点会把我们的节点加入到他们的路由表中。另一方面，路由节点会返回一个好节点列表。</p>
+</li>
+<li><p>252行代码，启动了6个线程。</p>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">线程</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">listener</td>
+<td style="text-align:left">代码93行，监听所有接收到的udp数据，并把这些放入到队列<code>recv_q</code></td>
+</tr>
+<tr>
+<td style="text-align:left">t_dispatch</td>
+<td style="text-align:left">代码106行，从队列<code>recv_q</code>中取出数据，并进行bdecoding，根据消息类别分别放入对应的队列。一共有三种：应答，请求，错误。</td>
+</tr>
+<tr>
+<td style="text-align:left">t_hand_reply</td>
+<td style="text-align:left">代码132行，从<code>reply_q</code>中取出数据，解码节点列表。每一个节点都插入到本地的路由表（这里不太好，最好先进行ping_node，确定是好节点再加入），并向其发送<code>find_node</code>消息</td>
+</tr>
+<tr>
+<td style="text-align:left">t_hand_query</td>
+<td style="text-align:left">代码165行，从<code>query_q</code>中取出请求，分别对四种请求进行应答处理，分别是ping，find_node, get_peers, announce_peer。</td>
+</tr>
+<tr>
+<td style="text-align:left">t_hand_error</td>
+<td style="text-align:left">错误消息的处理。</td>
+</tr>
+<tr>
+<td style="text-align:left">t_handle_metadata</td>
+<td style="text-align:left">代码234行，从<code>metadata_q</code>中取出已经获取的种子的metadata，打印并把种子保存再字典表中。</td>
+</tr>
+</tbody>
+</table>
+<ol start="3">
+<li>代码165行，t_hand_query线程执行对请求进行处理。</li>
+</ol>
+<ul>
+<li>ping: 返回本地节点id</li>
+<li>find_node: 从本地路由表中查出与请求节点id最近的8个节点，并返回。（据说把本地id进行返回，有利于本地节点加入其他路由表）</li>
+<li>get_peers: 这里进行了简单处理，仅仅返回空节点list。</li>
+<li>announce_peer: 这个请求是有节点告诉我们有新的种子文件发布了，并告诉我们info_hash。然后我们拿着info_hash取进行获取metadata的操作。
+代码207行，开启一个独立的获取metadata的线程。如果获取到metadata，则放入<code>metadata_q</code>中。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="keyword">from</span> __future__ <span class="keyword">import</span> absolute_import</span><br><span class="line"><span class="keyword">from</span> __future__ <span class="keyword">import</span> division</span><br><span class="line"><span class="keyword">from</span> __future__ <span class="keyword">import</span> print_function</span><br><span class="line"></span><br><span class="line">__author__ = <span class="string">'ym'</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">    Date        : '2019/2/3'</span></span><br><span class="line"><span class="string">    Description :</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> ym.bt.routing_table <span class="keyword">import</span> RoutingTable, BTNode</span><br><span class="line"><span class="keyword">from</span> ym.bt.util <span class="keyword">import</span> id_generator, ip_me, decode_compact_node, encode_compact_node, format_size</span><br><span class="line"><span class="keyword">from</span> ym.bt.bencoding_bin <span class="keyword">import</span> BEncode</span><br><span class="line"><span class="keyword">from</span> ym.bt.bdecoding <span class="keyword">import</span> BDecode</span><br><span class="line"><span class="keyword">from</span> ym.bt.request_metadata <span class="keyword">import</span> request_metadata_top</span><br><span class="line"><span class="keyword">from</span> queue <span class="keyword">import</span> Queue</span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"><span class="keyword">import</span> logging</span><br><span class="line"></span><br><span class="line">log = logging.getLogger()</span><br><span class="line"></span><br><span class="line">NODES = [(<span class="string">"router.bittorrent.com"</span>, <span class="number">6881</span>),</span><br><span class="line">         (<span class="string">"router.utorrent.com"</span>, <span class="number">6881</span>),</span><br><span class="line">         (<span class="string">"dht.transmissionbt.com"</span>, <span class="number">6881</span>)]</span><br><span class="line"></span><br><span class="line">ID = id_generator()</span><br><span class="line">SOURCE_IP = ip_me()</span><br><span class="line">SOURCE_PORT = <span class="number">6881</span></span><br><span class="line">TIME_OUT = <span class="number">1</span></span><br><span class="line"></span><br><span class="line">INFO_HASH_METADATA_DIC = &#123;&#125;</span><br><span class="line">RLOCK = threading.RLock()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">boot_step</span><span class="params">(sock: socket.socket, local_node: BTNode)</span>:</span></span><br><span class="line">    <span class="comment"># send find_node query to NODES</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        dic = &#123;<span class="string">"t"</span>: <span class="string">"aa"</span>, <span class="string">"y"</span>: <span class="string">"q"</span>, <span class="string">"q"</span>: <span class="string">"find_node"</span>,</span><br><span class="line">               <span class="string">"a"</span>: &#123;<span class="string">"id"</span>: local_node.id.hex(), <span class="string">"target"</span>: local_node.id.hex()&#125;&#125;</span><br><span class="line">        data = BEncode(dic).encode_bin()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> NODE <span class="keyword">in</span> NODES:</span><br><span class="line">            dst_ip, dst_port = NODE</span><br><span class="line">            sock.sendto(data, (dst_ip, dst_port))</span><br><span class="line">            print(<span class="string">"boot_step|send|dst_ip=&#123;&#125;|dst_port=&#123;&#125;"</span>.format(dst_ip, dst_port))</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        log.exception(e)</span><br><span class="line">        <span class="keyword">raise</span> Exception(<span class="string">"boot_step error"</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">request_metadata_thread</span><span class="params">(peer_id: bytes, info_hash, ip, port, metadata_q: Queue)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        print(<span class="string">"request_metadata_thread|info_hash=&#123;&#125;|ip=&#123;&#125;|port=&#123;&#125;"</span>.format(info_hash, ip, port))</span><br><span class="line">        metadata_dic = request_metadata_top(peer_id, info_hash, ip, port)</span><br><span class="line">        <span class="keyword">if</span> metadata_dic <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</span><br><span class="line">            metadata_q.put((metadata_dic, info_hash, ip, port))</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        log.exception(<span class="string">"request_metadata_thread error"</span>)</span><br><span class="line">        <span class="keyword">raise</span> Exception(<span class="string">"request metadata error"</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line">    sock.setblocking(<span class="keyword">True</span>)</span><br><span class="line">    sock.bind((SOURCE_IP, SOURCE_PORT))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># recv queue</span></span><br><span class="line">    recv_q = Queue(maxsize=<span class="number">0</span>)</span><br><span class="line">    <span class="comment"># reply queue</span></span><br><span class="line">    reply_q = Queue(maxsize=<span class="number">0</span>)</span><br><span class="line">    <span class="comment"># query queue</span></span><br><span class="line">    query_q = Queue(maxsize=<span class="number">0</span>)</span><br><span class="line">    <span class="comment"># error queue</span></span><br><span class="line">    error_q = Queue(maxsize=<span class="number">0</span>)</span><br><span class="line">    <span class="comment"># request metadata</span></span><br><span class="line">    metadata_q = Queue(maxsize=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># declare routing table</span></span><br><span class="line">    rt = RoutingTable()</span><br><span class="line"></span><br><span class="line">    local_node = BTNode(id=ID, ip=SOURCE_IP, port=SOURCE_PORT)</span><br><span class="line">    print(<span class="string">"local_node=&#123;&#125;"</span>.format(local_node))</span><br><span class="line">    rt.insert(local_node)</span><br><span class="line">    <span class="comment"># 1. boot step</span></span><br><span class="line">    print(<span class="string">"boot start."</span>)</span><br><span class="line">    boot_step(sock, local_node)</span><br><span class="line">    print(<span class="string">"boot end."</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 2. listener</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">recv_listener</span><span class="params">(sock: socket.socket, recv_q: Queue)</span>:</span></span><br><span class="line">        <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                data, addr = sock.recvfrom(<span class="number">2048</span>)</span><br><span class="line">                <span class="comment"># print("recv_listener|recv|addr=&#123;&#125;".format(addr))</span></span><br><span class="line">                recv_q.put((data, addr))</span><br><span class="line">            <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">                print(<span class="string">"recv_listener error"</span>)</span><br><span class="line"></span><br><span class="line">    listener = threading.Thread(target=recv_listener, args=(sock, recv_q,))</span><br><span class="line">    listener.daemon = <span class="keyword">True</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 3. handle recv msg</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">dispatch_recv</span><span class="params">(recv_q: Queue, reply_q: Queue, query_q: Queue, error_q: Queue)</span>:</span></span><br><span class="line">        <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">            data, addr = recv_q.get()</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                dic, i, n = BDecode(data).parse()</span><br><span class="line">                <span class="comment"># print("dispatch_recv|dic=&#123;&#125;".format(dic))</span></span><br><span class="line">                <span class="keyword">if</span> dic.get(<span class="string">"y"</span>) <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</span><br><span class="line">                    v = dic[<span class="string">'y'</span>]</span><br><span class="line">                    <span class="keyword">if</span> v == <span class="string">'r'</span>:</span><br><span class="line">                        <span class="comment"># reply msg</span></span><br><span class="line">                        reply_q.put((dic, addr))</span><br><span class="line">                    <span class="keyword">elif</span> v == <span class="string">'q'</span>:</span><br><span class="line">                        <span class="comment"># query msg</span></span><br><span class="line">                        query_q.put((dic, addr))</span><br><span class="line">                    <span class="keyword">elif</span> v == <span class="string">'e'</span>:</span><br><span class="line">                        <span class="comment"># error msg</span></span><br><span class="line">                        error_q.put((dic, addr))</span><br><span class="line">                    <span class="keyword">else</span>:</span><br><span class="line">                        print(<span class="string">"unknown type msg."</span>)</span><br><span class="line">            <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">                log.exception(<span class="string">'dispatch_recv error|data=&#123;&#125;'</span>.format(data))</span><br><span class="line"></span><br><span class="line">    t_dispatch = threading.Thread(target=dispatch_recv, args=(recv_q, reply_q, query_q, error_q,))</span><br><span class="line">    t_dispatch.daemon = <span class="keyword">True</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 4. handle reply</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">handle_reply</span><span class="params">(sock: socket.socket, reply_q: Queue, rt: RoutingTable)</span>:</span></span><br><span class="line">        <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">            dic, addr = reply_q.get()</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                r = dic[<span class="string">'r'</span>]</span><br><span class="line">                src_id = r[<span class="string">'id'</span>]</span><br><span class="line">                src_ip, src_port = addr</span><br><span class="line">                src_node = BTNode(id=src_id, ip=src_ip, port=src_port)</span><br><span class="line">                rt.insert(src_node)</span><br><span class="line">                print(<span class="string">"rt.size=&#123;&#125;"</span>.format(rt.size()))</span><br><span class="line">                <span class="comment"># print("handle_reply|src_ip=&#123;&#125;|src_port=&#123;&#125;".format(src_ip, src_port))</span></span><br><span class="line">                <span class="keyword">if</span> r.get(<span class="string">'nodes'</span>) <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</span><br><span class="line">                    <span class="comment"># ping every node and put good in rt.</span></span><br><span class="line">                    nodes = decode_compact_node(r[<span class="string">'nodes'</span>])</span><br><span class="line">                    dic = &#123;<span class="string">"t"</span>: <span class="string">"aa"</span>, <span class="string">"y"</span>: <span class="string">"q"</span>, <span class="string">"q"</span>: <span class="string">"find_node"</span>,</span><br><span class="line">                           <span class="string">"a"</span>: &#123;<span class="string">"id"</span>: local_node.id.hex(), <span class="string">"target"</span>: local_node.id.hex()&#125;&#125;</span><br><span class="line">                    data = BEncode(dic).encode_bin()</span><br><span class="line">                    <span class="keyword">for</span> node <span class="keyword">in</span> nodes:</span><br><span class="line">                        <span class="keyword">try</span>:</span><br><span class="line">                            dst_ip, dst_port, id = node</span><br><span class="line">                            sock.sendto(data, (dst_ip, dst_port))</span><br><span class="line">                        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">                            log.exception(<span class="string">"send node error|node=&#123;&#125;"</span>.format(node))</span><br><span class="line">                <span class="keyword">elif</span> r.get(<span class="string">'peers'</span>) <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</span><br><span class="line">                    <span class="comment"># ping every peer and put good in rt.</span></span><br><span class="line">                    print(<span class="string">"handle_reply|peers"</span>)</span><br><span class="line">            <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">                log.exception(<span class="string">"handle_reply error|dic=&#123;&#125;"</span>.format(dic), e)</span><br><span class="line"></span><br><span class="line">    t_hand_reply = threading.Thread(target=handle_reply, args=(sock, reply_q, rt,))</span><br><span class="line">    t_hand_reply.daemon = <span class="keyword">True</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 5. handle query</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">handle_query</span><span class="params">(sock: socket.socket, query_q: Queue)</span>:</span></span><br><span class="line">        <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">            dic, addr = query_q.get()</span><br><span class="line">            dst_ip, dst_port = addr</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                print(<span class="string">"handle_query|addr=&#123;&#125;|dic=&#123;&#125;"</span>.format(addr, dic))</span><br><span class="line">                <span class="keyword">if</span> dic[<span class="string">'q'</span>] == <span class="string">'ping'</span>:</span><br><span class="line">                    <span class="comment"># handle ping query</span></span><br><span class="line">                    reply = &#123;<span class="string">"t"</span>: dic[<span class="string">'t'</span>], <span class="string">"y"</span>: <span class="string">"r"</span>, <span class="string">"r"</span>: &#123;<span class="string">"id"</span>: local_node.id.hex()&#125;&#125;</span><br><span class="line">                    data = BEncode(reply).encode_bin()</span><br><span class="line">                    sock.sendto(data, (dst_ip, dst_port))</span><br><span class="line">                    <span class="comment"># print("handle_query|ping|send_reply|dst_ip=&#123;&#125;|dst_port=&#123;&#125;|data=&#123;&#125;".format(dst_ip, dst_port, data))</span></span><br><span class="line">                <span class="keyword">elif</span> dic[<span class="string">'q'</span>] == <span class="string">'find_node'</span>:</span><br><span class="line">                    <span class="comment"># handle find_node query</span></span><br><span class="line">                    nodes = rt.find_closer(bytes.fromhex(dic[<span class="string">'a'</span>][<span class="string">'id'</span>]))</span><br><span class="line">                    print(<span class="string">"local_node.id=&#123;&#125;"</span>.format(local_node.id.hex()))</span><br><span class="line">                    print(nodes)</span><br><span class="line">                    compact_node = encode_compact_node(nodes)</span><br><span class="line">                    reply = &#123;<span class="string">"t"</span>: dic[<span class="string">'t'</span>], <span class="string">"y"</span>: <span class="string">"r"</span>, <span class="string">"r"</span>: &#123;<span class="string">"id"</span>: local_node.id.hex(), <span class="string">"nodes"</span>: compact_node&#125;&#125;</span><br><span class="line">                    data = BEncode(reply).encode_bin()</span><br><span class="line">                    sock.sendto(data, (dst_ip, dst_port))</span><br><span class="line">                    print(<span class="string">"handle_query|find_node|send_reply|dst_ip=&#123;&#125;|dst_port=&#123;&#125;|data=&#123;&#125;"</span>.format(dst_ip, dst_port,</span><br><span class="line">                                                                                                   data))</span><br><span class="line">                <span class="keyword">elif</span> dic[<span class="string">'q'</span>] == <span class="string">'get_peers'</span>:</span><br><span class="line">                    <span class="comment"># handle get_peers query</span></span><br><span class="line">                    reply = &#123;<span class="string">"t"</span>: dic[<span class="string">'t'</span>], <span class="string">"y"</span>: <span class="string">"r"</span>,</span><br><span class="line">                             <span class="string">"r"</span>: &#123;<span class="string">"id"</span>: local_node.id.hex(), <span class="string">"token"</span>: <span class="string">"alenym"</span>.encode(<span class="string">"utf8"</span>), <span class="string">"nodes"</span>: <span class="string">b""</span>&#125;&#125;</span><br><span class="line">                    data = BEncode(reply).encode_bin()</span><br><span class="line">                    sock.sendto(data, (dst_ip, dst_port))</span><br><span class="line">                    print(<span class="string">"handle_query|get_peers|send_reply|dst_ip=&#123;&#125;|dst_port=&#123;&#125;|data=&#123;&#125;"</span>.format(dst_ip, dst_port,</span><br><span class="line">                                                                                                   data))</span><br><span class="line">                <span class="keyword">elif</span> dic[<span class="string">'q'</span>] == <span class="string">'announce_peer'</span>:</span><br><span class="line">                    <span class="comment"># handle announce_peer</span></span><br><span class="line">                    print(<span class="string">"handle_query|announce_peer|dic=&#123;&#125;"</span>.format(dic))</span><br><span class="line">                    info_hash = dic[<span class="string">'a'</span>].get(<span class="string">'info_hash'</span>)</span><br><span class="line">                    <span class="keyword">with</span> RLOCK:</span><br><span class="line">                        <span class="keyword">if</span> info_hash <span class="keyword">is</span> <span class="keyword">None</span> <span class="keyword">or</span> info_hash <span class="keyword">in</span> INFO_HASH_METADATA_DIC:</span><br><span class="line">                            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">                    target_ip = dst_ip</span><br><span class="line">                    target_port = dst_port</span><br><span class="line"></span><br><span class="line">                    t_request_meta = threading.Thread(target=request_metadata_thread,</span><br><span class="line">                                                      args=(</span><br><span class="line">                                                          local_node.id, info_hash, target_ip, target_port, metadata_q))</span><br><span class="line">                    t_request_meta.start()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    print(<span class="string">"handle_query|other|dic=&#123;&#125;"</span>.format(dic))</span><br><span class="line">            <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">                log.exception(<span class="string">"handle_query error|dic=&#123;&#125;"</span>.format(dic))</span><br><span class="line"></span><br><span class="line">    t_hand_query = threading.Thread(target=handle_query, args=(sock, query_q,))</span><br><span class="line">    t_hand_query.daemon = <span class="keyword">True</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 6. handle error</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">handle_error</span><span class="params">(error_q: Queue)</span>:</span></span><br><span class="line">        <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">            dic, addr = error_q.get()</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                print(<span class="string">"handle_error|addr=&#123;&#125;|dic=&#123;&#125;"</span>.format(addr, dic))</span><br><span class="line">            <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">                log.exception(<span class="string">'handle_error error'</span>, e)</span><br><span class="line"></span><br><span class="line">    t_hand_error = threading.Thread(target=handle_error, args=(error_q,))</span><br><span class="line">    t_hand_error.daemon = <span class="keyword">True</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 7. handle requested metadata</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">handle_metadata</span><span class="params">(metadata_q: Queue)</span>:</span></span><br><span class="line">        <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                metadata_dic, info_hash, ip, port = metadata_q.get()</span><br><span class="line">                format_s = <span class="string">"handle_metadata|info_hash=&#123;&#125;|ip=&#123;&#125;|port=&#123;&#125;|name=&#123;&#125;|size=&#123;&#125;"</span></span><br><span class="line">                file_name = metadata_dic[<span class="string">'name'</span>]</span><br><span class="line">                size = format_size(metadata_dic.get(<span class="string">'length'</span>))</span><br><span class="line">                print(format_s.format(info_hash, ip, port, file_name, size))</span><br><span class="line">                <span class="keyword">with</span> RLOCK:</span><br><span class="line">                    <span class="keyword">if</span> info_hash <span class="keyword">not</span> <span class="keyword">in</span> INFO_HASH_METADATA_DIC:</span><br><span class="line">                        INFO_HASH_METADATA_DIC[info_hash] = metadata_dic</span><br><span class="line">            <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">                log.exception(<span class="string">"handle_metadata error"</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    t_handle_metadata = threading.Thread(target=handle_metadata, args=(metadata_q,))</span><br><span class="line">    t_handle_metadata.daemon = <span class="keyword">True</span></span><br><span class="line"></span><br><span class="line">    listener.start()</span><br><span class="line">    t_dispatch.start()</span><br><span class="line">    t_hand_reply.start()</span><br><span class="line">    t_hand_query.start()</span><br><span class="line">    t_hand_error.start()</span><br><span class="line">    t_handle_metadata.start()</span><br><span class="line"></span><br><span class="line">    listener.join()</span><br><span class="line">    t_dispatch.join()</span><br><span class="line">    t_hand_reply.join()</span><br><span class="line">    t_hand_query.join()</span><br><span class="line">    t_hand_error.join()</span><br><span class="line">    t_handle_metadata.join()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+<h2 id="运行日志"><a href="#运行日志" class="headerlink" title="运行日志"></a>运行日志</h2><p>我们在一台有公网ip的电脑上运行十几分钟，过滤日志，查看接收到的种子信息如下，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:~# cat log.txt | grep &quot;handle_metadata&quot;</span><br><span class="line">handle_metadata|info_hash=5553330daa12bde6a2f71ab26f7b26688219f276|ip=69.80.12.126|port=11715|name=War for the Planet of the Apes 2017 1080p BluRay x264 DTS 5.1 MSubS-Hon3y|size=None</span><br><span class="line">handle_metadata|info_hash=5556f3a9c605dd009f92fddb91848f565439e4f4|ip=59.169.228.207|port=62215|name=(C94) [くろすこスイッチ (くろすこ)] 冷泉さんといちゃいちゃする本 (ガールズ&amp;パンツァー).zip|size=7.80M</span><br><span class="line">handle_metadata|info_hash=555333edb2519c3aa93db4a150f6e021f5a138ff|ip=96.40.42.32|port=32796|name=Princess Go Round|size=None</span><br><span class="line">handle_metadata|info_hash=572d4df79a7151d9466d371b960cfece91289bf4|ip=1.175.76.59|port=13283|name=(同人ゲーム) [181102][RJ237312][ピンポイント／キングピン] 妻が隠していたビデオ…～元カレ寝取らせ観察記～ DL版 (files).rar|size=1.08G</span><br><span class="line">handle_metadata|info_hash=572edd8670066945538e4fe823294b45f2c2e3a3|ip=14.199.224.142|port=22979|name=0407raw021|size=None</span><br><span class="line">handle_metadata|info_hash=574b27358fc1604e65babf32abe839267d36ba4b|ip=14.199.224.142|port=22979|name=o0Akrios0o@www.sexinsex.com@假裝租屋 事實上在陽台勾引住宅區人妻|size=None</span><br><span class="line">handle_metadata|info_hash=54730eeeb5d74a58f49c6da72eb90be922556f0a|ip=219.98.7.166|port=18586|name=DSAM-29-DVD|size=None</span><br><span class="line">handle_metadata|info_hash=57039c3ef3343c5b288c5ff219c66f837a88e808|ip=14.199.224.142|port=22979|name=tmem|size=None</span><br><span class="line">handle_metadata|info_hash=5687578db92c7df4ae3ab7e33c895f04b1e27d37|ip=14.199.224.142|port=22979|name=GNE-148|size=None</span><br><span class="line">handle_metadata|info_hash=57b832066b2103e29f3a4af256e25175da6dbdc2|ip=14.199.224.142|port=22979|name=[Thz.la]supa-154|size=None</span><br><span class="line">handle_metadata|info_hash=56936a12cdb3a1a837c8faa206a2dea189dadf66|ip=14.199.224.142|port=22979|name=club-022_1.wmv|size=2.96G</span><br><span class="line">handle_metadata|info_hash=570e89058161385b1d7dfadfcdc2d9f276ab829b|ip=14.199.224.142|port=22979|name=avidol.us-PTBI-026.wmv|size=2.71G</span><br><span class="line">handle_metadata|info_hash=57c30a1ddecac71142208425c610837b961f4de6|ip=14.199.224.142|port=22979|name=[HD]sad-039.wmv|size=3.52G</span><br><span class="line">handle_metadata|info_hash=56794273cf092e0b4f671885a16cf2dbe484f559|ip=14.199.224.142|port=22979|name=KRE-002.wmv|size=1.20G</span><br><span class="line">handle_metadata|info_hash=5710c35d85a9a0ed8cadc10bdcd09db5bb0c46fd|ip=14.199.224.142|port=22979|name=0111-xv1088|size=None</span><br><span class="line">handle_metadata|info_hash=561b55ec9a956f208f58b798d781bd5577a47b9e|ip=14.199.224.142|port=22979|name=52.R18-099|size=None</span><br><span class="line">handle_metadata|info_hash=57c262437e7cf0ca5f24bff947757026f9cef9a8|ip=14.199.224.142|port=22979|name=DF-35976|size=None</span><br><span class="line">handle_metadata|info_hash=565bedb7fc17d20f017a668e2931cb1d30b53556|ip=14.199.224.142|port=22979|name=judexkwok@片瀬まこ合集06|size=None</span><br><span class="line">handle_metadata|info_hash=57e93ca1527cd35045f0ca75d0c96579dcf96d2a|ip=14.199.224.142|port=22979|name=SMDV-10-DVD|size=None</span><br><span class="line">handle_metadata|info_hash=56747025a196cb78db9f94d8ca933677f57e54b0|ip=14.199.224.142|port=22979|name=HUNT-759.mp4|size=2.01G</span><br><span class="line">handle_metadata|info_hash=56e45f76194dadb2c799c7f2c9b34bc2fff07cee|ip=14.199.224.142|port=22979|name=0510-sama538|size=None</span><br><span class="line">handle_metadata|info_hash=57fae1a68ee9241a593c1623f64feb7927b40469|ip=14.199.224.142|port=22979|name=[thz.la]chunta-219|size=None</span><br><span class="line">handle_metadata|info_hash=56b89964da08b923b20722b89ccfc6ae4928aca3|ip=14.199.224.142|port=22979|name=HUNT-665_2.mp4|size=1.60G</span><br><span class="line">handle_metadata|info_hash=57528d8633ee8b823aea17e47def172082072dd5|ip=14.199.224.142|port=22979|name=HUNT|size=None</span><br><span class="line">handle_metadata|info_hash=57b14ca4cf260763e170e515b1f235ae5dca487f|ip=14.199.224.142|port=22979|name=SAMA-477|size=None</span><br><span class="line">handle_metadata|info_hash=57bc38a6f182dbd6be5b42371d645cc43cfa12e1|ip=14.199.224.142|port=22979|name=HUNT-710.mp4|size=1.82G</span><br><span class="line">handle_metadata|info_hash=57f2b65672462ff81834a928cf8e9863687dc220|ip=14.199.224.142|port=22979|name=3208|size=None</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>有些种子文件为什么没有文件大小呢？例如<code>size=None</code>,</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">handle_metadata|info_hash=54730eeeb5d74a58f49c6da72eb90be922556f0a|ip=219.98.7.166|port=18586|name=DSAM-29-DVD|size=None</span><br></pre></td></tr></table></figure>
+<p>用info_hash过滤日志，可以看到metadata包含了一个<code>files</code>项，该项包含了多个文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:~# cat log.txt | grep &quot;54730eeeb5d74a58f49c6da72eb90be922556f0a&quot;| grep &quot;metadata_dic&quot; </span><br><span class="line">request_metadata|info_hash=54730eeeb5d74a58f49c6da72eb90be922556f0a|metadata_dic=&#123;&apos;files&apos;: [&#123;&apos;ed2k&apos;: b&apos;\xc4&quot;%lT\xa14s\xd86\xd7a\xb1:\x8bC&apos;, &apos;filehash&apos;: &apos;788c531731917e92334c03423df5433b4d3d941d&apos;, &apos;length&apos;: 228076, &apos;path&apos;: [&apos;C9~Fang Ping Bi Cheng Xu防屏蔽程序.rar&apos;], &apos;path.utf-8&apos;: [&apos;C9~Fang Ping Bi Cheng Xu防屏蔽程序.rar&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;\xff,5\xb4W\x1b\xf1\xb0\x16\x13=\x0c\xc1\xc5\xb56&apos;, &apos;filehash&apos;: &apos;b760813c2b6690123eb174b5561ce6b4a0b6e000&apos;, &apos;length&apos;: 1966849, &apos;path&apos;: [&apos;HOTAVXXX,Free Adult Movie, Fastest &amp; Newest Porn Movie Site.jpg&apos;], &apos;path.utf-8&apos;: [&apos;HOTAVXXX,Free Adult Movie, Fastest &amp; Newest Porn Movie Site.jpg&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;\xfaggnH\xf8e&#125;O\x97\x04\xbb\x86\x9e\x92\xf5&apos;, &apos;filehash&apos;: &apos;9a8b43c663ecc46d3a29196cf527d8431fef842b&apos;, &apos;length&apos;: 180, &apos;path&apos;: [&apos;HOTAVXXX~最新最快的AV影片每日更新.url&apos;], &apos;path.utf-8&apos;: [&apos;HOTAVXXX~最新最快的AV影片每日更新.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;\xff,5\xb4W\x1b\xf1\xb0\x16\x13=\x0c\xc1\xc5\xb56&apos;, &apos;filehash&apos;: &apos;b760813c2b6690123eb174b5561ce6b4a0b6e000&apos;, &apos;length&apos;: 1966849, &apos;path&apos;: [&apos;HOTAVXXX、自由な成人映画、最も速く&amp;最新ポルノ映画サイト.jpg&apos;], &apos;path.utf-8&apos;: [&apos;HOTAVXXX、自由な成人映画、最も速く&amp;最新ポルノ映画サイト.jpg&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;$\x13\xfd\\\x8b\xa5\xee=\xc0\xfb\x88\xff~\x03/\x18&apos;, &apos;filehash&apos;: &apos;dddbfe3e917739e1da7afcdd8a78e1a6677b6648&apos;, &apos;length&apos;: 235, &apos;path&apos;: [&apos;QQ愛真人視頻交友聊天室.url&apos;], &apos;path.utf-8&apos;: [&apos;QQ愛真人視頻交友聊天室.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;/\xe2\xcf\x1b\xc06\xea[\xda\x93\xb9\xd0\\\xc1\x14\x98&apos;, &apos;filehash&apos;: &apos;715c4e653db4bb74bb7e40073d55113f512299e9&apos;, &apos;length&apos;: 628211, &apos;path&apos;: [&apos;SIS001全面封殺.jpg&apos;], &apos;path.utf-8&apos;: [&apos;SIS001全面封殺.jpg&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;\xf3\x19\x893\x8b\r\xc4\r\x99|W)\xf4\xce\x00J&apos;, &apos;filehash&apos;: &apos;c4eadc74cdbf36df8a66710f62932a60b1a0949a&apos;, &apos;length&apos;: 267, &apos;path&apos;: [&apos;[城風 - C9]~成人精品長篇區 最新http一手資源.url&apos;], &apos;path.utf-8&apos;: [&apos;[城風 - C9]~成人精品長篇區 最新http一手資源.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;r\xbab\x10i\xc4\x10&lt;f$\x10+p\x84\xd2Z&apos;, &apos;filehash&apos;: &apos;c6a1cb245511e4013c7510220ce3a6d912f8290f&apos;, &apos;length&apos;: 217, &apos;path&apos;: [&apos;dioguitar23(第六天魔王)@草榴社區.url&apos;], &apos;path.utf-8&apos;: [&apos;dioguitar23(第六天魔王)@草榴社區.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;\xe4z.\xa4\xfa\x88h\xfe\x07\xedy\xc3\x13D\xe8\x7f&apos;, &apos;filehash&apos;: &apos;dddd22e1c4027a8e5c6cec98a4ef3dd29b951682&apos;, &apos;length&apos;: 229, &apos;path&apos;: [&apos;dioguitar23@ HD1080.org.url&apos;], &apos;path.utf-8&apos;: [&apos;dioguitar23@ HD1080.org.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;\xf9\xee!X\xb3\x9d\xd9\x104\xc52\xc4\x872&amp;a&apos;, &apos;filehash&apos;: &apos;7191792635319be376c5ff3edd251e7bda81d069&apos;, &apos;length&apos;: 267, &apos;path&apos;: [&apos;dioguitar23@AV 天空.url&apos;], &apos;path.utf-8&apos;: [&apos;dioguitar23@AV 天空.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;\xba\x18f&amp;*y&amp;\xf5H\xe8\x1f;8x\x1eA&apos;, &apos;filehash&apos;: &apos;d774c64c18ec44e607ba6825675e841332a0d4f4&apos;, &apos;length&apos;: 188, &apos;path&apos;: [&apos;dioguitar23@D.C.資訊交流網.url&apos;], &apos;path.utf-8&apos;: [&apos;dioguitar23@D.C.資訊交流網.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;\x91\x97\x15O\rxh\x7fa\xbf^\xbf \x187K&apos;, &apos;filehash&apos;: &apos;f06835576489512e2c4a3ff58a5c4a2fed3131a3&apos;, &apos;length&apos;: 174, &apos;path&apos;: [&apos;dioguitar23@KTzone.url&apos;], &apos;path.utf-8&apos;: [&apos;dioguitar23@KTzone.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&quot;\xf7\xf1\x9c\xa0+\x15\xc5_\xdb2u&apos;\x81\xcb\xefU&quot;, &apos;filehash&apos;: &apos;25a54a9fdab494a60fdbd206089ee75c08913f24&apos;, &apos;length&apos;: 235, &apos;path&apos;: [&apos;dioguitar23@SexInSex! Board.url&apos;], &apos;path.utf-8&apos;: [&apos;dioguitar23@SexInSex! Board.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;\x10k\x08\xafU\xcb\x05\x8b\x0f\xf9\xaf\xcb\r\xdd\xf3\xc4&apos;, &apos;filehash&apos;: &apos;a9bb602e06bb33483a1960db95bc65b535831c5d&apos;, &apos;length&apos;: 1086, &apos;path&apos;: [&apos;dioguitar23@公仔箱論壇.url&apos;], &apos;path.utf-8&apos;: [&apos;dioguitar23@公仔箱論壇.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;6-*X\x12\xf3f\xbe\xd8q\x15\xbe\x91[\xee4&apos;, &apos;filehash&apos;: &apos;d19dd08e932c7db940491e5ac259c6ad0ff225c3&apos;, &apos;length&apos;: 188, &apos;path&apos;: [&apos;dioguitar23@痴漢俱樂部.url&apos;], &apos;path.utf-8&apos;: [&apos;dioguitar23@痴漢俱樂部.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;\x89\xe1CN\xef\xd1\x83\xc2\x8c?,|;\xdb\t\x10&apos;, &apos;filehash&apos;: &apos;47255a6ce6a43dc9af1de780fcffd210de793bfd&apos;, &apos;length&apos;: 190, &apos;path&apos;: [&apos;dioguitar23@香港廣場.url&apos;], &apos;path.utf-8&apos;: [&apos;dioguitar23@香港廣場.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;\xaaJh&amp;\x1f\x88\x93\xda\x9bL\xca\xd9\x9c+V\xa9&apos;, &apos;filehash&apos;: &apos;168c3faa1f01a31b31c8d5a1bb7e699333e0bfe4&apos;, &apos;length&apos;: 226, &apos;path&apos;: [&apos;dioguitar23_Plus28 討論區.url&apos;], &apos;path.utf-8&apos;: [&apos;dioguitar23_Plus28 討論區.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&quot;\x04k`&#123;\x0b&apos;\xee\x80\xb4\x8e\x91=\xa92\xaf\x95&quot;, &apos;filehash&apos;: &apos;c7181e934379905222bf363317d8ae8ddfb12eb4&apos;, &apos;length&apos;: 220, &apos;path&apos;: [&apos;dioguitar23_Touch99.url&apos;], &apos;path.utf-8&apos;: [&apos;dioguitar23_Touch99.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;\xaf\xbe+\xd5\xde\x96\xdc\xe0\xa8a\x18\x87b\x8d\xf6\x0c&apos;, &apos;filehash&apos;: &apos;a92caa360c647d14ae05655c6e43e9f28d7edcf5&apos;, &apos;length&apos;: 208, &apos;path&apos;: [&apos;dioguitar23_WK綜合論壇.url&apos;], &apos;path.utf-8&apos;: [&apos;dioguitar23_WK綜合論壇.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;\x05&gt;\x9b.\nS\xb2\x9c&amp;L\xbc5H\x82\xcc\xcb&apos;, &apos;filehash&apos;: &apos;6fa079db3cafb196163e9a6b126f60a5d4aa85b1&apos;, &apos;length&apos;: 156, &apos;path&apos;: [&apos;dioguitar23_mimip2p.url&apos;], &apos;path.utf-8&apos;: [&apos;dioguitar23_mimip2p.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;\xc3|\x1fKA\xb7\xdd\xb9\x87\xd3&#125;\x04\x8f&#125;\xb3m&apos;, &apos;filehash&apos;: &apos;1a709fb06ff75ced80995ab8fcdefa69744d7aa0&apos;, &apos;length&apos;: 229, &apos;path&apos;: [&apos;dioguitar23_※=色界论坛=※ (开放注册） 色界论坛.url&apos;], &apos;path.utf-8&apos;: [&apos;dioguitar23_※=色界论坛=※ (开放注册） 色界论坛.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;&gt;\x13\x98U3q\xf6u\xe6\x06\xc4\xa4\x91\xb24\xc5&apos;, &apos;filehash&apos;: &apos;350cdfa69ce763f8c2fad85e1f0f4323c3fb5dfa&apos;, &apos;length&apos;: 208, &apos;path&apos;: [&apos;dioguitar23_九九情色帝国.url&apos;], &apos;path.utf-8&apos;: [&apos;dioguitar23_九九情色帝国.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;E\x0c\x8a\xed5&#123;\x00\xe6\xdb\xfc\x9b\xb1|U%\xf5&apos;, &apos;filehash&apos;: &apos;384d925cb1da6605d49014622ed9f0b455efe343&apos;, &apos;length&apos;: 261, &apos;path&apos;: [&apos;dioguitar23_性吧春暖花开,春暖花开性吧有你.url&apos;], &apos;path.utf-8&apos;: [&apos;dioguitar23_性吧春暖花开,春暖花开性吧有你.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;\xefE\xbe\xc2\xcf(\xf5\xe3\x18\x04\xdan\x8f\x08j\xcf&apos;, &apos;filehash&apos;: &apos;2509953b0831793667a904ee08229da3114835cf&apos;, &apos;length&apos;: 214, &apos;path&apos;: [&apos;dioguitar23_找樂子論壇.url&apos;], &apos;path.utf-8&apos;: [&apos;dioguitar23_找樂子論壇.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&quot;QuDc&apos;zc]\xcb\xeb\xc0\x86-\xfe\xa5\xf4&quot;, &apos;filehash&apos;: &apos;2e92574d6c46add45048b08aa15b4eae132c2cc1&apos;, &apos;length&apos;: 235, &apos;path&apos;: [&apos;dioguitar23_無限討論區.url&apos;], &apos;path.utf-8&apos;: [&apos;dioguitar23_無限討論區.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;tf\xe0\xda\x8c&amp;\x96A\x9d\x9e~P\xe9\xd6\x83\xdb&apos;, &apos;filehash&apos;: &apos;6b2a83a72df99bd7f2a197cb6fd423a41e061b70&apos;, &apos;length&apos;: 138, &apos;path&apos;: [&apos;hav.tv-新幹線ONLINE~慶祝開站包月對折優惠~免費影片天看到爽!!.url&apos;], &apos;path.utf-8&apos;: [&apos;hav.tv-新幹線ONLINE~慶祝開站包月對折優惠~免費影片天看到爽!!.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;\&apos;\xf0\x08\xf1 &#123;\xa9&quot;\x13//(\xc7o\x9d`&apos;, &apos;filehash&apos;: &apos;226f0d140af4689833613f0f21a95608fff324ef&apos;, &apos;length&apos;: 4324384768, &apos;path&apos;: [&apos;hotavxxx.com_DSAM-29.ISO&apos;], &apos;path.utf-8&apos;: [&apos;hotavxxx.com_DSAM-29.ISO&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;\x92]\xef\x0b\xa5\xee\xff\xd9\xb9\xd2\xd2\xc2J\x9e\x1a\xdc&apos;, &apos;filehash&apos;: &apos;eb8316fc354049e3bc1fb251bf6928dc55ed157a&apos;, &apos;length&apos;: 131523, &apos;path&apos;: [&apos;hotavxxx.com_DSAM-29.jpg&apos;], &apos;path.utf-8&apos;: [&apos;hotavxxx.com_DSAM-29.jpg&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;0\xaf\xc8Q\xc9\xa3\xfb\xacn\xf4\xde\xc1\r\x9c\xda\xbd&apos;, &apos;filehash&apos;: &apos;aa6975d6341d2a079661c066eb5244ee0fd1aaff&apos;, &apos;length&apos;: 2254263, &apos;path&apos;: [&apos;hotavxxx.com_DSAM-29A.jpg&apos;], &apos;path.utf-8&apos;: [&apos;hotavxxx.com_DSAM-29A.jpg&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;\xa1\xaf\x1b\xd7\x84\xd2g\x87\x99&gt;\x82\xec\x94j\xb1U&apos;, &apos;filehash&apos;: &apos;7254c5e02a0119f38e9c0e7576a1d8ac04b59f67&apos;, &apos;length&apos;: 214, &apos;path&apos;: [&apos;❤dioguitar23❤18P2P-2013年04月2日 18p2p開放註冊3天.url&apos;], &apos;path.utf-8&apos;: [&apos;❤dioguitar23❤18P2P-2013年04月2日 18p2p開放註冊3天.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;\xe0\x82]\xe7\xe2\xc3\xe0\x9bn\x81\x1d\xa4\x0fr\x9f+&apos;, &apos;filehash&apos;: &apos;cad3021392437e48d35faa57861e8ce0a89a6a0d&apos;, &apos;length&apos;: 233, &apos;path&apos;: [&apos;アジア表動画公開板 [城風 - C9].url&apos;], &apos;path.utf-8&apos;: [&apos;アジア表動画公開板 [城風 - C9].url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;\x9a\xdeh5D\x1e&#125;5`FeM\xf3\xcf\x1dt&apos;, &apos;filehash&apos;: &apos;37402d4e9e9fedb26ff5c833fbc399fb5462a4af&apos;, &apos;length&apos;: 168, &apos;path&apos;: [&apos;京色屋~即日起大降價.一片只要30元起.藍光片只要150元.url&apos;], &apos;path.utf-8&apos;: [&apos;京色屋~即日起大降價.一片只要30元起.藍光片只要150元.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;W\x9a\xf4E\x1d\xb0b(\x05_v\x00\xef\xe5\xe4\xe6&apos;, &apos;filehash&apos;: &apos;6d6df82810c4aa00152c3912d28bc13b6589a780&apos;, &apos;length&apos;: 223, &apos;path&apos;: [&apos;堂本屋 TW DMM~即日起大降價.一片只要30元起.藍光片只要150元.url&apos;], &apos;path.utf-8&apos;: [&apos;堂本屋 TW DMM~即日起大降價.一片只要30元起.藍光片只要150元.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;\x83\x05t=\xda\x85\x84\xbc\x1c\xb3J\xac\x04\x94\xfea&apos;, &apos;filehash&apos;: &apos;52dcc77f3f2aad3ffd1cf4af73157deb1aeb8f4c&apos;, &apos;length&apos;: 2994, &apos;path&apos;: [&apos;更多精彩.rar&apos;], &apos;path.utf-8&apos;: [&apos;更多精彩.rar&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;&lt;\xf8Y\xfd\x08\x99.\xc5\xec\x0e\x03V\r\xb4%\x06&apos;, &apos;filehash&apos;: &apos;ab91ce91df44509574450c875435f3c2a7bf18cf&apos;, &apos;length&apos;: 226, &apos;path&apos;: [&apos;金花娱乐城-澳门网上真人赌博，90后性感荷官24小时在线存提款（5分钟到账）.url&apos;], &apos;path.utf-8&apos;: [&apos;金花娱乐城-澳门网上真人赌博，90后性感荷官24小时在线存提款（5分钟到账）.url&apos;]&#125;, &#123;&apos;ed2k&apos;: b&apos;\xfc*&quot;\xad\xdbva\xdf\xbf\x92\x0e\x83.\x08/\x84&apos;, &apos;filehash&apos;: &apos;b60f8d54f1756a04753905be9a9dc7982f33ad14&apos;, &apos;length&apos;: 235, &apos;path&apos;: [&apos;魔王の家-情慾視界~最新最快的成人資訊平台 魔王の家,http--bbs.hotavxxx.com.url&apos;], &apos;path.utf-8&apos;: [&apos;魔王の家-情慾視界~最新最快的成人資訊平台 魔王の家,http--bbs.hotavxxx.com.url&apos;]&#125;], &apos;name&apos;: &apos;DSAM-29-DVD&apos;, &apos;name.utf-8&apos;: &apos;DSAM-29-DVD&apos;, &apos;piece length&apos;: 1048576, &apos;pieces&apos;: [&apos;557c428f62f38fe8ac8d11411bc9796abb28254d&apos;, &apos;53effb4976edd7d32c9be7a0315bfd40ff93875e&apos;, &apos;c38ea041059367193bc3e9cc6fac40f67cfb377f&apos;, &apos;63d640ba1942f834e4ec0340f84d8c0703a1f992&apos;, &apos;8b783f6a2dc8ec649ad78acc8c49f892a8bf7663&apos;, &apos;961a8f0b0cdfe010c979061082982c3548173948&apos;, &apos;57dd2532983cf4d30bd442281d007ce0189b6eac&apos;, &apos;d858de50e2a5d5dd60945ac687baa159697d88cd&apos;, &apos;f7a262965c87d1c4d3cc10660176c4d063d16807&apos;, &apos;43f7e4f982c4a47d94757071e8b280798d5fbfa9&apos;, ...</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/bitTorrent/" rel="tag"># bitTorrent</a>
+          
+            <a href="/tags/protocol/" rel="tag"># protocol</a>
+          
+            <a href="/tags/p2p/" rel="tag"># p2p</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/25/2019-1-25-bt-5/" rel="next" title="BitTorrent协议（五）之下载文件">
+                <i class="fa fa-chevron-left"></i> BitTorrent协议（五）之下载文件
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/28/2019-4-28-byte-to-string-and-back/" rel="prev" title="Java语言中bytes convert to string and back not equal">
+                Java语言中bytes convert to string and back not equal <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">alenym@qq.com</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">33</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">33</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/yanggeorge" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:alenym@qq.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Sniffer（嗅探器）"><span class="nav-number">1.</span> <span class="nav-text">Sniffer（嗅探器）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基本原理"><span class="nav-number">2.</span> <span class="nav-text">基本原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行日志"><span class="nav-number">3.</span> <span class="nav-text">运行日志</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alenym@qq.com</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.4.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.4.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.4.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.2"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+</body>
+</html>

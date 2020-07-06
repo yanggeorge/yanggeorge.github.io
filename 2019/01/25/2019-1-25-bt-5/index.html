@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.4.2" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.4.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.4.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.2" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.4.2',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="单节点下载小文件从多个peer进行下载的算法显然是复杂的，更不用说下载一个很大的文件。这里只是简单验证一下， 从单个peer下载文件。">
+<meta name="keywords" content="bitTorrent,protocol,p2p">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BitTorrent协议（五）之下载文件">
+<meta property="og:url" content="http://threelambda.com/2019/01/25/2019-1-25-bt-5/index.html">
+<meta property="og:site_name" content="3.λ.形而下技术博客">
+<meta property="og:description" content="单节点下载小文件从多个peer进行下载的算法显然是复杂的，更不用说下载一个很大的文件。这里只是简单验证一下， 从单个peer下载文件。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-06-22T02:14:48.274Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="BitTorrent协议（五）之下载文件">
+<meta name="twitter:description" content="单节点下载小文件从多个peer进行下载的算法显然是复杂的，更不用说下载一个很大的文件。这里只是简单验证一下， 从单个peer下载文件。">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="3.λ.形而下技术博客" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="http://threelambda.com/2019/01/25/2019-1-25-bt-5/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>BitTorrent协议（五）之下载文件 | 3.λ.形而下技术博客</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-102303390-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-102303390-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">3.λ.形而下技术博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">这里只关注技术实现，用代码说话。</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://threelambda.com/2019/01/25/2019-1-25-bt-5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="alenym@qq.com">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="3.λ.形而下技术博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">BitTorrent协议（五）之下载文件
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-01-25 00:00:00" itemprop="dateCreated datePublished" datetime="2019-01-25T00:00:00+08:00">2019-01-25</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-06-22 10:14:48" itemprop="dateModified" datetime="2020-06-22T10:14:48+08:00">2020-06-22</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="单节点下载小文件"><a href="#单节点下载小文件" class="headerlink" title="单节点下载小文件"></a>单节点下载小文件</h2><p>从多个peer进行下载的算法显然是复杂的，更不用说下载一个很大的文件。这里只是简单验证一下，
+从单个peer下载文件。</p>
+<a id="more"></a>
+<p>还是利用<code>uTorrent</code>软件来进行验证。</p>
+<p>可以用之前介绍的方法来下载metadata。 获取到的info信息如下，</p>
+<pre><code>{&apos;length&apos;: 1799542, &apos;name&apos;: &apos;show.gif&apos;, &apos;piece length&apos;: 16384, &apos;pieces&apos;: [&apos;32bd6b1b19914363f3c4d6ac4aca3f8acc1fc9be&apos;, &apos;189f81db5c5c12f21483fb24ee709ff6c08a0517&apos;, &apos;a3133d83aabfa6793418d3cb325012b0d4bfae46&apos;, &apos;0e3d60244fabc21b723b8cd88f5f987d87743e89&apos;, &apos;132157b55b0c5b7ee9a20243846eb3f1c5ac80dc&apos;, &apos;92c37804b00d5430c67747ec5fee0868445ecd69&apos;, &apos;5f1bb90f1ae670f7cbc3daa49d219d7d1b45acbf&apos;, &apos;0fb09e567a1370f7903f55dff250503482de8b3e&apos;, &apos;6dd7073806b41b4ed27d45f8dbccc0a0c10be50d&apos;, &apos;1fcaa683cb850fce41395576c798a61e6cf905b5&apos;, &apos;b61629bf5a6bf0e40e67e1cbdf91bb739a02d518&apos;, &apos;f63a3fa985c3debb543bbcf75adeda9ab67ac9c9&apos;, &apos;e90e01fb4ceb645ee449ae0956cfb9308beeccb5&apos;, &apos;cbfa039f843f7243fb2074e465741eda474e3977&apos;, &apos;943840bcfff18968113222d932298f813e5cc179&apos;, &apos;c209625e0ddf0facb53b30f4480537deadae6793&apos;, &apos;f71e53fb153ad59e73eeb527bb72156e747f9275&apos;, &apos;c5beef4d546249e731f67307904cfc78c74f1bca&apos;, &apos;565f7f1f15a0eb25c53ca93dfb064806788b48ec&apos;, &apos;8fef5d00ba48a62546dd2a17e8710a0cc8d2d1f9&apos;, &apos;f668e1c8053cc48660106013fb2b6f985e96ae2f&apos;, &apos;c6f2b38f8ec06b52988b2a440bdc1e113db1bf56&apos;, &apos;d9b628b10d349deb67e318969697311c8108c111&apos;, &apos;b822aecd7d71a4182e47c7c33ed507b7ba98a9ff&apos;, &apos;8b43bb5a107942f21af0dfe93551c24ec7ed01e7&apos;, &apos;fbed560ff746b870aa9a341fdeeb3b2a84437b1d&apos;, &apos;34026cdef61fe05668cb1ae45f8ca46a47539993&apos;, &apos;1d68c176d5a8c019840d9013652c03d7118335c1&apos;, &apos;5476b766cab277119970254a595fd69029553d09&apos;, &apos;f01dcc57eaf647ff9a7884e0c2ce6ce616a50e7d&apos;, &apos;54972dab56f5e7df31dce81d44354a39c2952da7&apos;, &apos;858184b28005ea4f11cae7b280cf964bd63c5036&apos;, &apos;cdc80e8a3fbd0d258dd2557aea6fdf0b778a9740&apos;, &apos;126862f9026fae3348f19d7d285658713f545d52&apos;, &apos;2cbd85f935a8a14de068e8284a449f3ab3345db9&apos;, &apos;f37dadec918d6a4295fb3ced2e5e3c06680dc138&apos;, &apos;b69389c850cf159cbbc50b67cce7304e48cd2fc8&apos;, &apos;520922981a1f4752742c6b680956ea62ce98f008&apos;, &apos;8e28d442dd20d82a88f9a17983fa2f7e704c958d&apos;, &apos;1e3363ae14e1c0e03060a99a4f18163b1ffb07c5&apos;, &apos;f3237eeb35b900c3b6c7aa7e3ad33096d1717cb1&apos;, &apos;f287d5e00c33e65fc5c73fd0e152dfcc4c75b643&apos;, &apos;8499d07f2fdaeebaab73c008725de0f8c7f3156f&apos;, &apos;8e3936cf42625dfc4dd71a5128aedd051581a933&apos;, &apos;fe9db13341c3f7378c0cc0fe69895bd1a1635546&apos;, &apos;86a383614a32021187439e662a0d9981d3266dac&apos;, &apos;e8fe2fbd7bc75f212188f30129ff2b5fbc326fc8&apos;, &apos;c535c7d03b83d0cee8b56c380d839de86450259d&apos;, &apos;09317f2958a7ce16af570417dc2f4ff56b74739a&apos;, &apos;597198e18e4fd6df0598e55ad6ac41ddd9fbfe4c&apos;, &apos;9289b6999a360314dc5c4b5a09aec9b20aec1f13&apos;, &apos;6611f3a373aeecfd23bbce43f3993e8b770ba550&apos;, &apos;81fb04659a20bb00edba72c456f8ef7809dc87f3&apos;, &apos;59496e456e24d27871fcb8127934df33925888af&apos;, &apos;308db6c4eff529d1caa2e436cb53ad5f0ff3ed19&apos;, &apos;f0bb16a3f35928b6c3fcbd45227e732211e422bb&apos;, &apos;e0bd3d3533f9ef6051bcfe4617b45920fd42a11b&apos;, &apos;79909209aa840c77043a2d9b2dddad042924b57e&apos;, &apos;899e90841a27a0c2cf691e3319ddfd6b139dd28f&apos;, &apos;ff46286f5f16cfbc9d2d5d4d9574d842adf88d12&apos;, &apos;5968efcadb0fa8b62702918e2bc6d109169b1688&apos;, &apos;2a1bb615d4cb43d08f1703b6dd55b6f036843b7e&apos;, &apos;bc04aacea03fa3f3457a182c64c2893eed7abde3&apos;, &apos;ba462044856ba2355ab59f0f92a6261908495508&apos;, &apos;58c5593a3f627c45fe995a5ad7c3abbdcd4558cb&apos;, &apos;4d44dfa3e97ce4f5ef510f11edc8e7fdeadc0127&apos;, &apos;76156e683a8d78dc84c9dc77b8b3295bf65ade85&apos;, &apos;0fedc3f5cc217b1195361eb24348e3da869ee9c8&apos;, &apos;d135bb807f863e4341ec5dfc3ce089e3ccb90423&apos;, &apos;9079bbc75010af82d5f820087a3d0bca68ba7335&apos;, &apos;f26d6acd59053b7e5c058e7e663a5aafdf08cbcd&apos;, &apos;3a528b4e824b7e4d94eb1771d25aab1333ee4f6c&apos;, &apos;a378b13c679091b4f6df535e274b489a1921487a&apos;, &apos;486a7b84e2d2826faf33fede673557abf13d4858&apos;, &apos;a707ce9e469a5f09bf9b20a51d36510971a8c902&apos;, &apos;fbf2945c8eb174e81d354ac0a217707e27d80df1&apos;, &apos;805fbf2e06bb2780c853a5d7cb760a09bbfede41&apos;, &apos;8077a90826ce293c28af8ec03bb9fe2bc968a87e&apos;, &apos;db5b68bc3ad6e1c7d9cadc0ef5336dac91ea7802&apos;, &apos;17db99964e9e6170c12a903fddf74614f765ac63&apos;, &apos;36a25d99fd2026aee1e93dffdab081325f6d82be&apos;, &apos;4941159f05a9c1b5316aaebe483b68ed2b3d9bf6&apos;, &apos;2783da31f7043a29011507c817c4469b03a7047f&apos;, &apos;1beaf2d802cc747acf82633d6d35498e1ef1c0f2&apos;, &apos;d9484d93128be7f62537f24609080dbf48fc15a1&apos;, &apos;a3d4b391af6a4787cc2581894a9ba952a04c06af&apos;, &apos;f09c619843ee7bf6898fdcce47dd89c329f113b3&apos;, &apos;9451d16f558cfeb8a65e92a74bcd627764d3b395&apos;, &apos;2d3ac710b84c7465044994de9c07437e629ff9aa&apos;, &apos;a7d6d56ef412462c1f0eef2a403bf2cba615710a&apos;, &apos;2b0804a61db331444c40c6d9817476c25438c702&apos;, &apos;2af9e4587ee984bfa68c2e832b61d060df812d9c&apos;, &apos;ac75705e3f02f67e319833309af23db3aeb6e9b1&apos;, &apos;002a18cb7b1836c01842c80107bce23f8899d046&apos;, &apos;2d532adec4d0de4582463c8028d7b7b1797e2ad6&apos;, &apos;4818335666c0fb4abf758fed7770f924766c08b0&apos;, &apos;753a675a197b8b7d3d8e579172aef2f5b5987ba5&apos;, &apos;69d335d9126f56b229304326e1bba38f48667b77&apos;, &apos;e57eb75086c332598025be0c424124b48f944790&apos;, &apos;7227355ee48815247ab824d580f0d8be6722ccc8&apos;, &apos;25872f29012b912e415165e3e04cb846cbfd5373&apos;, &apos;2c9aea7e3dd67d8f28551fd7c3a1ea31bbe1fa5d&apos;, &apos;64e09ec0c09b7b4c8743e1ee7899d494d9c19a99&apos;, &apos;252b538782968f65284bf2f5cfe6a804cc877567&apos;, &apos;f9e9a038358f557b9780efd2899d9f9557912821&apos;, &apos;27a6c6a7bcb3f7d53c04427f9f5bdd6c20eb78bb&apos;, &apos;79e21154bb06d1a91da161cc75e4f75dd7df3d93&apos;, &apos;10a8ea942ea2ce344c8b052d6a98f76825a0e13e&apos;, &apos;cce77357aaad177352a19d4f91ec0a35058e2e33&apos;, &apos;48f41629e57f84ae7637b11b396c78d318f7e84d&apos;]}
+</code></pre><p>这个文件的大小为1799542字节，每个片的长度是16384字节，一共110片。</p>
+<p>通过简单计算可以知道，最后一片的长度只有13686。所以发request的消息的时候，要注意。</p>
+<p>因为只有一个peer，简单的循环就够了。</p>
+<h2 id="实现的代码"><a href="#实现的代码" class="headerlink" title="实现的代码"></a>实现的代码</h2><p>代码中充斥了全局变量。</p>
+<pre><code class="python">
+__author__ = <span class="string">'ym'</span>
+<span class="string">"""</span>
+<span class="string">    Date        : '2019/1/22'</span>
+<span class="string">    Description :</span>
+<span class="string"></span>
+<span class="string">"""</span>
+<span class="keyword">from</span> ym.bt.peer_protocol <span class="keyword">import</span> pack_handshake, unpack_handshake, sendall, recv, pack_extend, sha1
+<span class="keyword">from</span> ym.bt.parse_torrent <span class="keyword">import</span> BDecode
+<span class="keyword">from</span> ym.bt.udp_announce <span class="keyword">import</span> ip_me
+<span class="keyword">import</span> socket
+<span class="keyword">import</span> struct
+<span class="keyword">import</span> logging
+<span class="keyword">from</span> bitstring <span class="keyword">import</span> BitArray
+
+log = logging.getLogger()
+
+
+<span class="function"><span class="keyword">def</span> <span class="title">download</span><span class="params">(bit_field, file_data)</span>:</span>
+    <span class="keyword">try</span>:
+        info_hash = <span class="string">'c99c3b7a5ba31a8966e6c9a40bc4f83887a107e5'</span>
+        ip, port = ip_me(), <span class="number">40959</span>
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(<span class="number">1</span>)
+        sock.connect((ip, port))
+
+        handshake = pack_handshake(info_hash)
+        rt = sendall(sock, handshake)
+        <span class="keyword">if</span> rt <span class="keyword">is</span> <span class="keyword">None</span>:
+            <span class="keyword">raise</span> Exception(<span class="string">"end"</span>)
+        print(<span class="string">"sent={}, data={}"</span>.format(rt, handshake))
+        data = recv(sock, <span class="number">68</span>)
+
+        tup = unpack_handshake(data)
+        <span class="keyword">if</span> tup <span class="keyword">is</span> <span class="keyword">None</span>:
+            <span class="keyword">raise</span> Exception(<span class="string">"end"</span>)
+        print(tup)
+
+        UT_METADATA_ID = <span class="number">1</span>
+        dic = {<span class="string">'m'</span>: {<span class="string">'ut_metadata'</span>: UT_METADATA_ID}}
+        ext_handshake = pack_extend(dic, id=<span class="number">20</span>, ext_id=<span class="number">0</span>)  <span class="comment"># 扩展协议的握手消息</span>
+        sock.sendall(ext_handshake)
+        print(<span class="string">"sent|ext_handshake={}"</span>.format(ext_handshake))
+
+        <span class="keyword">while</span> <span class="keyword">True</span>:
+            data = recv(sock, <span class="number">4</span>)
+            <span class="keyword">if</span> data <span class="keyword">is</span> <span class="keyword">None</span>:
+                <span class="keyword">raise</span> Exception(<span class="string">"end"</span>)
+            num, = struct.unpack(<span class="string">"&gt;i"</span>, data)
+
+            <span class="keyword">if</span> num == <span class="number">0</span>:
+                <span class="keyword">continue</span>
+
+            tmp = recv(sock, <span class="number">1</span>)
+
+            <span class="keyword">if</span> tmp <span class="keyword">is</span> <span class="keyword">None</span>:
+                <span class="keyword">raise</span> Exception(<span class="string">"end"</span>)
+            id, = struct.unpack(<span class="string">"&gt;B"</span>, tmp)
+            <span class="comment"># print("id={}".format(id))</span>
+            tmp = recv(sock, int(num) - <span class="number">1</span>)
+            <span class="comment"># print("recv={}".format(tmp))</span>
+            <span class="keyword">if</span> id == <span class="number">5</span>:
+                <span class="comment"># bitfield</span>
+                <span class="keyword">if</span> bit_field <span class="keyword">is</span> <span class="keyword">None</span>:
+                    bit_field = BitArray(tmp)
+                    file_data = [<span class="keyword">None</span>] * <span class="number">110</span>  <span class="comment"># pieces num</span>
+                print(bit_field.bin)
+
+                <span class="comment"># interested</span>
+                send_interested(sock)
+            <span class="keyword">elif</span> id == <span class="number">4</span>:
+                <span class="comment"># have</span>
+                index, = struct.unpack(<span class="string">"&gt;i"</span>, tmp)
+                <span class="comment"># print("index={}".format(index))</span>
+                <span class="keyword">if</span> bit_field.bin[index] == <span class="string">'0'</span>:
+                    bit_field.set(<span class="string">'1'</span>, index)
+                    <span class="comment"># print(bitfield.bin)</span>
+
+            <span class="keyword">elif</span> id == <span class="number">1</span>:
+                <span class="comment"># unchoke</span>
+                print(<span class="string">"unchoke"</span>)
+                send_request(bit_field, file_data, sock)
+            <span class="keyword">elif</span> id == <span class="number">7</span>:
+                <span class="comment"># piece</span>
+                print(<span class="string">"piece"</span>)
+                index, begin = struct.unpack(<span class="string">"&gt;i i"</span>, tmp[<span class="number">0</span>:<span class="number">8</span>])
+                print(<span class="string">"index={}, begin={}"</span>.format(index, begin))
+                print(len(tmp[<span class="number">8</span>:]))
+                file_data[index] = tmp[<span class="number">8</span>:]
+                <span class="keyword">if</span> index == <span class="number">109</span>:
+                    print(<span class="string">"completed."</span>)
+                    <span class="keyword">return</span> bit_field, file_data
+
+                send_request(bit_field, file_data, sock)
+
+            <span class="keyword">elif</span> id == <span class="number">20</span>:
+                <span class="comment">#</span>
+                ext_id, = struct.unpack(<span class="string">"&gt;B"</span>, tmp[<span class="number">0</span>:<span class="number">1</span>])
+                <span class="keyword">if</span> ext_id == <span class="number">0</span>:
+                    <span class="comment"># 扩展握手消息</span>
+                    dic, i, n = BDecode(tmp[<span class="number">1</span>:]).parse()
+                    print(dic)
+                <span class="keyword">else</span>:
+                    <span class="keyword">pass</span>
+            <span class="keyword">else</span>:
+                <span class="keyword">pass</span>
+
+    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:
+        log.exception(e)
+
+    <span class="keyword">return</span> (bit_field, file_data)
+
+
+<span class="function"><span class="keyword">def</span> <span class="title">send_interested</span><span class="params">(sock)</span>:</span>
+    data = struct.pack(<span class="string">"&gt;i B"</span>, <span class="number">1</span>, <span class="number">2</span>)
+    rt = sendall(sock, data)
+    <span class="keyword">if</span> rt <span class="keyword">is</span> <span class="keyword">None</span>:
+        <span class="keyword">raise</span> Exception(<span class="string">"end"</span>)
+    print(<span class="string">"interested={}"</span>.format(data))
+
+
+<span class="function"><span class="keyword">def</span> <span class="title">send_request</span><span class="params">(bit_field, file_data, sock)</span>:</span>
+    index = find_one(bit_field.bin, file_data)
+    <span class="keyword">if</span> index <span class="keyword">is</span> <span class="keyword">None</span>:
+        <span class="keyword">raise</span> Exception(<span class="string">"end"</span>)
+    print(<span class="string">"request piece={}"</span>.format(index))
+    data = pack_request(index)
+    <span class="keyword">if</span> index == <span class="number">109</span>:
+        data = pack_request(index, begin=<span class="number">0</span>, length=<span class="number">13686</span>)
+    rt = sendall(sock, data)
+    <span class="keyword">if</span> rt <span class="keyword">is</span> <span class="keyword">None</span>:
+        <span class="keyword">raise</span> Exception(<span class="string">"end"</span>)
+    print(<span class="string">"sent={}"</span>.format(data))
+
+
+<span class="function"><span class="keyword">def</span> <span class="title">find_one</span><span class="params">(bit_array: str, file_data: list)</span>:</span>
+    i = <span class="number">0</span>
+    <span class="keyword">while</span> i &lt; len(file_data):
+        <span class="keyword">if</span> file_data[i] <span class="keyword">is</span> <span class="keyword">None</span> <span class="keyword">and</span> bit_array[i] == <span class="string">'1'</span>:
+            <span class="keyword">break</span>
+        i += <span class="number">1</span>
+
+    <span class="keyword">if</span> i == len(file_data):
+        <span class="keyword">return</span> <span class="keyword">None</span>
+    <span class="keyword">else</span>:
+        <span class="keyword">return</span> i
+
+
+<span class="function"><span class="keyword">def</span> <span class="title">pack_request</span><span class="params">(index, begin=<span class="number">0</span>, length=<span class="number">16384</span>)</span>:</span>
+    <span class="keyword">return</span> struct.pack(<span class="string">"&gt;i B i i i"</span>, <span class="number">13</span>, <span class="number">6</span>, index, begin, length)
+
+
+<span class="function"><span class="keyword">def</span> <span class="title">not_finish</span><span class="params">(file_data)</span>:</span>
+    <span class="keyword">if</span> file_data <span class="keyword">is</span> <span class="keyword">None</span>:
+        <span class="keyword">return</span> <span class="keyword">True</span>
+
+    <span class="keyword">for</span> item <span class="keyword">in</span> file_data:
+        <span class="keyword">if</span> item <span class="keyword">is</span> <span class="keyword">None</span>:
+            <span class="keyword">return</span> <span class="keyword">True</span>
+
+    <span class="keyword">return</span> <span class="keyword">False</span>
+
+
+<span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span>
+    bit_field = <span class="keyword">None</span>
+    file_data = <span class="keyword">None</span>
+    <span class="keyword">while</span> not_finish(file_data):
+        bit_field, file_data = download(bit_field, file_data)
+
+    print(bit_field)
+    output = <span class="string">'/Users/ym/tmp/copy.gif'</span>
+    expected = {<span class="string">'length'</span>: <span class="number">1799542</span>, <span class="string">'name'</span>: <span class="string">'show.gif'</span>, <span class="string">'piece length'</span>: <span class="number">16384</span>,
+                <span class="string">'pieces'</span>: [<span class="string">'32bd6b1b19914363f3c4d6ac4aca3f8acc1fc9be'</span>, <span class="string">'189f81db5c5c12f21483fb24ee709ff6c08a0517'</span>,
+                           <span class="string">'a3133d83aabfa6793418d3cb325012b0d4bfae46'</span>, <span class="string">'0e3d60244fabc21b723b8cd88f5f987d87743e89'</span>,
+                           <span class="string">'132157b55b0c5b7ee9a20243846eb3f1c5ac80dc'</span>, <span class="string">'92c37804b00d5430c67747ec5fee0868445ecd69'</span>,
+                           <span class="string">'5f1bb90f1ae670f7cbc3daa49d219d7d1b45acbf'</span>, <span class="string">'0fb09e567a1370f7903f55dff250503482de8b3e'</span>,
+                           <span class="string">'6dd7073806b41b4ed27d45f8dbccc0a0c10be50d'</span>, <span class="string">'1fcaa683cb850fce41395576c798a61e6cf905b5'</span>,
+                           <span class="string">'b61629bf5a6bf0e40e67e1cbdf91bb739a02d518'</span>, <span class="string">'f63a3fa985c3debb543bbcf75adeda9ab67ac9c9'</span>,
+                           <span class="string">'e90e01fb4ceb645ee449ae0956cfb9308beeccb5'</span>, <span class="string">'cbfa039f843f7243fb2074e465741eda474e3977'</span>,
+                           <span class="string">'943840bcfff18968113222d932298f813e5cc179'</span>, <span class="string">'c209625e0ddf0facb53b30f4480537deadae6793'</span>,
+                           <span class="string">'f71e53fb153ad59e73eeb527bb72156e747f9275'</span>, <span class="string">'c5beef4d546249e731f67307904cfc78c74f1bca'</span>,
+                           <span class="string">'565f7f1f15a0eb25c53ca93dfb064806788b48ec'</span>, <span class="string">'8fef5d00ba48a62546dd2a17e8710a0cc8d2d1f9'</span>,
+                           <span class="string">'f668e1c8053cc48660106013fb2b6f985e96ae2f'</span>, <span class="string">'c6f2b38f8ec06b52988b2a440bdc1e113db1bf56'</span>,
+                           <span class="string">'d9b628b10d349deb67e318969697311c8108c111'</span>, <span class="string">'b822aecd7d71a4182e47c7c33ed507b7ba98a9ff'</span>,
+                           <span class="string">'8b43bb5a107942f21af0dfe93551c24ec7ed01e7'</span>, <span class="string">'fbed560ff746b870aa9a341fdeeb3b2a84437b1d'</span>,
+                           <span class="string">'34026cdef61fe05668cb1ae45f8ca46a47539993'</span>, <span class="string">'1d68c176d5a8c019840d9013652c03d7118335c1'</span>,
+                           <span class="string">'5476b766cab277119970254a595fd69029553d09'</span>, <span class="string">'f01dcc57eaf647ff9a7884e0c2ce6ce616a50e7d'</span>,
+                           <span class="string">'54972dab56f5e7df31dce81d44354a39c2952da7'</span>, <span class="string">'858184b28005ea4f11cae7b280cf964bd63c5036'</span>,
+                           <span class="string">'cdc80e8a3fbd0d258dd2557aea6fdf0b778a9740'</span>, <span class="string">'126862f9026fae3348f19d7d285658713f545d52'</span>,
+                           <span class="string">'2cbd85f935a8a14de068e8284a449f3ab3345db9'</span>, <span class="string">'f37dadec918d6a4295fb3ced2e5e3c06680dc138'</span>,
+                           <span class="string">'b69389c850cf159cbbc50b67cce7304e48cd2fc8'</span>, <span class="string">'520922981a1f4752742c6b680956ea62ce98f008'</span>,
+                           <span class="string">'8e28d442dd20d82a88f9a17983fa2f7e704c958d'</span>, <span class="string">'1e3363ae14e1c0e03060a99a4f18163b1ffb07c5'</span>,
+                           <span class="string">'f3237eeb35b900c3b6c7aa7e3ad33096d1717cb1'</span>, <span class="string">'f287d5e00c33e65fc5c73fd0e152dfcc4c75b643'</span>,
+                           <span class="string">'8499d07f2fdaeebaab73c008725de0f8c7f3156f'</span>, <span class="string">'8e3936cf42625dfc4dd71a5128aedd051581a933'</span>,
+                           <span class="string">'fe9db13341c3f7378c0cc0fe69895bd1a1635546'</span>, <span class="string">'86a383614a32021187439e662a0d9981d3266dac'</span>,
+                           <span class="string">'e8fe2fbd7bc75f212188f30129ff2b5fbc326fc8'</span>, <span class="string">'c535c7d03b83d0cee8b56c380d839de86450259d'</span>,
+                           <span class="string">'09317f2958a7ce16af570417dc2f4ff56b74739a'</span>, <span class="string">'597198e18e4fd6df0598e55ad6ac41ddd9fbfe4c'</span>,
+                           <span class="string">'9289b6999a360314dc5c4b5a09aec9b20aec1f13'</span>, <span class="string">'6611f3a373aeecfd23bbce43f3993e8b770ba550'</span>,
+                           <span class="string">'81fb04659a20bb00edba72c456f8ef7809dc87f3'</span>, <span class="string">'59496e456e24d27871fcb8127934df33925888af'</span>,
+                           <span class="string">'308db6c4eff529d1caa2e436cb53ad5f0ff3ed19'</span>, <span class="string">'f0bb16a3f35928b6c3fcbd45227e732211e422bb'</span>,
+                           <span class="string">'e0bd3d3533f9ef6051bcfe4617b45920fd42a11b'</span>, <span class="string">'79909209aa840c77043a2d9b2dddad042924b57e'</span>,
+                           <span class="string">'899e90841a27a0c2cf691e3319ddfd6b139dd28f'</span>, <span class="string">'ff46286f5f16cfbc9d2d5d4d9574d842adf88d12'</span>,
+                           <span class="string">'5968efcadb0fa8b62702918e2bc6d109169b1688'</span>, <span class="string">'2a1bb615d4cb43d08f1703b6dd55b6f036843b7e'</span>,
+                           <span class="string">'bc04aacea03fa3f3457a182c64c2893eed7abde3'</span>, <span class="string">'ba462044856ba2355ab59f0f92a6261908495508'</span>,
+                           <span class="string">'58c5593a3f627c45fe995a5ad7c3abbdcd4558cb'</span>, <span class="string">'4d44dfa3e97ce4f5ef510f11edc8e7fdeadc0127'</span>,
+                           <span class="string">'76156e683a8d78dc84c9dc77b8b3295bf65ade85'</span>, <span class="string">'0fedc3f5cc217b1195361eb24348e3da869ee9c8'</span>,
+                           <span class="string">'d135bb807f863e4341ec5dfc3ce089e3ccb90423'</span>, <span class="string">'9079bbc75010af82d5f820087a3d0bca68ba7335'</span>,
+                           <span class="string">'f26d6acd59053b7e5c058e7e663a5aafdf08cbcd'</span>, <span class="string">'3a528b4e824b7e4d94eb1771d25aab1333ee4f6c'</span>,
+                           <span class="string">'a378b13c679091b4f6df535e274b489a1921487a'</span>, <span class="string">'486a7b84e2d2826faf33fede673557abf13d4858'</span>,
+                           <span class="string">'a707ce9e469a5f09bf9b20a51d36510971a8c902'</span>, <span class="string">'fbf2945c8eb174e81d354ac0a217707e27d80df1'</span>,
+                           <span class="string">'805fbf2e06bb2780c853a5d7cb760a09bbfede41'</span>, <span class="string">'8077a90826ce293c28af8ec03bb9fe2bc968a87e'</span>,
+                           <span class="string">'db5b68bc3ad6e1c7d9cadc0ef5336dac91ea7802'</span>, <span class="string">'17db99964e9e6170c12a903fddf74614f765ac63'</span>,
+                           <span class="string">'36a25d99fd2026aee1e93dffdab081325f6d82be'</span>, <span class="string">'4941159f05a9c1b5316aaebe483b68ed2b3d9bf6'</span>,
+                           <span class="string">'2783da31f7043a29011507c817c4469b03a7047f'</span>, <span class="string">'1beaf2d802cc747acf82633d6d35498e1ef1c0f2'</span>,
+                           <span class="string">'d9484d93128be7f62537f24609080dbf48fc15a1'</span>, <span class="string">'a3d4b391af6a4787cc2581894a9ba952a04c06af'</span>,
+                           <span class="string">'f09c619843ee7bf6898fdcce47dd89c329f113b3'</span>, <span class="string">'9451d16f558cfeb8a65e92a74bcd627764d3b395'</span>,
+                           <span class="string">'2d3ac710b84c7465044994de9c07437e629ff9aa'</span>, <span class="string">'a7d6d56ef412462c1f0eef2a403bf2cba615710a'</span>,
+                           <span class="string">'2b0804a61db331444c40c6d9817476c25438c702'</span>, <span class="string">'2af9e4587ee984bfa68c2e832b61d060df812d9c'</span>,
+                           <span class="string">'ac75705e3f02f67e319833309af23db3aeb6e9b1'</span>, <span class="string">'002a18cb7b1836c01842c80107bce23f8899d046'</span>,
+                           <span class="string">'2d532adec4d0de4582463c8028d7b7b1797e2ad6'</span>, <span class="string">'4818335666c0fb4abf758fed7770f924766c08b0'</span>,
+                           <span class="string">'753a675a197b8b7d3d8e579172aef2f5b5987ba5'</span>, <span class="string">'69d335d9126f56b229304326e1bba38f48667b77'</span>,
+                           <span class="string">'e57eb75086c332598025be0c424124b48f944790'</span>, <span class="string">'7227355ee48815247ab824d580f0d8be6722ccc8'</span>,
+                           <span class="string">'25872f29012b912e415165e3e04cb846cbfd5373'</span>, <span class="string">'2c9aea7e3dd67d8f28551fd7c3a1ea31bbe1fa5d'</span>,
+                           <span class="string">'64e09ec0c09b7b4c8743e1ee7899d494d9c19a99'</span>, <span class="string">'252b538782968f65284bf2f5cfe6a804cc877567'</span>,
+                           <span class="string">'f9e9a038358f557b9780efd2899d9f9557912821'</span>, <span class="string">'27a6c6a7bcb3f7d53c04427f9f5bdd6c20eb78bb'</span>,
+                           <span class="string">'79e21154bb06d1a91da161cc75e4f75dd7df3d93'</span>, <span class="string">'10a8ea942ea2ce344c8b052d6a98f76825a0e13e'</span>,
+                           <span class="string">'cce77357aaad177352a19d4f91ec0a35058e2e33'</span>, <span class="string">'48f41629e57f84ae7637b11b396c78d318f7e84d'</span>]}
+
+    <span class="keyword">with</span> open(output, <span class="string">"wb+"</span>) <span class="keyword">as</span> f:
+        <span class="keyword">for</span> i <span class="keyword">in</span> range(len(file_data)):
+            file_datum = file_data[i]
+            <span class="keyword">if</span> sha1(file_datum) != expected[<span class="string">'pieces'</span>][i]:
+                <span class="keyword">raise</span> Exception(<span class="string">"error hash"</span>)
+            f.write(file_datum)
+    print(<span class="string">"download ok."</span>)
+
+
+<span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:
+    main()
+
+
+</code></pre>
+<h2 id="运行日志"><a href="#运行日志" class="headerlink" title="运行日志"></a>运行日志</h2><p>以下是运行日志。</p>
+<pre><code>/usr/local/bin/python3.7 /Users/ym/charm/pytest/ym/bt/bt_download_data.py
+sent=ok, data=b&apos;\x13BitTorrent protocol\x00\x00\x00\x00\x00\x10\x00\x01\xc9\x9c;z[\xa3\x1a\x89f\xe6\xc9\xa4\x0b\xc4\xf88\x87\xa1\x07\xe5ym111111111111111111&apos;
+Handshake(fixed_num=19, bt_head=b&apos;BitTorrent protocol&apos;, reserved=b&apos;\x00\x00\x00\x00\x00\x10\x00\x05&apos;, info_hash=b&apos;\xc9\x9c;z[\xa3\x1a\x89f\xe6\xc9\xa4\x0b\xc4\xf88\x87\xa1\x07\xe5&apos;, peer_id=b&apos;-UM1870-\x14\xab,SS\x82\x1d\x9crh\xc8d&apos;)
+sent|ext_handshake=b&apos;\x00\x00\x00\x1a\x14\x00d1:md11:ut_metadatai1eee&apos;
+{&apos;e&apos;: 0, &apos;ipv4&apos;: &apos;ށ\x01\x14&apos;, &apos;ipv6&apos;: &apos;þ€\x00\x00\x00\x00\x00\x00\x04:^:D[\x0c’&apos;, &apos;complete_ago&apos;: 1, &apos;m&apos;: {&apos;upload_only&apos;: 3, &apos;ut_holepunch&apos;: 4, &apos;ut_metadata&apos;: 2, &apos;ut_pex&apos;: 1, &apos;ut_recommend&apos;: 5, &apos;ut_comment&apos;: 6}, &apos;metadata_size&apos;: 2270, &apos;p&apos;: 40959, &apos;reqq&apos;: 255, &apos;v&apos;: &apos;ÂµTorrent Mac 1.8.7&apos;, &apos;yourip&apos;: &apos;À¨+R&apos;}
+0111111101110111110111111111111111111101110111110011100111010110011111011111110101101110101101111000111111111100
+interested=b&apos;\x00\x00\x00\x01\x02&apos;
+unchoke
+request piece=0
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=0, begin=0
+16384
+request piece=1
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=1, begin=0
+16384
+request piece=2
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=2, begin=0
+16384
+request piece=3
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=3, begin=0
+16384
+request piece=4
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=4, begin=0
+16384
+request piece=5
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x05\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=5, begin=0
+16384
+request piece=6
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x06\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=6, begin=0
+16384
+request piece=7
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x07\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=7, begin=0
+16384
+request piece=8
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=8, begin=0
+16384
+request piece=9
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\t\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=9, begin=0
+16384
+request piece=10
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\n\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=10, begin=0
+16384
+request piece=11
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x0b\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=11, begin=0
+16384
+request piece=12
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x0c\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=12, begin=0
+16384
+request piece=13
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\r\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=13, begin=0
+16384
+request piece=14
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x0e\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=14, begin=0
+16384
+request piece=15
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x0f\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=15, begin=0
+16384
+request piece=16
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x10\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=16, begin=0
+16384
+request piece=17
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x11\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=17, begin=0
+16384
+request piece=18
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x12\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=18, begin=0
+16384
+request piece=19
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x13\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=19, begin=0
+16384
+request piece=20
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x14\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=20, begin=0
+16384
+request piece=21
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x15\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=21, begin=0
+16384
+request piece=22
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x16\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=22, begin=0
+16384
+request piece=23
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x17\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=23, begin=0
+16384
+request piece=24
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x18\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=24, begin=0
+16384
+request piece=25
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x19\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=25, begin=0
+16384
+request piece=26
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x1a\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=26, begin=0
+16384
+request piece=27
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x1b\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=27, begin=0
+16384
+request piece=28
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=28, begin=0
+16384
+request piece=29
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x1d\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=29, begin=0
+16384
+request piece=30
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x1e\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=30, begin=0
+16384
+request piece=31
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\x1f\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=31, begin=0
+16384
+request piece=32
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00 \x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=32, begin=0
+16384
+request piece=33
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00!\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=33, begin=0
+16384
+request piece=34
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00&quot;\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=34, begin=0
+16384
+request piece=35
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00#\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=35, begin=0
+16384
+request piece=36
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00$\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=36, begin=0
+16384
+request piece=37
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00%\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=37, begin=0
+16384
+request piece=38
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00&amp;\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=38, begin=0
+16384
+request piece=39
+sent=b&quot;\x00\x00\x00\r\x06\x00\x00\x00&apos;\x00\x00\x00\x00\x00\x00@\x00&quot;
+piece
+index=39, begin=0
+16384
+request piece=40
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00(\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=40, begin=0
+16384
+request piece=41
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00)\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=41, begin=0
+16384
+request piece=42
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00*\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=42, begin=0
+16384
+request piece=43
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00+\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=43, begin=0
+16384
+request piece=44
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00,\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=44, begin=0
+16384
+request piece=45
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00-\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=45, begin=0
+16384
+request piece=46
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00.\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=46, begin=0
+16384
+request piece=47
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00/\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=47, begin=0
+16384
+request piece=48
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x000\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=48, begin=0
+16384
+request piece=49
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x001\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=49, begin=0
+16384
+request piece=50
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x002\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=50, begin=0
+16384
+request piece=51
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x003\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=51, begin=0
+16384
+request piece=52
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x004\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=52, begin=0
+16384
+request piece=53
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x005\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=53, begin=0
+16384
+request piece=54
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x006\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=54, begin=0
+16384
+request piece=55
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x007\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=55, begin=0
+16384
+request piece=56
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x008\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=56, begin=0
+16384
+request piece=57
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x009\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=57, begin=0
+16384
+request piece=58
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00:\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=58, begin=0
+16384
+request piece=59
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00;\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=59, begin=0
+16384
+request piece=60
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00&lt;\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=60, begin=0
+16384
+request piece=61
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00=\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=61, begin=0
+16384
+request piece=62
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00&gt;\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=62, begin=0
+16384
+request piece=63
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00?\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=63, begin=0
+16384
+request piece=64
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00@\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=64, begin=0
+16384
+request piece=65
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00A\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=65, begin=0
+16384
+request piece=66
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00B\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=66, begin=0
+16384
+request piece=67
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00C\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=67, begin=0
+16384
+request piece=68
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00D\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=68, begin=0
+16384
+request piece=69
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00E\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=69, begin=0
+16384
+request piece=70
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00F\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=70, begin=0
+16384
+request piece=71
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00G\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=71, begin=0
+16384
+request piece=72
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00H\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=72, begin=0
+16384
+request piece=73
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00I\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=73, begin=0
+16384
+request piece=74
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00J\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=74, begin=0
+16384
+request piece=75
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00K\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=75, begin=0
+16384
+request piece=76
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00L\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=76, begin=0
+16384
+request piece=77
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00M\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=77, begin=0
+16384
+request piece=78
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00N\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=78, begin=0
+16384
+request piece=79
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00O\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=79, begin=0
+16384
+request piece=80
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00P\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=80, begin=0
+16384
+request piece=81
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00Q\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=81, begin=0
+16384
+request piece=82
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00R\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=82, begin=0
+16384
+request piece=83
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00S\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=83, begin=0
+16384
+request piece=84
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00T\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=84, begin=0
+16384
+request piece=85
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00U\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=85, begin=0
+16384
+request piece=86
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00V\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=86, begin=0
+16384
+request piece=87
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00W\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=87, begin=0
+16384
+request piece=88
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00X\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=88, begin=0
+16384
+request piece=89
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00Y\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=89, begin=0
+16384
+request piece=90
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00Z\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=90, begin=0
+16384
+request piece=91
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00[\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=91, begin=0
+16384
+request piece=92
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00\\\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=92, begin=0
+16384
+request piece=93
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00]\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=93, begin=0
+16384
+request piece=94
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00^\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=94, begin=0
+16384
+request piece=95
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00_\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=95, begin=0
+16384
+request piece=96
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00`\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=96, begin=0
+16384
+request piece=97
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00a\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=97, begin=0
+16384
+request piece=98
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00b\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=98, begin=0
+16384
+request piece=99
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00c\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=99, begin=0
+16384
+request piece=100
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00d\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=100, begin=0
+16384
+request piece=101
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00e\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=101, begin=0
+16384
+request piece=102
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00f\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=102, begin=0
+16384
+request piece=103
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00g\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=103, begin=0
+16384
+request piece=104
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00h\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=104, begin=0
+16384
+request piece=105
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00i\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=105, begin=0
+16384
+request piece=106
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00j\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=106, begin=0
+16384
+request piece=107
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00k\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=107, begin=0
+16384
+request piece=108
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00l\x00\x00\x00\x00\x00\x00@\x00&apos;
+piece
+index=108, begin=0
+16384
+request piece=109
+sent=b&apos;\x00\x00\x00\r\x06\x00\x00\x00m\x00\x00\x00\x00\x00\x005v&apos;
+piece
+index=109, begin=0
+13686
+completed.
+0xfffffffffffffffffffffffffffc
+download ok.
+
+Process finished with exit code 0
+</code></pre>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/bitTorrent/" rel="tag"># bitTorrent</a>
+          
+            <a href="/tags/protocol/" rel="tag"># protocol</a>
+          
+            <a href="/tags/p2p/" rel="tag"># p2p</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/21/2019-1-21-bt-3/" rel="next" title="BitTorrent协议（三）之磁力链接获取元数据">
+                <i class="fa fa-chevron-left"></i> BitTorrent协议（三）之磁力链接获取元数据
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/02/18/2019-2-18-bt-6/" rel="prev" title="BitTorrent协议（六）之种子嗅探器">
+                BitTorrent协议（六）之种子嗅探器 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">alenym@qq.com</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">33</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">33</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/yanggeorge" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:alenym@qq.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#单节点下载小文件"><span class="nav-number">1.</span> <span class="nav-text">单节点下载小文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现的代码"><span class="nav-number">2.</span> <span class="nav-text">实现的代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行日志"><span class="nav-number">3.</span> <span class="nav-text">运行日志</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alenym@qq.com</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.4.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.4.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.4.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.2"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+</body>
+</html>

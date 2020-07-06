@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.4.2" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.4.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.4.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.2" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.4.2',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="题目概述原题链接 You are given an integer array nums and you have to return a new counts array.  The counts array has the property where counts[i] is  the number of smaller elements to the right of nums[i].">
+<meta name="keywords" content="python,leetcode,算法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[leetcode 315]Count of Smaller Numbers After Self 原创解法">
+<meta property="og:url" content="http://threelambda.com/2016/12/26/leetcode-315/index.html">
+<meta property="og:site_name" content="3.λ.形而下技术博客">
+<meta property="og:description" content="题目概述原题链接 You are given an integer array nums and you have to return a new counts array.  The counts array has the property where counts[i] is  the number of smaller elements to the right of nums[i].">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://threelambda.com/images/2016-12-26-1.png">
+<meta property="og:image" content="http://threelambda.com/images/2016-12-26-2.png">
+<meta property="og:updated_time" content="2020-06-22T02:14:48.260Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[leetcode 315]Count of Smaller Numbers After Self 原创解法">
+<meta name="twitter:description" content="题目概述原题链接 You are given an integer array nums and you have to return a new counts array.  The counts array has the property where counts[i] is  the number of smaller elements to the right of nums[i].">
+<meta name="twitter:image" content="http://threelambda.com/images/2016-12-26-1.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="3.λ.形而下技术博客" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="http://threelambda.com/2016/12/26/leetcode-315/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>[leetcode 315]Count of Smaller Numbers After Self 原创解法 | 3.λ.形而下技术博客</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-102303390-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-102303390-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">3.λ.形而下技术博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">这里只关注技术实现，用代码说话。</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://threelambda.com/2016/12/26/leetcode-315/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="alenym@qq.com">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="3.λ.形而下技术博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[leetcode 315]Count of Smaller Numbers After Self 原创解法
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2016-12-26 00:00:00" itemprop="dateCreated datePublished" datetime="2016-12-26T00:00:00+08:00">2016-12-26</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-06-22 10:14:48" itemprop="dateModified" datetime="2020-06-22T10:14:48+08:00">2020-06-22</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="题目概述"><a href="#题目概述" class="headerlink" title=" 题目概述"></a><a name="hh0"></a> 题目概述</h2><p><a href="https://leetcode.com/problems/count-of-smaller-numbers-after-self/" target="_blank" rel="noopener">原题链接</a></p>
+<pre><code>You are given an integer array nums and you
+have to return a new counts array. 
+The counts array has the property where counts[i] is 
+the number of smaller elements to the right of nums[i].
+
+Example:
+
+Given nums = [5, 2, 6, 1]
+
+To the right of 5 there are 2 smaller elements (2 and 1).
+To the right of 2 there is only 1 smaller element (1).
+To the right of 6 there is 1 smaller element (1).
+To the right of 1 there is 0 smaller element.
+Return the array [2, 1, 1, 0].
+</code></pre><a id="more"></a>
+<p>拿到这个题，最先想到的是时间复杂度O(N*N)
+的解法。那就实现一下吧。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution2</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">countSmaller</span><span class="params">(self, nums)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        O(N*N)</span></span><br><span class="line"><span class="string">        :type nums: List[int]</span></span><br><span class="line"><span class="string">        :rtype: List[int]</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">if</span> nums:</span><br><span class="line">            n = len(nums)</span><br><span class="line">            result = []</span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> range(n):</span><br><span class="line">                cur_val = nums[i]</span><br><span class="line">                smaller_n = <span class="number">0</span></span><br><span class="line">                <span class="keyword">for</span> j <span class="keyword">in</span> range(i, n):</span><br><span class="line">                    <span class="keyword">if</span> nums[j] &lt; cur_val:</span><br><span class="line">                        smaller_n += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">                result.append(smaller_n)</span><br><span class="line">            <span class="keyword">return</span> result</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> []</span><br></pre></td></tr></table></figure>
+<p>把上面的代码提交上去，还是正确的，但是超时了。
+该怎么优化呢？</p>
+<p>遇到这样的问题，如果能够想出<code>S(N)=f(S(N-1),S(N-2),...)</code>这样的动态规划
+解法
+就可以把时间复杂度降到O(N)了。能不能使用动态规划呢？
+还是要仔仔细细列出来，可是怎么也找不到递推规律。只好放弃。不过在思考
+的过程中忽然想到一种思路。对于数组<code>[5, 2, 6, 1]]</code>，如果我先遍历
+求出<code>5</code>的smaller数组<code>[2,1]</code>和larger数组<code>[6]</code>。那么<code>6</code>的smaller个数怎么
+求呢，<code>s(6) = len([5,2,6,1]) - pos(6) = 4-3 = 1</code>。看起来很不错，但是当
+数的个数多起来，就变得复杂了，无法这样简单的求解了。真是非常的泄气啊。
+想了好久也没有想出新点子。脑子里把曾经用到的方法想了一个遍，
+也还是不行。</p>
+<h2 id="用二维图描述问题"><a href="#用二维图描述问题" class="headerlink" title=" 用二维图描述问题"></a><a name="hh1"></a> 用二维图描述问题</h2><p>物理学科中经常使用的一个策略就是转换坐标系，这样可以神奇的
+化繁为简。那么我是否可以这样做呢。看看能不能用二维的图来重新展示这个问题。
+于是我就画了这样一个图表。这是对数组<code>[5,1,6,7,2,3]</code>画的表格。横轴表示数组的index，
+纵轴表示大小。</p>
+<p><img src="/images/2016-12-26-1.png" alt="2016-12-26-1"></p>
+<p>我把它画在纸上，盯着看了半小时。呵呵，真的有这么长时间。
+因为我一直还是老思路，总想着根据第一个数字把剩下的数组分成大小两批。
+后来我想，既然是二维图，<strong>我既可以从左向右，一列一列的看，也可以从上往下一行一行的
+看。</strong> 不错，终于有了新的思路。</p>
+<ol start="0">
+<li>初始化一个长度为N的smaller数组，用于存放最后的解。</li>
+<li>对原始数组从大到小排序。</li>
+<li>取出最大的数，这个数的 <code>value = smaller_num(Nmax) = 数组的长度 - pos(Nmax)</code></li>
+<li>保存结果<code>smaller[index(Nmax)] = value</code></li>
+<li>对于index大于该数的所有数字的index减一。</li>
+<li>重复2</li>
+</ol>
+<p>如下图。首先找到最大的数字<code>7</code>，它的索引是<code>4</code>(第四个数字)，
+而数组的长度为<code>6</code>，那么<code>smaller_num(&quot;7&quot;) = 6 - 4 = 2</code>。然后不考虑该数字<code>7</code>。
+对<code>7</code>右侧的<code>2</code>和<code>3</code>同时向左移动，同时令数组的长度减一。然后依次这样操作。</p>
+<p><img src="/images/2016-12-26-2.png" alt="2016-12-26-2"></p>
+<p>这样我们就可以写出一个新的算法。而对于步骤5则
+使用了简单实现，遍历整个数组，对所有<code>index &gt; index(Nmax)</code>数的索引进行
+减一。上述算法描述没有考虑有多个最大值的情况。但是下面的代码里考虑了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution1</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">countSmaller</span><span class="params">(self, nums)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        O(N*N)</span></span><br><span class="line"><span class="string">        :type nums: List[int]</span></span><br><span class="line"><span class="string">        :rtype: List[int]</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        origin = list(enumerate(nums))</span><br><span class="line">        l = self.create(nums)</span><br><span class="line">        l.sort(cmp=compare, reverse=<span class="keyword">True</span>)</span><br><span class="line">        smaller = [<span class="number">0</span>] * len(nums)</span><br><span class="line">        i = <span class="number">0</span></span><br><span class="line">        N = len(nums)</span><br><span class="line">        <span class="keyword">while</span> i &lt; len(l):</span><br><span class="line">            v, origin_pos, cur_pos = l[i]</span><br><span class="line">            smaller[origin_pos] = N - <span class="number">1</span> - cur_pos</span><br><span class="line">            equal_n = <span class="number">0</span></span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> range(i + <span class="number">1</span>, len(nums)):</span><br><span class="line">                v1, origin_pos2, cur_pos2 = l[j]</span><br><span class="line">                <span class="keyword">if</span> cur_pos2 &gt; cur_pos:</span><br><span class="line">                    l[j][<span class="number">2</span>] = cur_pos2 - <span class="number">1</span></span><br><span class="line">                    <span class="keyword">if</span> v1 == v:</span><br><span class="line">                        <span class="comment"># 考虑值相等的情况。</span></span><br><span class="line">                        equal_n += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">            smaller[origin_pos] -= equal_n</span><br><span class="line"></span><br><span class="line">            N -= <span class="number">1</span></span><br><span class="line">            i += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> smaller</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">create</span><span class="params">(self, nums)</span>:</span></span><br><span class="line">        result = []</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(len(nums)):</span><br><span class="line">            result.append([nums[i], i, i])</span><br><span class="line">        <span class="keyword">return</span> result</span><br></pre></td></tr></table></figure>
+<h2 id="终于通过了"><a href="#终于通过了" class="headerlink" title=" 终于通过了"></a><a name="hh2"></a> 终于通过了</h2><p>事情终于有了进展，看起来很不错。但是仍然
+遇到了时间复杂度过高的问题。因为实现步骤5的方法导致整个程序的
+时间复杂度是O(N*N)。那么有什么办法能够优化呢。嗯，肯定有办法的。
+我们这样来做。</p>
+<ol>
+<li>保存一个原始索引的<code>(origin_index,value)</code>的<code>origin</code>List。</li>
+<li>再保存一个从大到小排序后的<code>(origin_index,value)</code>的<code>l</code>List。</li>
+<li>对<code>l</code>根据<code>value</code>从大到小进行遍历：根据orgin_index使用二分查找
+查找<code>origin</code>中对应的实际索引，计算得到该值对应的smaller_num之后，
+从<code>origin</code>中删除该项。</li>
+</ol>
+<p>因为二分查找和删除项的时间复杂度是O(logN)。
+上述步骤的总的时间复杂度是O(N*logN)。</p>
+<p>而相等的数怎么办呢？嗯我们可以在排序
+的时候保证序列不但满足值的升序，还能保证索引值的升序。
+这样，原始数组中处于最右侧的最大数永远在序列的末尾。这个数的右侧不会有相等的值。
+因而计算的时候就不需要考虑相等值的情况。
+而该数字计算之后会进行删除。那么即使有相等的数，也不会受到影响。
+真是很不错啊。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution11</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">countSmaller</span><span class="params">(self, nums)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        O(NlogN)</span></span><br><span class="line"><span class="string">        :type nums: List[int]</span></span><br><span class="line"><span class="string">        :rtype: List[int]</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        origin = list(enumerate(nums))</span><br><span class="line">        l = self.create(nums)</span><br><span class="line">        l.sort(cmp=self.compare)</span><br><span class="line">        smaller = [<span class="number">0</span>] * len(nums)</span><br><span class="line">        <span class="keyword">while</span> l:</span><br><span class="line">            v, pos = l.pop()</span><br><span class="line">            cur_pos = self.bin_find(origin, pos)</span><br><span class="line">            smaller[pos] = len(origin) - <span class="number">1</span> - cur_pos</span><br><span class="line">            origin.pop(cur_pos)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> smaller</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">compare</span><span class="params">(self, x, y)</span>:</span></span><br><span class="line">        <span class="comment"># 这样排序那么相等的元素的仍然顺序不变</span></span><br><span class="line">        <span class="keyword">if</span> x[<span class="number">0</span>] &gt; y[<span class="number">0</span>]:</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">        <span class="keyword">elif</span> x[<span class="number">0</span>] == y[<span class="number">0</span>]:</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">create</span><span class="params">(self, nums)</span>:</span></span><br><span class="line">        result = []</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(len(nums)):</span><br><span class="line">            result.append([nums[i], i])</span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">bin_find</span><span class="params">(self, origin, pos)</span>:</span></span><br><span class="line">        <span class="comment"># 二分查找法</span></span><br><span class="line">        start = <span class="number">0</span></span><br><span class="line">        end = len(origin)</span><br><span class="line">        mid = (start + end) // <span class="number">2</span></span><br><span class="line">        new_mid = <span class="keyword">None</span></span><br><span class="line">        <span class="keyword">while</span> mid &lt; len(origin) <span class="keyword">and</span> mid &gt;= <span class="number">0</span>:</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> origin[mid][<span class="number">0</span>] == pos:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">elif</span> origin[mid][<span class="number">0</span>] &gt; pos:</span><br><span class="line">                end = mid</span><br><span class="line">                new_mid = (start + end) // <span class="number">2</span></span><br><span class="line">            <span class="keyword">elif</span> origin[mid][<span class="number">0</span>] &lt; pos:</span><br><span class="line">                start = mid</span><br><span class="line">                new_mid = (start + end) // <span class="number">2</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> new_mid == mid:</span><br><span class="line">                mid += <span class="number">1</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                mid = new_mid</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> mid</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title=" 总结"></a><a name="hh3"></a> 总结</h2><p>以上的解法是首先排序，再进行巧妙处理的一种方法。排序的
+时间复杂度是<code>O(N*logN)</code>，接下来的处理也是<code>O(N*logN)</code>。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/leetcode/" rel="tag"># leetcode</a>
+          
+            <a href="/tags/算法/" rel="tag"># 算法</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/22/pandas-read-csv/" rel="next" title="使用pandas.read_csv()读取csv文件">
+                <i class="fa fa-chevron-left"></i> 使用pandas.read_csv()读取csv文件
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/12/31/leetcode-327/" rel="prev" title="[leetcode 327]Count of Range Sum 原创解法">
+                [leetcode 327]Count of Range Sum 原创解法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">alenym@qq.com</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">33</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">33</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/yanggeorge" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:alenym@qq.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#题目概述"><span class="nav-number">1.</span> <span class="nav-text"> 题目概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用二维图描述问题"><span class="nav-number">2.</span> <span class="nav-text"> 用二维图描述问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#终于通过了"><span class="nav-number">3.</span> <span class="nav-text"> 终于通过了</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text"> 总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alenym@qq.com</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.4.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.4.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.4.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.2"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+</body>
+</html>

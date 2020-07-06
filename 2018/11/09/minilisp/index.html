@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.4.2" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.4.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.4.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.2" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.4.2',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="宏是怎么扩展的呢？比较流行的编程语言中，Java,Python都没有定义宏的功能。c语言中的宏限制比较大， 没有Lisp中的宏强大。以下提到的宏，指的是Lisp方言中的宏。 宏的求值可以分为两个步骤   扩展（expand）–编译期   求值（eval）  –运行期  这看起来很简单，但是实际写macro的时候，就会有很多的困惑。这里的主要矛盾就是理解 以下两个过程，  在一个宏的内部调用另一个函">
+<meta name="keywords" content="clojure,lisp,macro">
+<meta property="og:type" content="article">
+<meta property="og:title" content="宏扩展的执行逻辑初探(一)">
+<meta property="og:url" content="http://threelambda.com/2018/11/09/minilisp/index.html">
+<meta property="og:site_name" content="3.λ.形而下技术博客">
+<meta property="og:description" content="宏是怎么扩展的呢？比较流行的编程语言中，Java,Python都没有定义宏的功能。c语言中的宏限制比较大， 没有Lisp中的宏强大。以下提到的宏，指的是Lisp方言中的宏。 宏的求值可以分为两个步骤   扩展（expand）–编译期   求值（eval）  –运行期  这看起来很简单，但是实际写macro的时候，就会有很多的困惑。这里的主要矛盾就是理解 以下两个过程，  在一个宏的内部调用另一个函">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-06-22T02:14:48.264Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="宏扩展的执行逻辑初探(一)">
+<meta name="twitter:description" content="宏是怎么扩展的呢？比较流行的编程语言中，Java,Python都没有定义宏的功能。c语言中的宏限制比较大， 没有Lisp中的宏强大。以下提到的宏，指的是Lisp方言中的宏。 宏的求值可以分为两个步骤   扩展（expand）–编译期   求值（eval）  –运行期  这看起来很简单，但是实际写macro的时候，就会有很多的困惑。这里的主要矛盾就是理解 以下两个过程，  在一个宏的内部调用另一个函">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="3.λ.形而下技术博客" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="http://threelambda.com/2018/11/09/minilisp/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>宏扩展的执行逻辑初探(一) | 3.λ.形而下技术博客</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-102303390-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-102303390-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">3.λ.形而下技术博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">这里只关注技术实现，用代码说话。</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://threelambda.com/2018/11/09/minilisp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="alenym@qq.com">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="3.λ.形而下技术博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">宏扩展的执行逻辑初探(一)
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-11-09 00:00:00" itemprop="dateCreated datePublished" datetime="2018-11-09T00:00:00+08:00">2018-11-09</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-06-22 10:14:48" itemprop="dateModified" datetime="2020-06-22T10:14:48+08:00">2020-06-22</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="宏是怎么扩展的呢？"><a href="#宏是怎么扩展的呢？" class="headerlink" title="宏是怎么扩展的呢？"></a>宏是怎么扩展的呢？</h2><p>比较流行的编程语言中，<code>Java</code>,<code>Python</code>都没有定义宏的功能。<code>c</code>语言中的宏限制比较大，
+没有<code>Lisp</code>中的宏强大。以下提到的宏，指的是Lisp方言中的宏。</p>
+<p>宏的求值可以分为两个步骤 </p>
+<ol>
+<li>扩展（expand）–编译期  </li>
+<li>求值（eval）  –运行期</li>
+</ol>
+<p>这看起来很简单，但是实际写macro的时候，就会有很多的困惑。这里的主要矛盾就是理解
+以下两个过程，</p>
+<ol>
+<li>在一个宏的内部调用另一个函数</li>
+<li>在一个宏的内部调用另一个宏</li>
+</ol>
+<p>不同的lisp方言有不同的实现。以下用Clojure来研究宏的用法。</p>
+<a id="more"></a>
+<h2 id="宏内部调用函数-call-function-inside-macro"><a href="#宏内部调用函数-call-function-inside-macro" class="headerlink" title="宏内部调用函数(call function inside macro)"></a>宏内部调用函数(call function inside macro)</h2><p>宏扩展阶段，就会调用函数进行求值。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">use</span> 'clojure.walk)</span><br><span class="line">(<span class="name">defmacro</span> fool [x]</span><br><span class="line">  (<span class="name">+</span> x <span class="number">1</span>))</span><br><span class="line"></span><br><span class="line">(<span class="name">macroexpand-all</span> '(fool <span class="number">2</span>))</span><br></pre></td></tr></table></figure>
+<p>运行结果如下，可以看到宏扩展阶段已经调用<code>+</code>函数进行了求值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#&apos;user/fool</span><br><span class="line">3</span><br></pre></td></tr></table></figure>
+<p>这里的<code>+</code>是一个函数。</p>
+<h2 id="宏内部调用宏（call-macro-inside-macro"><a href="#宏内部调用宏（call-macro-inside-macro" class="headerlink" title="宏内部调用宏（call macro inside macro)"></a>宏内部调用宏（call macro inside macro)</h2><p>继续上面的例子，我们定义一个加法宏，然后在fool的内部调用该宏。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">use</span> 'clojure.walk)</span><br><span class="line"></span><br><span class="line">(<span class="name">defmacro</span> plus [x y]</span><br><span class="line">  (<span class="name">+</span> x y))</span><br><span class="line"></span><br><span class="line">(<span class="name">defmacro</span> fool [x]</span><br><span class="line">  (<span class="name">plus</span> x <span class="number">1</span>))</span><br><span class="line"></span><br><span class="line">(<span class="name">macroexpand-all</span> '(fool <span class="number">2</span>))</span><br></pre></td></tr></table></figure>
+<p>运行这段代码会得到以下的错误信息。重点就是理解这里为什么会报错。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CompilerException java.lang.ClassCastException: clojure.lang.Symbol cannot be cast to java.lang.Number, compiling:(/tmp/form-init4487875798119154898.clj:8:3)</span><br></pre></td></tr></table></figure>
+<p>这里报错说是Symbol无法转换为数字。可是我们明明输入的是2。</p>
+<p>事实的过程如下，</p>
+<ol>
+<li>扩展 (fool 2)</li>
+<li>进入fool的body</li>
+<li>扩展 (plus x 1) — 这里x是一个Symbol，而不是x-value</li>
+<li>进入宏plus的body</li>
+<li>对(+ x 1)求值  —到这里报错了，因为x是一个Symbol。</li>
+</ol>
+<p>所以，如果直接在一个宏的内部调用另一个宏，很可能编译都无法通过。因为编译期会对宏进行扩展，
+但不会绑定实参。</p>
+<p>那么怎么正确的使用呢，这里引入了一个概念叫<code>emit a macro call inside a macro</code>。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">use</span> 'clojure.walk)</span><br><span class="line"></span><br><span class="line">(<span class="name">defmacro</span> plus [x y]</span><br><span class="line">  (<span class="name">+</span> x y))</span><br><span class="line"></span><br><span class="line">(<span class="name">defmacro</span> fool [x]</span><br><span class="line">  (<span class="name">list</span> 'plus x <span class="number">1</span>))</span><br><span class="line"></span><br><span class="line">(<span class="name">macroexpand-1</span> '(fool <span class="number">2</span>))    <span class="comment">;; (plus 2 1)</span></span><br><span class="line">(<span class="name">macroexpand-all</span> '(fool <span class="number">2</span>))  <span class="comment">;; 3</span></span><br></pre></td></tr></table></figure>
+<p>结果如下，只扩展一次，会得到<code>(plus 2 1)</code>， 而完全扩展会得到<code>3</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">=&gt; nil</span><br><span class="line">#&apos;user/plus</span><br><span class="line">#&apos;user/fool</span><br><span class="line">(plus 2 1)</span><br><span class="line">3</span><br></pre></td></tr></table></figure>
+<p>具体过程如下，</p>
+<ol>
+<li>扩展(fool 2)</li>
+<li>进入fool的body</li>
+<li>求值(list ‘plus x-value 1) – 这里x-value是2</li>
+<li>得到(plus x-value 1)  – 这里x-value是2</li>
+<li>发现仍然是一个宏，继续扩展</li>
+<li>进入plus的body</li>
+<li>求值(+ x-value 1)为3 – 这里x-value是2</li>
+</ol>
+<h2 id="语法引用（Syntax-Quote）"><a href="#语法引用（Syntax-Quote）" class="headerlink" title="语法引用（Syntax Quote）"></a>语法引用（Syntax Quote）</h2><p>正是因为需要频繁的使用list来进行宏调用，因此发明了这样的语法糖。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">use</span> 'clojure.walk)</span><br><span class="line"></span><br><span class="line">(<span class="name">defmacro</span> plus [x y]</span><br><span class="line">  (<span class="name">+</span> x y))</span><br><span class="line"></span><br><span class="line">(<span class="name">defmacro</span> fool [x]</span><br><span class="line">  `(plus ~x <span class="number">1</span>))    <span class="comment">;; &lt;- 这里等价于 (list 'plus x 1))</span></span><br><span class="line"></span><br><span class="line">(<span class="name">macroexpand-1</span> '(fool <span class="number">2</span>))</span><br><span class="line">(<span class="name">macroexpand-all</span> '(fool <span class="number">2</span>))</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/clojure/" rel="tag"># clojure</a>
+          
+            <a href="/tags/lisp/" rel="tag"># lisp</a>
+          
+            <a href="/tags/macro/" rel="tag"># macro</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/08/2018-11-8-leetcode-352/" rel="next" title="[leetcode 352]原创解法">
+                <i class="fa fa-chevron-left"></i> [leetcode 352]原创解法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/09/macro/" rel="prev" title="宏扩展的执行逻辑初探(二)">
+                宏扩展的执行逻辑初探(二) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">alenym@qq.com</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">33</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">33</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/yanggeorge" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:alenym@qq.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#宏是怎么扩展的呢？"><span class="nav-number">1.</span> <span class="nav-text">宏是怎么扩展的呢？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#宏内部调用函数-call-function-inside-macro"><span class="nav-number">2.</span> <span class="nav-text">宏内部调用函数(call function inside macro)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#宏内部调用宏（call-macro-inside-macro"><span class="nav-number">3.</span> <span class="nav-text">宏内部调用宏（call macro inside macro)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#语法引用（Syntax-Quote）"><span class="nav-number">4.</span> <span class="nav-text">语法引用（Syntax Quote）</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alenym@qq.com</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.4.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.4.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.4.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.2"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+</body>
+</html>

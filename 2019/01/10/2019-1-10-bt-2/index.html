@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.4.2" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.4.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.4.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.2" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.4.2',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="如何获取下载源作为一个downloader开始下载资源首先要向tracker宣布自己的存在，同时获得其他downloader的地址。 这里的downloader我们统一称为对等节点（peer），因此接下来要做的事情就是与tracker通信，获取peers。">
+<meta name="keywords" content="bitTorrent,protocol,p2p">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BitTorrent协议（二）之获取下载源">
+<meta property="og:url" content="http://threelambda.com/2019/01/10/2019-1-10-bt-2/index.html">
+<meta property="og:site_name" content="3.λ.形而下技术博客">
+<meta property="og:description" content="如何获取下载源作为一个downloader开始下载资源首先要向tracker宣布自己的存在，同时获得其他downloader的地址。 这里的downloader我们统一称为对等节点（peer），因此接下来要做的事情就是与tracker通信，获取peers。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-06-22T02:14:48.266Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="BitTorrent协议（二）之获取下载源">
+<meta name="twitter:description" content="如何获取下载源作为一个downloader开始下载资源首先要向tracker宣布自己的存在，同时获得其他downloader的地址。 这里的downloader我们统一称为对等节点（peer），因此接下来要做的事情就是与tracker通信，获取peers。">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="3.λ.形而下技术博客" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="http://threelambda.com/2019/01/10/2019-1-10-bt-2/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>BitTorrent协议（二）之获取下载源 | 3.λ.形而下技术博客</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-102303390-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-102303390-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">3.λ.形而下技术博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">这里只关注技术实现，用代码说话。</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://threelambda.com/2019/01/10/2019-1-10-bt-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="alenym@qq.com">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="3.λ.形而下技术博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">BitTorrent协议（二）之获取下载源
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-01-10 00:00:00" itemprop="dateCreated datePublished" datetime="2019-01-10T00:00:00+08:00">2019-01-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-06-22 10:14:48" itemprop="dateModified" datetime="2020-06-22T10:14:48+08:00">2020-06-22</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="如何获取下载源"><a href="#如何获取下载源" class="headerlink" title="如何获取下载源"></a>如何获取下载源</h2><p>作为一个downloader开始下载资源首先要向tracker宣布自己的存在，同时获得其他downloader的地址。
+这里的downloader我们统一称为对等节点（peer），因此接下来要做的事情就是与tracker通信，获取peers。</p>
+<a id="more"></a>
+<h2 id="获取下载源的协议"><a href="#获取下载源的协议" class="headerlink" title="获取下载源的协议"></a>获取下载源的协议</h2><p>有两种方法，</p>
+<ul>
+<li>方法一：基于HTTP的GET请求</li>
+</ul>
+<p>官网文档 <a href="http://www.bittorrent.org/beps/bep_0003.html" target="_blank" rel="noopener">BEP3</a> 中的trackers章节告诉我们可以使用HTTP /GET
+来得到peer的信息。也就是发送一个GET请求。</p>
+<ul>
+<li>方法二：基于UDP的tracker协议</li>
+</ul>
+<p>再对照如下tracker列表就可以明白了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">http://tracker.trackerfix.com:80/announce  # 方法一</span><br><span class="line"></span><br><span class="line">udp://9.rarbg.me:2710/announce  # 方法二</span><br><span class="line"> </span><br><span class="line">udp://9.rarbg.to:2710/announce # 方法二</span><br></pre></td></tr></table></figure>
+<p>方法一看起来是更简单的方法，但是在GFW保护下，这些采用方法一的服务端口都无法访问。因此只能尝试方法二。</p>
+<h2 id="基于UDP的Tracker协议"><a href="#基于UDP的Tracker协议" class="headerlink" title="基于UDP的Tracker协议"></a>基于UDP的Tracker协议</h2><p>UDP协议本来也是一种更好的选择，因为传输的字节更少。官网文档<a href="http://www.bittorrent.org/beps/bep_0015.html" target="_blank" rel="noopener">UDP Tracker Protocol for BitTorrent</a>
+详细说明了原因。</p>
+<blockquote>
+<p>Using HTTP introduces significant overhead. There’s overhead at the ethernet layer (14 bytes per packet), at the IP layer (20 bytes per packet), at the TCP layer (20 bytes per packet) and at the HTTP layer. About 10 packets are used for a request plus response containing 50 peers and the total number of bytes used is about 1206 [1]. This overhead can be reduced significantly by using a UDP based protocol. The protocol proposed here uses 4 packets and about 618 bytes, reducing traffic by 50%. For a client, saving 1 kbyte every hour isn’t significant, but for a tracker serving a million peers, reducing traffic by 50% matters a lot. An additional advantage is that a UDP based binary protocol doesn’t require a complex parser and no connection handling, reducing the complexity of tracker code and increasing it’s performance.</p>
+</blockquote>
+<p>简单来说就是方法一基于TCP的，每个基于TCP的请求的头部自然要比基于UDP的请求大。</p>
+<p>UDP协议包含三个过程，</p>
+<ul>
+<li>CONNECT</li>
+<li>ANNOUNCE</li>
+<li>SCRAPE</li>
+</ul>
+<p>我们关心的是发布（ANNOUNCE），接下来重点看如何实现。</p>
+<h2 id="实现发布"><a href="#实现发布" class="headerlink" title="实现发布"></a>实现发布</h2><p>两个步骤，</p>
+<ul>
+<li>CONNECT，获取connection_id</li>
+<li>ANNOUNCE，拿着connection_id和info_hash等参数再请求。</li>
+</ul>
+<p>参考了<a href="https://www.libtorrent.org/udp_tracker_protocol.html" target="_blank" rel="noopener">Bittorrent udp-tracker protocol extension</a>
+因为对入参和返回参数说明的更详细一些。用的tracker是一个热门的磁力链接。</p>
+<pre><code>ip = &apos;exodus.desync.com&apos;  # get from tracker list
+port = 6969  # get from tracker list
+</code></pre><p>而info_hash是用uTorrent软件打开该磁力链接后获得的。</p>
+<pre><code>1aa4c13830b822c1375686d685a9fce23405f6ba
+</code></pre><p>以下是代码实现。uTorrent软件打开磁力链接会拿到tracker列表。</p>
+<p>announce的重要参数说明</p>
+<ol>
+<li>num_want : -1  # 希望获得的peer个数，则是默认的peer个数</li>
+<li>ip : 0  # 当前发送udp包的地址</li>
+<li>port : 监听的公网端口</li>
+</ol>
+<p>一旦发布完成，该监听的端口会收到DHT协议的请求，例如FIND_NODE</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"></span><br><span class="line">__author__ = <span class="string">'ym'</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">    Date        : '2019/1/8'</span></span><br><span class="line"><span class="string">    Description :  udp tracker protocol</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">ip_me</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">import</span> psutil</span><br><span class="line">    <span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_ip_addresses</span><span class="params">(family)</span>:</span></span><br><span class="line">        <span class="keyword">for</span> interface, snics <span class="keyword">in</span> psutil.net_if_addrs().items():</span><br><span class="line">            <span class="keyword">for</span> snic <span class="keyword">in</span> snics:</span><br><span class="line">                <span class="keyword">if</span> snic.family == family:</span><br><span class="line">                    <span class="keyword">yield</span> (interface, snic.address)</span><br><span class="line"></span><br><span class="line">    addrs = list(get_ip_addresses(socket.AF_INET))</span><br><span class="line">    <span class="keyword">for</span> tup <span class="keyword">in</span> addrs:</span><br><span class="line">        <span class="keyword">if</span> tup[<span class="number">0</span>] == <span class="string">'en0'</span>:</span><br><span class="line">            <span class="keyword">return</span> tup[<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">SOURCE_IP = ip_me()</span><br><span class="line">SOURCE_PORT = <span class="number">59876</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">to_byte</span><span class="params">(integer, length=<span class="number">4</span>)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> integer.to_bytes(length, byteorder=<span class="string">'big'</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">udp_send</span><span class="params">(ip, port, data)</span>:</span></span><br><span class="line">    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  <span class="comment"># UDP</span></span><br><span class="line">    sock.bind((SOURCE_IP, SOURCE_PORT))</span><br><span class="line">    sock.sendto(data, (ip, port))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">udp_recv</span><span class="params">(ip, port)</span>:</span></span><br><span class="line">    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  <span class="comment"># UDP</span></span><br><span class="line">    sock.bind((ip, port))</span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">        data, addr = sock.recvfrom(<span class="number">2048</span>)</span><br><span class="line">        print(<span class="string">"received message:"</span>, data)</span><br><span class="line">        <span class="keyword">return</span> data</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UdpAnnouceRequest</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.connection_id = <span class="keyword">None</span></span><br><span class="line">        self.action = <span class="keyword">None</span></span><br><span class="line">        self.transaction_id = <span class="keyword">None</span></span><br><span class="line">        self.info_hash = <span class="keyword">None</span></span><br><span class="line">        self.peer_id = <span class="keyword">None</span></span><br><span class="line">        self.downloaded = <span class="keyword">None</span></span><br><span class="line">        self.left = <span class="keyword">None</span></span><br><span class="line">        self.uploaded = <span class="keyword">None</span></span><br><span class="line">        self.event = <span class="number">0</span></span><br><span class="line">        self.ip = <span class="keyword">None</span></span><br><span class="line">        self.key = <span class="keyword">None</span></span><br><span class="line">        self.num_want = <span class="number">-1</span></span><br><span class="line">        self.port = <span class="keyword">None</span></span><br><span class="line">        self.extensions = <span class="keyword">None</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_bytes</span><span class="params">(self)</span>:</span></span><br><span class="line">        result = to_byte(self.connection_id, <span class="number">8</span>)</span><br><span class="line">        result += to_byte(self.action)</span><br><span class="line">        result += to_byte(self.transaction_id)</span><br><span class="line">        result += self.info_hash</span><br><span class="line">        result += self.peer_id</span><br><span class="line">        result += to_byte(self.downloaded, <span class="number">8</span>)</span><br><span class="line">        result += to_byte(self.left, <span class="number">8</span>)</span><br><span class="line">        result += to_byte(self.uploaded, <span class="number">8</span>)</span><br><span class="line">        result += to_byte(self.event)</span><br><span class="line">        result += to_byte(self.ip)</span><br><span class="line">        result += to_byte(self.key)</span><br><span class="line">        result += struct.pack(<span class="string">"&gt;i"</span>, self.num_want)</span><br><span class="line">        result += to_byte(self.port, <span class="number">2</span>)</span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">udp_announcing</span><span class="params">(request: UdpAnnouceRequest, dst_ip, dst_port)</span>:</span></span><br><span class="line">    data = request.get_bytes()</span><br><span class="line">    udp_send(dst_ip, dst_port, data)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">connect</span><span class="params">(tracker_ip, tracker_port)</span>:</span></span><br><span class="line">    protocol_id = <span class="number">0x41727101980</span>  <span class="comment"># magic number</span></span><br><span class="line">    action = <span class="number">0</span>  <span class="comment"># connect</span></span><br><span class="line">    transaction_id = <span class="number">123</span>  <span class="comment"># random</span></span><br><span class="line"></span><br><span class="line">    data = struct.pack(<span class="string">"&gt;Qii"</span>, protocol_id, action, transaction_id)</span><br><span class="line">    udp_send(tracker_ip, tracker_port, data)</span><br><span class="line"></span><br><span class="line">    reply = udp_recv(SOURCE_IP, SOURCE_PORT)</span><br><span class="line">    action, transaction_id, connection_id = struct.unpack(<span class="string">"&gt;iiQ"</span>, reply)</span><br><span class="line">    fmt = <span class="string">"connect reply:\n\taction:&#123;&#125;, transaction_id:&#123;&#125;, connection_id:&#123;&#125;"</span></span><br><span class="line">    print(fmt.format(action, transaction_id, connection_id))</span><br><span class="line">    <span class="keyword">return</span> connection_id</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">announce</span><span class="params">(connection_id, dst_ip, dst_port)</span>:</span></span><br><span class="line">    request = UdpAnnouceRequest()</span><br><span class="line">    request.connection_id = connection_id</span><br><span class="line">    request.action = <span class="number">1</span></span><br><span class="line">    request.transaction_id = <span class="number">1234</span>  <span class="comment"># random</span></span><br><span class="line">    request.info_hash = bytearray.fromhex(<span class="string">'1aa4c13830b822c1375686d685a9fce23405f6ba'</span>)  <span class="comment"># compute from meta_info</span></span><br><span class="line">    request.peer_id = bytearray.fromhex(<span class="string">'ab'</span> * <span class="number">20</span>)  <span class="comment"># random</span></span><br><span class="line">    request.downloaded = <span class="number">0</span></span><br><span class="line">    request.left = <span class="number">1509949440</span>  <span class="comment"># from meta_info</span></span><br><span class="line">    request.uploaded = <span class="number">0</span></span><br><span class="line">    request.ip = <span class="number">0</span>  <span class="comment"># default</span></span><br><span class="line">    request.key = <span class="number">314</span></span><br><span class="line">    request.port = <span class="number">59601</span>  <span class="comment">#</span></span><br><span class="line">    <span class="comment"># print(request)</span></span><br><span class="line">    udp_announcing(request, dst_ip, dst_port)</span><br><span class="line">    <span class="keyword">return</span> udp_recv(SOURCE_IP, SOURCE_PORT)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">udp_process</span><span class="params">()</span>:</span></span><br><span class="line">    ip = <span class="string">'exodus.desync.com'</span>  <span class="comment"># get from tracker list</span></span><br><span class="line">    port = <span class="number">6969</span>  <span class="comment"># get from tracker list</span></span><br><span class="line">    connection_id = connect(ip, port)</span><br><span class="line">    reply = announce(connection_id, ip, port)</span><br><span class="line">    action, transaction_id, interval, leechers, seeders = struct.unpack(<span class="string">"&gt;iiiii"</span>, reply[<span class="number">0</span>:<span class="number">20</span>])</span><br><span class="line">    fmt = <span class="string">"announce_reply:\n\taction:&#123;&#125;, transaction_id:&#123;&#125;, interval:&#123;&#125;s, leechers:&#123;&#125;, seeders:&#123;&#125;"</span></span><br><span class="line">    print(fmt.format(action, transaction_id, interval, leechers, seeders))</span><br><span class="line">    peers = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">20</span>, len(reply), <span class="number">6</span>):</span><br><span class="line">        <span class="keyword">if</span> i + <span class="number">6</span> &lt;= len(reply):</span><br><span class="line">            data = reply[i:i + <span class="number">6</span>]</span><br><span class="line">            n1, n2, n3, n4, peer_port = struct.unpack(<span class="string">"&gt;BBBBH"</span>, data)</span><br><span class="line">            peer_ip = <span class="string">"&#123;&#125;.&#123;&#125;.&#123;&#125;.&#123;&#125;"</span>.format(n1, n2, n3, n4)</span><br><span class="line">            peers.append((peer_ip, peer_port))</span><br><span class="line">    print(<span class="string">"get &#123;&#125; peers:&#123;&#125;"</span>.format(len(peers), peers))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    udp_process()</span><br></pre></td></tr></table></figure>
+<h2 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h2><p>运行日志如下，可以看到拿到了200个peers的ipv4地址和端口。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/bin/python3.7 /Users/ym/charm/pytest/ym/bt/udp_announce.py</span><br><span class="line">received message: b&apos;\x00\x00\x00\x00\x00\x00\x00&#123;\xd89\xa8\x9dv\xd3=]&apos;</span><br><span class="line">connect reply:</span><br><span class="line">	action:0, transaction_id:123, connection_id:15580669780121828701</span><br><span class="line">received message: b&apos;\x00\x00\x00\x01\x00\x00\x04\xd2\x00\x00\x07_\x00\x00\x00%\x00\x00\x01qi\xe8\xff\xd8XWl\x18-F\xbcd\x9e\xae&#125;\xea\xaa[\xd41S\&apos;\xcb\x0eb\x14\x8f\xcfbcg\xcd\xaf9\xe0\x1f-\xf7*\xa6\xa2\x86)P\xadl\xbc\xbf)\xb6&#123;\xc4w\xaa)\xcd\xf0@cF--;M\xa6Wp\xce\xc7\xff\xfc\xcf\xbb\x9e\x18\x9c\xec\x96\xc4\xcf\x83PS\x06_\xb4zmc\xd3\x82i\xef\x0b\xeb\xd0\xaf ~d\xf3\x8c\xde\x9b?\xfc\xdb!1\x93W\x0b\xc3I\xad\xf4,)\xf0\x1c\xc5\xe0\x98\x80\xbbZ\xb4^UA#\&apos;|\x95\x7fd\xc77p\xc8Z\xadN\xb5p\xc7K\xbc\xd31i\x9c\xe0\x7f0\xaeV\x02\xc2\xe3G.R\x92\xfc\x15\xc8\x05R\x18\x18I\x943H3~\r\xd3\x89=\x06\xe6\xbb86-y\xd1\xa6\xca\xcb)\xd7\r\x8aLo)\xcb\xda\x8e;K)Z&lt;\x9c\xb0\x87);Q\xd0\xb2\x8b\x18\xa5\xc2T\xb8\xd7\x05\x90;\x83\xf1^\xca\x8eeB\xa1a\xb9\xe8\x15z\x83\xde\x93\n\xba\x91+\x9em\xb1\x9b\xd0V\x82Y\xf2\xb5\xad\xc7\rV\x06\xf8^k\x14R\x8eP\xb1\xfb\x15Rf\x1eV\xd0\x05R-\xd9\xf5\xc2&quot;@\x86\xf0K\x00\x00@B\xdeFa*\x1f;\x02&lt;\xa2\xa7\x18l\xed\xfa\xd2\xf4\x05k#\x81\xe8\xa5\x01\xban\x82\xcd\t\xd57\xb8\x8eQ\xdd\xd4\x1b\x13\xfalh\xd0\x83\xa5J\xa9\xb5\xce\xe7x:\xb8\xe1\xc9\xab\xc6\xf9\xa3:\xc5\xed\xc5\xe4\xd2c\xb6\xb9\x1cL\xc0\x19\x8b&lt;\xbfn\x9a\xc2\x80\xcc\xf3\xc3?\xefn\x8dg\xa5=\x0cm\xb1^\xfcU\xf3[&#125;\xdd\x90\x82yS\xe9o\xf3\xf0R@w\xc0\xf4\&apos;\xae\xd0SR\xcc\xde@\xc5\xf8\xdb\x9e\x8a\x0f\xb3\x08_\x90\xb4\xc1\xa9=\xda$\x1a\xe1n\xe8V\r\xe5\xe1b\x8cr&#123;1\xc3^\x05\xe8bR\x00Sn\xe5\x7fe\xe5G4V5I \x1bjQ\x9a\x80\x7f\xce\xe7y\xd5\xde]\xbc\x81D\xbd\xbf\xf1\xb8K\xdfZ\x8d\xe5\xa9=\xda#\x1a\xe1sE\xbb\xb8\xd4Oi\xa7\x10V\xe9\xffgG\x10\xf3\x8f\xde^\xea#S+%\\\xeeN_\xba\xbd3\x07g\xaf\xdb\xb3)\xa1:#\xe0G%\x98\xce\x84&#125;\xe2\xd8ch\xeaN\xb2\xbe\xabp\xe3\xd2?\xb7\r\xcd\x9d\xf3\x8c\xa8\x01\x18I\xabH\x90\x84,A\x9a\x02&#125;\xd1\\\xdd\x94bp\x8d:\xa7e:p\n\x17\x93\xb0\xb9h\x05\xa9)b\xdc\\\xed\x0f;]\x9dX\x10\x96\x98u\x92R\x18\x8a+\xc2LR\x0cH\xa7z\x06&gt;\x96OI2\x9f.\xb6\xbax9\xee)\xbaS\x8b\x9b\x81)\x8b\xfa&amp;m,)P\xe4\x95\xc8s%\x8e\x03+&gt;\x1e\xc5\xf8\x92\xba\xb9\xca\xc4\xca\xa9\xba\xd3(\xc3Yxr\x07_\xbe:\x08\x08\xc8\x9c\xb2P\x14X\x7f\xcf\x9aIWU\xc6G\x80j\xa0\x9dRSx\xf4n\x07w\xe4m\xbe\xd4`\xc8\xd5g\xf4\xf2&#125;\xe1\x01g5I%\xc1\xa1\\c@\x89\x99\x9bVSE\x95\xfb\xdeV\x12\xe0F\&apos;gR\x17n\x90\x91\xf4O\xb7c\xa6\xd1\xfcOC9\xf0s\xee+\xf6\xc8u\xe1\xed+\xf1\x91DGD)Zo\x9e\xf3y\x18\xcb\x97\x9e=\&apos;\xc4\xca\xa9\xba\xcbO\xa5\xe7(\x0e8\xc1\xa2\xf6k\x92\x14\x82q\x14b.\xe7oi\xe8X\x86\xe2\xbagF\xcc\xc2\xed\x83`+\xbdk\x99\xdfR\x07u\xa2\xbf\x8cBW\xcfc\x00\x00?\x8f\xecq\x00\x00)\xd2\n\xe3\xe9\xca\x1f-g\x8a\xe5y\xde\xb8\xe8\xad\xab\xc4\xd8\x97\xb8\x9f\xd0d\xd0g\xe9\xa2\xdb\xbd\xc4\xd1\xe9\xa4\x86\xc2\xc4\xcf\xb83\xe2\xaa\xc3\x93\xb5\xbe&amp;\xfb\x9c\xde.\xdc\xd2\x14\x9aF9B\xa4&#123;p\xcd\x9d\xf6\xe0\xcai\xb8\x99u\xf0+g&#123;$\xb5\xb3LZ\xdbs\xab\x99~Qd\xff\xdf\xe8\xefP\&apos;\x86\xc9:\x8aMD\xf3F\x88\xb8H\xe5%G\x84M1\x92\r~\xe9\x13)OB\xe1Vi\xdd\xcb\x16\xf53\xb3\xba\x96\x86\xaf\xba:\xb2\xa6!$\x7f\xdd|k\xc0+\x8a&#125;&#123;\xf5\x14\x8eAVy68&amp;K\xb1tZ`\nY\xb8l\x04\xd7\xfb\x84\xb3h\xcfSb*\x93`\x17\xb5[\xebGV\x89\x15S\x91\xd1KA\xd7\xc4\xa3o?\xf5:\x9b\x83\x1d.\xd1,c\x05\x16\xb6\xba\xfd\xab97\xb2\x9d\xf9&gt;g\xeb\x82i\xa4&#123;G\xb7i\xe8V1\x91\xafg\xfc\xca\x96\xaf\x16g\x04\xf8\x8a\xda!_^\x9d\xaf\xd2-^\xaf\x94\x0c\xbc\x0f^L\x0f,\xc3\x00Y\xedbW\xf5\x84WFe\xc7\xaeAV\x19|\x9e\xb0\xcfH\xe6\xda\x88&lt;\xdcFA\xe3\x15q\x08)\x8b\xf3:L\x1b)&lt;\xe9\xf5\xaa[\x1f\xd7\x0e\x08Z\xb2\x01\t\x87,R\xd9\xcb\xd4\x9bSx&quot;\xca\x8e[f`N\xc5\xed\x81\x96b\xdc\xc5\xe8\x1av#\&apos;\xc5\xe8\x13n\xdbn\xc4\xf9g\xc4:\x15\xbbp|\xa6#\&apos;\xb7W\xa9\x9b@5u\xc2\xdcQd\xef&apos;</span><br><span class="line">announce_reply:</span><br><span class="line">	action:1, transaction_id:1234, interval:1887s, leechers:37, seeders:369</span><br><span class="line">get 200 peers:[(&apos;105.232.255.216&apos;, 22615), (&apos;108.24.45.70&apos;, 48228), (&apos;158.174.125.234&apos;, 43611), (&apos;212.49.83.39&apos;, 51982), (&apos;98.20.143.207&apos;, 25187), (&apos;103.205.175.57&apos;, 57375), (&apos;45.247.42.166&apos;, 41606), (&apos;41.80.173.108&apos;, 48319), (&apos;41.182.123.196&apos;, 30634), (&apos;41.205.240.64&apos;, 25414), (&apos;45.45.59.77&apos;, 42583), (&apos;112.206.199.255&apos;, 64719), (&apos;187.158.24.156&apos;, 60566), (&apos;196.207.131.80&apos;, 21254), (&apos;95.180.122.109&apos;, 25555), (&apos;130.105.239.11&apos;, 60368), (&apos;175.32.126.100&apos;, 62348), (&apos;222.155.63.252&apos;, 56097), (&apos;49.147.87.11&apos;, 49993), (&apos;173.244.44.41&apos;, 61468), (&apos;197.224.152.128&apos;, 47962), (&apos;180.94.85.65&apos;, 8999), (&apos;124.149.127.100&apos;, 50999), (&apos;112.200.90.173&apos;, 20149), (&apos;112.199.75.188&apos;, 54065), (&apos;105.156.224.127&apos;, 12462), (&apos;86.2.194.227&apos;, 18222), (&apos;82.146.252.21&apos;, 51205), (&apos;82.24.24.73&apos;, 37939), (&apos;72.51.126.13&apos;, 54153), (&apos;61.6.230.187&apos;, 14390), (&apos;45.121.209.166&apos;, 51915), (&apos;41.215.13.138&apos;, 19567), (&apos;41.203.218.142&apos;, 15179), (&apos;41.90.60.156&apos;, 45191), (&apos;41.59.81.208&apos;, 45707), (&apos;24.165.194.84&apos;, 47319), (&apos;5.144.59.131&apos;, 61790), (&apos;202.142.101.66&apos;, 41313), (&apos;185.232.21.122&apos;, 33758), (&apos;147.10.186.145&apos;, 11166), (&apos;109.177.155.208&apos;, 22146), (&apos;89.242.181.173&apos;, 50957), (&apos;86.6.248.94&apos;, 27412), (&apos;82.142.80.177&apos;, 64277), (&apos;82.102.30.86&apos;, 53253), (&apos;82.45.217.245&apos;, 49698), (&apos;64.134.240.75&apos;, 0), (&apos;64.66.222.70&apos;, 24874), (&apos;31.59.2.60&apos;, 41639), (&apos;24.108.237.250&apos;, 54004), (&apos;5.107.35.129&apos;, 59557), (&apos;1.186.110.130&apos;, 52489), (&apos;213.55.184.142&apos;, 20957), (&apos;212.27.19.250&apos;, 27752), (&apos;208.131.165.74&apos;, 43445), (&apos;206.231.120.58&apos;, 47329), (&apos;201.171.198.249&apos;, 41786), (&apos;197.237.197.228&apos;, 53859), (&apos;182.185.28.76&apos;, 49177), (&apos;139.60.191.110&apos;, 39618), (&apos;128.204.243.195&apos;, 16367), (&apos;110.141.103.165&apos;, 15628), (&apos;109.177.94.252&apos;, 22003), (&apos;91.125.221.144&apos;, 33401), (&apos;83.233.111.243&apos;, 61522), (&apos;64.119.192.244&apos;, 10158), (&apos;208.83.82.204&apos;, 56896), (&apos;197.248.219.158&apos;, 35343), (&apos;179.8.95.144&apos;, 46273), (&apos;169.61.218.36&apos;, 6881), (&apos;110.232.86.13&apos;, 58849), (&apos;98.140.114.123&apos;, 12739), (&apos;94.5.232.98&apos;, 20992), (&apos;83.110.229.127&apos;, 26085), (&apos;71.52.86.53&apos;, 18720), (&apos;27.106.81.154&apos;, 32895), (&apos;206.231.121.213&apos;, 56925), (&apos;188.129.68.189&apos;, 49137), (&apos;184.75.223.90&apos;, 36325), (&apos;169.61.218.35&apos;, 6881), (&apos;115.69.187.184&apos;, 54351), (&apos;105.167.16.86&apos;, 59903), (&apos;103.71.16.243&apos;, 36830), (&apos;94.234.35.83&apos;, 11045), (&apos;92.238.78.95&apos;, 47805), (&apos;51.7.103.175&apos;, 56243), (&apos;41.161.58.35&apos;, 57415), (&apos;37.152.206.132&apos;, 32226), (&apos;216.99.104.234&apos;, 20146), (&apos;190.171.112.227&apos;, 53823), (&apos;183.13.205.157&apos;, 62348), (&apos;168.1.24.73&apos;, 43848), (&apos;144.132.44.65&apos;, 39426), (&apos;125.209.92.221&apos;, 37986), (&apos;112.141.58.167&apos;, 25914), (&apos;112.10.23.147&apos;, 45241), (&apos;104.5.169.41&apos;, 25308), (&apos;92.237.15.59&apos;, 23965), (&apos;88.16.150.152&apos;, 30098), (&apos;82.24.138.43&apos;, 49740), (&apos;82.12.72.167&apos;, 31238), (&apos;62.150.79.73&apos;, 12959), (&apos;46.182.186.120&apos;, 14830), (&apos;41.186.83.139&apos;, 39809), (&apos;41.139.250.38&apos;, 27948), (&apos;41.80.228.149&apos;, 51315), (&apos;37.142.3.43&apos;, 15902), (&apos;197.248.146.186&apos;, 47562), (&apos;196.202.169.186&apos;, 54056), (&apos;195.89.120.114&apos;, 1887), (&apos;190.58.8.8&apos;, 51356), (&apos;178.80.20.88&apos;, 32719), (&apos;154.73.87.85&apos;, 50759), (&apos;128.106.160.157&apos;, 21075), (&apos;120.244.110.7&apos;, 30692), (&apos;109.190.212.96&apos;, 51413), (&apos;103.244.242.125&apos;, 57601), (&apos;103.53.73.37&apos;, 49569), (&apos;92.99.64.137&apos;, 39323), (&apos;86.83.69.149&apos;, 64478), (&apos;86.18.224.70&apos;, 10087), (&apos;82.23.110.144&apos;, 37364), (&apos;79.183.99.166&apos;, 53756), (&apos;79.67.57.240&apos;, 29678), (&apos;43.246.200.117&apos;, 57837), (&apos;43.241.145.68&apos;, 18244), (&apos;41.90.111.158&apos;, 62329), (&apos;24.203.151.158&apos;, 15655), (&apos;196.202.169.186&apos;, 52047), (&apos;165.231.40.14&apos;, 14529), (&apos;162.246.107.146&apos;, 5250), (&apos;113.20.98.46&apos;, 59247), (&apos;105.232.88.134&apos;, 58042), (&apos;103.70.204.194&apos;, 60803), (&apos;96.43.189.107&apos;, 39391), (&apos;82.7.117.162&apos;, 49036), (&apos;66.87.207.99&apos;, 0), (&apos;63.143.236.113&apos;, 0), (&apos;41.210.10.227&apos;, 59850), (&apos;31.45.103.138&apos;, 58745), (&apos;222.184.232.173&apos;, 43972), (&apos;216.151.184.159&apos;, 53348), (&apos;208.103.233.162&apos;, 56253), (&apos;196.209.233.164&apos;, 34498), (&apos;196.207.184.51&apos;, 58026), (&apos;195.147.181.190&apos;, 9979), (&apos;156.222.46.220&apos;, 53780), (&apos;154.70.57.66&apos;, 42107), (&apos;112.205.157.246&apos;, 57546), (&apos;105.184.153.117&apos;, 61483), (&apos;103.123.36.181&apos;, 45900), (&apos;90.219.115.171&apos;, 39294), (&apos;81.100.255.223&apos;, 59631), (&apos;80.39.134.201&apos;, 14986), (&apos;77.68.243.70&apos;, 35000), (&apos;72.229.37.71&apos;, 33869), (&apos;49.146.13.126&apos;, 59667), (&apos;41.79.66.225&apos;, 22121), (&apos;221.203.22.245&apos;, 13235), (&apos;186.150.134.175&apos;, 47674), (&apos;178.166.33.36&apos;, 32733), (&apos;124.107.192.43&apos;, 35453), (&apos;123.245.20.142&apos;, 16726), (&apos;121.54.56.38&apos;, 19377), (&apos;116.90.96.10&apos;, 22968), (&apos;108.4.215.251&apos;, 33971), (&apos;104.207.83.98&apos;, 10899), (&apos;96.23.181.91&apos;, 60231), (&apos;86.137.21.83&apos;, 37329), (&apos;75.65.215.196&apos;, 41839), (&apos;63.245.58.155&apos;, 33565), (&apos;46.209.44.99&apos;, 1302), (&apos;182.186.253.171&apos;, 14647), (&apos;178.157.249.62&apos;, 26603), (&apos;130.105.164.123&apos;, 18359), (&apos;105.232.86.49&apos;, 37295), (&apos;103.252.202.150&apos;, 44822), (&apos;103.4.248.138&apos;, 55841), (&apos;95.94.157.175&apos;, 53805), (&apos;94.175.148.12&apos;, 48143), (&apos;94.76.15.44&apos;, 49920), (&apos;89.237.98.87&apos;, 62852), (&apos;87.70.101.199&apos;, 44609), (&apos;86.25.124.158&apos;, 45263), (&apos;72.230.218.136&apos;, 15580), (&apos;70.65.227.21&apos;, 28936), (&apos;41.139.243.58&apos;, 19483), (&apos;41.60.233.245&apos;, 43611), (&apos;31.215.14.8&apos;, 23218), (&apos;1.9.135.44&apos;, 21209), (&apos;203.212.155.83&apos;, 30754), (&apos;202.142.91.102&apos;, 24654), (&apos;197.237.129.150&apos;, 25308), (&apos;197.232.26.118&apos;, 8999), (&apos;197.232.19.110&apos;, 56174), (&apos;196.249.103.196&apos;, 14869), (&apos;187.112.124.166&apos;, 8999), (&apos;183.87.169.155&apos;, 16437), (&apos;117.194.220.81&apos;, 25839)]</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/bitTorrent/" rel="tag"># bitTorrent</a>
+          
+            <a href="/tags/protocol/" rel="tag"># protocol</a>
+          
+            <a href="/tags/p2p/" rel="tag"># p2p</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/09/2019-1-9-bt-1/" rel="next" title="BitTorrent协议（一）之解析种子文件">
+                <i class="fa fa-chevron-left"></i> BitTorrent协议（一）之解析种子文件
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/01/21/2019-1-23-bt-4/" rel="prev" title="BitTorrent协议（四）之bitfield消息">
+                BitTorrent协议（四）之bitfield消息 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">alenym@qq.com</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">33</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">33</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/yanggeorge" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:alenym@qq.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#如何获取下载源"><span class="nav-number">1.</span> <span class="nav-text">如何获取下载源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取下载源的协议"><span class="nav-number">2.</span> <span class="nav-text">获取下载源的协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于UDP的Tracker协议"><span class="nav-number">3.</span> <span class="nav-text">基于UDP的Tracker协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现发布"><span class="nav-number">4.</span> <span class="nav-text">实现发布</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行结果"><span class="nav-number">5.</span> <span class="nav-text">运行结果</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alenym@qq.com</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.4.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.4.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.4.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.2"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+</body>
+</html>

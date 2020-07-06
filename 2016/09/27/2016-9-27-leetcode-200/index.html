@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.4.2" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.4.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.4.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.2" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.4.2',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="题目概述原题链接 Given a 2d grid map of &amp;apos;1&amp;apos;s (land) and &amp;apos;0&amp;apos;s (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally">
+<meta name="keywords" content="python,leetcode,算法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[leetcode 200]Number of Islands 原创解法">
+<meta property="og:url" content="http://threelambda.com/2016/09/27/2016-9-27-leetcode-200/index.html">
+<meta property="og:site_name" content="3.λ.形而下技术博客">
+<meta property="og:description" content="题目概述原题链接 Given a 2d grid map of &amp;apos;1&amp;apos;s (land) and &amp;apos;0&amp;apos;s (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-06-22T02:14:48.261Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[leetcode 200]Number of Islands 原创解法">
+<meta name="twitter:description" content="题目概述原题链接 Given a 2d grid map of &amp;apos;1&amp;apos;s (land) and &amp;apos;0&amp;apos;s (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="3.λ.形而下技术博客" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="http://threelambda.com/2016/09/27/2016-9-27-leetcode-200/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>[leetcode 200]Number of Islands 原创解法 | 3.λ.形而下技术博客</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-102303390-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-102303390-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">3.λ.形而下技术博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">这里只关注技术实现，用代码说话。</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://threelambda.com/2016/09/27/2016-9-27-leetcode-200/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="alenym@qq.com">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="3.λ.形而下技术博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[leetcode 200]Number of Islands 原创解法
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2016-09-27 00:00:00" itemprop="dateCreated datePublished" datetime="2016-09-27T00:00:00+08:00">2016-09-27</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-06-22 10:14:48" itemprop="dateModified" datetime="2020-06-22T10:14:48+08:00">2020-06-22</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="题目概述"><a href="#题目概述" class="headerlink" title=" 题目概述"></a><a name="hh0"></a> 题目概述</h2><p><a href="https://leetcode.com/problems/number-of-islands/" target="_blank" rel="noopener">原题链接</a></p>
+<pre><code>Given a 2d grid map of &apos;1&apos;s (land) and &apos;0&apos;s (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+
+Example 1:
+
+11110
+11010
+11000
+00000
+Answer: 1
+
+Example 2:
+
+11000
+11000
+00100
+00011
+Answer: 3
+</code></pre><a id="more"></a>
+<h2 id="最终解法"><a href="#最终解法" class="headerlink" title=" 最终解法"></a><a name="hh1"></a> 最终解法</h2><p>解法的代码先贴出来了，解题思路后补啊。总体来说，就是一行一行的扫描。
+是个不错的<code>在线算法</code>，也就是说如果数据量非常大也没关系，呵呵。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">numIslands</span><span class="params">(self, grid)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        基本思路，一行一行的扫描。</span></span><br><span class="line"><span class="string">        :type grid: List[List[str]]</span></span><br><span class="line"><span class="string">        :rtype: int</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        print(<span class="string">"===="</span>)</span><br><span class="line">        n = len(grid)</span><br><span class="line">        <span class="keyword">if</span> n == <span class="number">0</span>: <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line">        length = len(grid[<span class="number">0</span>])</span><br><span class="line">        h_pre = &#123;&#125;   <span class="comment"># key : 是 “i,j” 字符串。value =》 [accumulator] ，一个list包含了岛的索引。</span></span><br><span class="line">        h_curr = &#123;&#125;  <span class="comment"># 当前行</span></span><br><span class="line">        a = []  <span class="comment"># 保存的是一个个的list，list的长度是1，值对应岛的索引。</span></span><br><span class="line">        debug = []</span><br><span class="line">        accumulator = <span class="number">1</span> <span class="comment"># 表示岛的自增索引，每当发现一个新的岛，自增。</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, length):</span><br><span class="line">            <span class="keyword">if</span> i == <span class="number">0</span> <span class="keyword">and</span> grid[<span class="number">0</span>][i] == <span class="string">'1'</span>:</span><br><span class="line">                h_curr[<span class="string">'0,'</span> + str(i)] = [accumulator]</span><br><span class="line">                a.append(h_curr[<span class="string">'0,'</span> + str(i)])</span><br><span class="line">                debug.append(<span class="string">'0,'</span> + str(i))</span><br><span class="line">            <span class="keyword">elif</span> i &gt; <span class="number">0</span> <span class="keyword">and</span> grid[<span class="number">0</span>][i] == <span class="string">'1'</span>:</span><br><span class="line">                <span class="keyword">if</span> grid[<span class="number">0</span>][i - <span class="number">1</span>] == <span class="string">'1'</span>:</span><br><span class="line">                    h_curr[str(<span class="number">0</span>) + <span class="string">','</span> + str(i)] = h_curr[str(<span class="number">0</span>) + <span class="string">','</span> + str(i - <span class="number">1</span>)]</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    accumulator += <span class="number">1</span></span><br><span class="line">                    h_curr[<span class="string">'0,'</span> + str(i)] = [accumulator]</span><br><span class="line">                    a.append(h_curr[<span class="string">'0,'</span> + str(i)])</span><br><span class="line">                    debug.append(<span class="string">'0,'</span> + str(i))</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>, n):</span><br><span class="line">            h_pre = h_curr</span><br><span class="line">            h_curr = &#123;&#125;</span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">0</span>, length):</span><br><span class="line">                <span class="keyword">if</span> j == <span class="number">0</span> <span class="keyword">and</span> grid[i][j] == <span class="string">'1'</span>:</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">if</span> grid[i - <span class="number">1</span>][j] == <span class="string">'1'</span>:</span><br><span class="line">                        h_curr[str(i) + <span class="string">','</span> + str(j)] = h_pre[str(i - <span class="number">1</span>) + <span class="string">','</span> + str(j)]</span><br><span class="line">                    <span class="keyword">else</span>:</span><br><span class="line">                        accumulator += <span class="number">1</span></span><br><span class="line">                        h_curr[str(i) + <span class="string">','</span> + str(j)] = [accumulator]</span><br><span class="line">                        a.append(h_curr[str(i) + <span class="string">','</span> + str(j)])</span><br><span class="line">                        debug.append(str(i) + <span class="string">','</span> + str(j))</span><br><span class="line"></span><br><span class="line">                <span class="keyword">elif</span> j &gt; <span class="number">0</span> <span class="keyword">and</span> grid[i][j] == <span class="string">'1'</span>:</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">if</span> grid[i - <span class="number">1</span>][j] == <span class="string">'1'</span> <span class="keyword">and</span> grid[i][j - <span class="number">1</span>] == <span class="string">'1'</span>:</span><br><span class="line">                        pre = h_curr[str(i) + <span class="string">','</span> + str(j - <span class="number">1</span>)]</span><br><span class="line">                        above = h_pre[str(i - <span class="number">1</span>) + <span class="string">','</span> + str(j)]</span><br><span class="line"></span><br><span class="line">                        <span class="keyword">if</span> pre[<span class="number">0</span>] == above[<span class="number">0</span>]:</span><br><span class="line">                            <span class="comment"># 对pre的值进行更新</span></span><br><span class="line">                            h_curr[str(i) + <span class="string">','</span> + str(j)] = pre</span><br><span class="line">                        <span class="keyword">else</span> :</span><br><span class="line">                            h_curr[str(i) + <span class="string">','</span> + str(j)] = above</span><br><span class="line">                            v1 = pre[<span class="number">0</span>]</span><br><span class="line">                            v2 = above[<span class="number">0</span>]  <span class="comment"># z这里一定要换成静态的值，否则的话当a[k]的值进行更新时，会影响到pre的值。</span></span><br><span class="line">                            <span class="keyword">for</span> k <span class="keyword">in</span> range(<span class="number">0</span>, len(a)):</span><br><span class="line">                                <span class="keyword">if</span> a[k][<span class="number">0</span>] == v1:</span><br><span class="line">                                    a[k][<span class="number">0</span>] = v2</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                    <span class="keyword">elif</span> grid[i][j - <span class="number">1</span>] == <span class="string">'1'</span> <span class="keyword">and</span> grid[i - <span class="number">1</span>][j] != <span class="string">'1'</span>:</span><br><span class="line">                        pre = h_curr[str(i) + <span class="string">','</span> + str(j - <span class="number">1</span>)]</span><br><span class="line">                        h_curr[str(i) + <span class="string">','</span> + str(j)] = pre</span><br><span class="line">                    <span class="keyword">elif</span> grid[i][j - <span class="number">1</span>] != <span class="string">'1'</span> <span class="keyword">and</span> grid[i - <span class="number">1</span>][j] == <span class="string">'1'</span>:</span><br><span class="line">                        above = h_pre[str(i - <span class="number">1</span>) + <span class="string">','</span> + str(j)]</span><br><span class="line">                        h_curr[str(i) + <span class="string">','</span> + str(j)] = above</span><br><span class="line">                    <span class="keyword">else</span>:</span><br><span class="line">                        accumulator += <span class="number">1</span></span><br><span class="line">                        h_curr[str(i) + <span class="string">','</span> + str(j)] = [accumulator]</span><br><span class="line">                        a.append(h_curr[str(i) + <span class="string">','</span> + str(j)])</span><br><span class="line">                        debug.append(str(i) + <span class="string">','</span> + str(j))</span><br><span class="line">        s = set()</span><br><span class="line">        <span class="keyword">for</span> item <span class="keyword">in</span> a:</span><br><span class="line">            s.add(item[<span class="number">0</span>])</span><br><span class="line">        <span class="keyword">return</span> len(s)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    grid = [<span class="string">"11000"</span>,</span><br><span class="line">            <span class="string">"11000"</span>,</span><br><span class="line">            <span class="string">"00100"</span>,</span><br><span class="line">            <span class="string">"00011"</span>]  <span class="comment"># 3</span></span><br><span class="line">    print(Solution().numIslands(grid))</span><br><span class="line">    grid = [<span class="string">"10111"</span>,</span><br><span class="line">            <span class="string">"10101"</span>,</span><br><span class="line">            <span class="string">"11101"</span>]  <span class="comment"># 1</span></span><br><span class="line">    print(Solution().numIslands(grid))</span><br><span class="line">    grid = [<span class="string">"1111111"</span>,</span><br><span class="line">            <span class="string">"0000001"</span>,</span><br><span class="line">            <span class="string">"1111101"</span>,</span><br><span class="line">            <span class="string">"1000101"</span>,</span><br><span class="line">            <span class="string">"1010101"</span>,</span><br><span class="line">            <span class="string">"1011101"</span>,</span><br><span class="line">            <span class="string">"1111111"</span>]  <span class="comment"># 1</span></span><br><span class="line">    print(Solution().numIslands(grid))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    grid = [<span class="string">"10011101100000000000"</span>,</span><br><span class="line">            <span class="string">"10011001000101010010"</span>,</span><br><span class="line">            <span class="string">"00011110101100001010"</span>,</span><br><span class="line">            <span class="string">"00011001000111001001"</span>,</span><br><span class="line">            <span class="string">"00000001110000000000"</span>,</span><br><span class="line">            <span class="string">"10000101011000000101"</span>,</span><br><span class="line">            <span class="string">"00010001010101010101"</span>,</span><br><span class="line">            <span class="string">"00010100110101101110"</span>,</span><br><span class="line">            <span class="string">"00001001100001000101"</span>,</span><br><span class="line">            <span class="string">"00100100000100100010"</span>,</span><br><span class="line">            <span class="string">"10010000000100101010"</span>,</span><br><span class="line">            <span class="string">"01000101011011101100"</span>,</span><br><span class="line">            <span class="string">"11010000100000010001"</span>,</span><br><span class="line">            <span class="string">"01001110001111101000"</span>,</span><br><span class="line">            <span class="string">"00111000110001010000"</span>,</span><br><span class="line">            <span class="string">"10010100001000101011"</span>,</span><br><span class="line">            <span class="string">"10100000010001010000"</span>,</span><br><span class="line">            <span class="string">"01100011101010111100"</span>,</span><br><span class="line">            <span class="string">"01000011001010010011"</span>,</span><br><span class="line">            <span class="string">"00000011110100011000"</span>]  <span class="comment"># 58</span></span><br><span class="line">    print(Solution().numIslands(grid))</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/leetcode/" rel="tag"># leetcode</a>
+          
+            <a href="/tags/算法/" rel="tag"># 算法</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/10/24/leetcode-224/" rel="prev" title="[leetcode 224 & 227]Basic Calculator I & II 原创解法">
+                [leetcode 224 & 227]Basic Calculator I & II 原创解法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">alenym@qq.com</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">33</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">33</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/yanggeorge" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:alenym@qq.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#题目概述"><span class="nav-number">1.</span> <span class="nav-text"> 题目概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最终解法"><span class="nav-number">2.</span> <span class="nav-text"> 最终解法</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alenym@qq.com</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.4.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.4.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.4.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.2"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+</body>
+</html>
