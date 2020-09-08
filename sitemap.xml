@@ -4,7 +4,7 @@
   <url>
     <loc>http://threelambda.com/2020/09/08/remote-debug-with-clion/</loc>
     
-    <lastmod>2020-09-08T06:22:02.507Z</lastmod>
+    <lastmod>2020-09-08T06:23:01.568Z</lastmod>
     
   </url>
   
@@ -128,14 +128,14 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/2018/11/08/2018-11-8-leetcode-352/</loc>
+    <loc>http://threelambda.com/2018/12/09/macro/</loc>
     
     <lastmod>2020-06-22T02:14:48.264Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://threelambda.com/2018/12/09/macro/</loc>
+    <loc>http://threelambda.com/2018/11/08/2018-11-8-leetcode-352/</loc>
     
     <lastmod>2020-06-22T02:14:48.264Z</lastmod>
     
@@ -170,20 +170,6 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/2017/03/06/2017-3-6-grails-call-java/</loc>
-    
-    <lastmod>2020-06-22T02:14:48.262Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/2017/03/12/2017-3-12-leetcode-329/</loc>
-    
-    <lastmod>2020-06-22T02:14:48.262Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://threelambda.com/2017/03/23/2017-3-23-compile-and-run-clojure/</loc>
     
     <lastmod>2020-06-22T02:14:48.262Z</lastmod>
@@ -192,6 +178,20 @@
   
   <url>
     <loc>http://threelambda.com/2017/11/27/find-top-n/</loc>
+    
+    <lastmod>2020-06-22T02:14:48.262Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/2017/03/06/2017-3-6-grails-call-java/</loc>
+    
+    <lastmod>2020-06-22T02:14:48.262Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/2017/03/12/2017-3-12-leetcode-329/</loc>
     
     <lastmod>2020-06-22T02:14:48.262Z</lastmod>
     
@@ -219,14 +219,14 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/2017/01/12/2017-1-12-cython-on-win10/</loc>
+    <loc>http://threelambda.com/2016/09/27/2016-9-27-leetcode-200/</loc>
     
     <lastmod>2020-06-22T02:14:48.261Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://threelambda.com/2016/09/27/2016-9-27-leetcode-200/</loc>
+    <loc>http://threelambda.com/2017/01/12/2017-1-12-cython-on-win10/</loc>
     
     <lastmod>2020-06-22T02:14:48.261Z</lastmod>
     
@@ -247,7 +247,7 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/2016/12/21/get-val-name-and-value/</loc>
+    <loc>http://threelambda.com/2016/12/22/pandas-read-csv/</loc>
     
     <lastmod>2020-06-22T02:14:48.260Z</lastmod>
     
@@ -261,7 +261,7 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/2016/12/22/pandas-read-csv/</loc>
+    <loc>http://threelambda.com/2016/12/21/get-val-name-and-value/</loc>
     
     <lastmod>2020-06-22T02:14:48.260Z</lastmod>
     
