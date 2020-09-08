@@ -111,16 +111,16 @@
   <meta name="description" content="远程调试c程序最近基于tsar（阿里开源的一个基于c语言的监控程序）做二次开发， 因为以前从来没有在工作中写过c，所以这个简单的工作花了两周时间，期间用gdb进行调试，用valgrind检查内存泄漏。 但是最让我不舒服的就是gdb调试了，虽然gdb很给力，但是毕竟由奢入俭难，之前写Java，Python，Go都是可以用IDE进行 debug的。有图形化界面还是效率高很多，而对于新手，能够方便的de">
 <meta name="keywords" content="debug,clion,gdb,remote">
 <meta property="og:type" content="article">
-<meta property="og:title" content="基于Clion和gdbserver实现远程调试c程序">
+<meta property="og:title" content="基于CLion和gdbserver实现远程调试c程序">
 <meta property="og:url" content="http://threelambda.com/2020/09/08/remote-debug-with-clion/index.html">
 <meta property="og:site_name" content="3.λ.形而下技术博客">
 <meta property="og:description" content="远程调试c程序最近基于tsar（阿里开源的一个基于c语言的监控程序）做二次开发， 因为以前从来没有在工作中写过c，所以这个简单的工作花了两周时间，期间用gdb进行调试，用valgrind检查内存泄漏。 但是最让我不舒服的就是gdb调试了，虽然gdb很给力，但是毕竟由奢入俭难，之前写Java，Python，Go都是可以用IDE进行 debug的。有图形化界面还是效率高很多，而对于新手，能够方便的de">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://threelambda.com/images/gdb-remote-debug.png">
 <meta property="og:image" content="http://threelambda.com/images/tsar-remote-debug.png">
-<meta property="og:updated_time" content="2020-09-08T06:23:01.568Z">
+<meta property="og:updated_time" content="2020-09-08T06:24:12.736Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="基于Clion和gdbserver实现远程调试c程序">
+<meta name="twitter:title" content="基于CLion和gdbserver实现远程调试c程序">
 <meta name="twitter:description" content="远程调试c程序最近基于tsar（阿里开源的一个基于c语言的监控程序）做二次开发， 因为以前从来没有在工作中写过c，所以这个简单的工作花了两周时间，期间用gdb进行调试，用valgrind检查内存泄漏。 但是最让我不舒服的就是gdb调试了，虽然gdb很给力，但是毕竟由奢入俭难，之前写Java，Python，Go都是可以用IDE进行 debug的。有图形化界面还是效率高很多，而对于新手，能够方便的de">
 <meta name="twitter:image" content="http://threelambda.com/images/gdb-remote-debug.png">
 
@@ -141,7 +141,7 @@
   };
 </script>
 
-  <title>基于Clion和gdbserver实现远程调试c程序 | 3.λ.形而下技术博客</title>
+  <title>基于CLion和gdbserver实现远程调试c程序 | 3.λ.形而下技术博客</title>
   
 
 
@@ -332,7 +332,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">基于Clion和gdbserver实现远程调试c程序
+          <h1 class="post-title" itemprop="name headline">基于CLion和gdbserver实现远程调试c程序
               
             
           </h1>
@@ -357,7 +357,7 @@
                 
               
 
-              <time title="创建时间：2020-09-08 00:00:00 / 修改时间：14:23:01" itemprop="dateCreated datePublished" datetime="2020-09-08T00:00:00+08:00">2020-09-08</time>
+              <time title="创建时间：2020-09-08 00:00:00 / 修改时间：14:24:12" itemprop="dateCreated datePublished" datetime="2020-09-08T00:00:00+08:00">2020-09-08</time>
             
 
             
@@ -401,7 +401,7 @@
 debug的。有图形化界面还是效率高很多，而对于新手，能够方便的debug源码就可以快速的理解项目。</p>
 <p>那么怎么办呢？</p>
 <a id="more"></a>
-<h2 id="clion"><a href="#clion" class="headerlink" title="clion"></a>clion</h2><p>我一直以为clion可以很好的理解cmake项目，但是对于大量的基于makefile编译的项目，则不能很好的解析，所以也无法利用clion
+<h2 id="CLion"><a href="#CLion" class="headerlink" title="CLion"></a>CLion</h2><p>我一直以为clion可以很好的理解cmake项目，但是对于大量的基于makefile编译的项目，则不能很好的解析，所以也无法利用clion
 进行代码调试。</p>
 <p>但是并不是这样，虽然clion无法理解代码中各种符号之间的依赖关系，但是调试只要有debug info和源码就可以进行图形化调试。</p>
 <p>参考Clion远程开发的<a href="https://www.jetbrains.com/help/clion/remote-gdb-server.html" target="_blank" rel="noopener">Remote GDB Server</a>，很简单就实现了。</p>
@@ -423,7 +423,7 @@ remote path为<code>/home/keyvalue/ym/operation</code>，local path为<code>/Use
 </ul>
 <p><img src="/images/gdb-remote-debug.png" alt="gdb remote debug config"></p>
 <ol start="3">
-<li><p>在linu下运行命令</p>
+<li><p>在linux下运行命令</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo gdbserver :1234 src/tsar --cron</span><br><span class="line">Process src/tsar created; pid = 10216</span><br><span class="line">Listening on port 1234</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>clion下启动之前的<code>GDB remote debug</code>配置，就可以愉快的断点调试了。</p>
@@ -701,7 +701,7 @@ remote path为<code>/home/keyvalue/ym/operation</code>，local path为<code>/Use
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#远程调试c程序"><span class="nav-number">1.</span> <span class="nav-text">远程调试c程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#clion"><span class="nav-number">2.</span> <span class="nav-text">clion</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#远程调试tsar"><span class="nav-number">3.</span> <span class="nav-text">远程调试tsar</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#远程调试c程序"><span class="nav-number">1.</span> <span class="nav-text">远程调试c程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CLion"><span class="nav-number">2.</span> <span class="nav-text">CLion</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#远程调试tsar"><span class="nav-number">3.</span> <span class="nav-text">远程调试tsar</span></a></li></ol></div>
             
 
           </div>
