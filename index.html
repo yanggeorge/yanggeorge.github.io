@@ -308,6 +308,155 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://threelambda.com/2020/10/09/x509-ca/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="alenym@qq.com">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="3.λ.形而下技术博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/10/09/x509-ca/" itemprop="url">
+                  自建根证书，中间证书和Server端X.509证书并搭建nginx验证Server端证书有效性
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-10-09 00:00:00 / 修改时间：16:42:24" itemprop="dateCreated datePublished" datetime="2020-10-09T00:00:00+08:00">2020-10-09</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="X-509证书的颁发和使用"><a href="#X-509证书的颁发和使用" class="headerlink" title="X.509证书的颁发和使用"></a>X.509证书的颁发和使用</h2><p><code>X.509</code>证书是用来认证身份的，例如在访问一个HTTPS网站的时候，浏览器会首先下载该网站
+的证书，验证是否有效。如果无效，浏览器会提示<code>您的连接不是私密连接</code>，进一步访问网站有风险。
+如果有效则可以直接访问，不会告警。</p>
+<p>浏览器怎么验证网站证书是否有效呢？简单说就是看网站证书的颁发机构是不是已经被操作系统信任，即看
+颁发机构的身份证书是否已经安装到操作系统里，并被设置为信任。</p>
+<p>那么我们接下来做的事情就是在<strong>mac系统上</strong>验证浏览器的上述行为。
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/10/09/x509-ca/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </p></div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://threelambda.com/2020/09/08/remote-debug-with-clion/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1545,162 +1694,6 @@ debug的。有图形化界面还是效率高很多，而对于新手，能够方
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://threelambda.com/2019/01/21/2019-1-21-bt-3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="alenym@qq.com">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="3.λ.形而下技术博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/21/2019-1-21-bt-3/" itemprop="url">
-                  BitTorrent协议（三）之磁力链接获取元数据
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-01-21 00:00:00" itemprop="dateCreated datePublished" datetime="2019-01-21T00:00:00+08:00">2019-01-21</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2020-06-22 10:14:48" itemprop="dateModified" datetime="2020-06-22T10:14:48+08:00">2020-06-22</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="磁力链接的含义"><a href="#磁力链接的含义" class="headerlink" title="磁力链接的含义"></a>磁力链接的含义</h2><p>如果把tracker给封了，那么就无法下载torrent。于是磁力链接为了解决这个问题而出现了。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/01/21/2019-1-21-bt-3/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://threelambda.com/2019/01/21/2019-1-23-bt-4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1890,7 +1883,7 @@ debug的。有图形化界面还是效率高很多，而对于新手，能够方
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">35</span>
+                    <span class="site-state-item-count">36</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1989,7 +1982,15 @@ debug的。有图形化界面还是效率高很多，而对于新手，能够方
                     
                       
                     
-                    <span class="site-state-item-count">41</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">46</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
