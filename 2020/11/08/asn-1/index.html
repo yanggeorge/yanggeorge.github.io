@@ -117,7 +117,7 @@
 <meta property="og:description" content="ASN.1介绍X.509证书常用的编码方式有DER格式和PEM格式。证书是一个对象的话，那么需要一个描述这个对象的语言。ASN.1就是这样的一个语言规范。而DER是ASN.1编码的一种方式。如果要解析DER编码文件，就需要了解ASN.1语言规范的编解码。">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://threelambda.com/images/2020-11-09.jpg">
-<meta property="og:updated_time" content="2020-11-09T06:23:45.286Z">
+<meta property="og:updated_time" content="2020-11-09T06:27:04.559Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ASN.1语言规范介绍">
 <meta name="twitter:description" content="ASN.1介绍X.509证书常用的编码方式有DER格式和PEM格式。证书是一个对象的话，那么需要一个描述这个对象的语言。ASN.1就是这样的一个语言规范。而DER是ASN.1编码的一种方式。如果要解析DER编码文件，就需要了解ASN.1语言规范的编解码。">
@@ -373,7 +373,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2020-11-09 14:23:45" itemprop="dateModified" datetime="2020-11-09T14:23:45+08:00">2020-11-09</time>
+                <time title="修改时间：2020-11-09 14:27:04" itemprop="dateModified" datetime="2020-11-09T14:27:04+08:00">2020-11-09</time>
               
             
           </span>
@@ -509,6 +509,10 @@ byte &amp; 0x7F 表示length的编码长度。</li>
 <p>因此’0x82’之后的两个字节’0x05’和’0xC1’组成长度。
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0x05C1 = 1473</span><br></pre></td></tr></table></figure></p>
 <p>两个字节表示value的长度1473。</p>
+<p>因此，
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">30 82 05 C1</span><br></pre></td></tr></table></figure></p>
+<p>这个头四个字节的含义是，这个是<code>Sequence</code>类型，
+长度是1473，这四节之后的1473个字节就是<code>Sequence</code>类型的值。</p>
 
       
     </div>
