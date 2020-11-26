@@ -59,9 +59,9 @@
     </summary>
     
     
-      <category term="X.509" scheme="http://threelambda.com/tags/X-509/"/>
-    
       <category term="certificate" scheme="http://threelambda.com/tags/certificate/"/>
+    
+      <category term="X.509" scheme="http://threelambda.com/tags/X-509/"/>
     
       <category term="nginx" scheme="http://threelambda.com/tags/nginx/"/>
     
