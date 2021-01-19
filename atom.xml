@@ -568,9 +568,9 @@ Determine the maximum amount of money the thief can rob tonight without alerting
     </summary>
     
     
-      <category term="java" scheme="http://threelambda.com/tags/java/"/>
-    
       <category term="algorithm" scheme="http://threelambda.com/tags/algorithm/"/>
+    
+      <category term="java" scheme="http://threelambda.com/tags/java/"/>
     
       <category term="trie" scheme="http://threelambda.com/tags/trie/"/>
     
