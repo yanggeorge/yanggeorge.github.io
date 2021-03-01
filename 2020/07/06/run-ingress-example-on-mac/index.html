@@ -109,14 +109,14 @@
 
 
   <meta name="description" content="Ingress是什么在Kubernetes中，Ingress是一个对象，该对象允许从Kubernetes集群外部访问Kubernetes服务。 您可以  通过创建一组规则来配置访问权限，这些规则定义了哪些入站连接可以访问哪些服务。">
-<meta name="keywords" content="docker,k8s,ingress,mac">
+<meta name="keywords" content="k8s,ingress,docker,mac">
 <meta property="og:type" content="article">
 <meta property="og:title" content="在mac下跑一个Ingress的例子">
 <meta property="og:url" content="http://threelambda.com/2020/07/06/run-ingress-example-on-mac/index.html">
 <meta property="og:site_name" content="3.λ.形而下技术博客">
 <meta property="og:description" content="Ingress是什么在Kubernetes中，Ingress是一个对象，该对象允许从Kubernetes集群外部访问Kubernetes服务。 您可以  通过创建一组规则来配置访问权限，这些规则定义了哪些入站连接可以访问哪些服务。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-08-14T14:21:40.522Z">
+<meta property="og:updated_time" content="2021-03-01T03:01:37.228Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="在mac下跑一个Ingress的例子">
 <meta name="twitter:description" content="Ingress是什么在Kubernetes中，Ingress是一个对象，该对象允许从Kubernetes集群外部访问Kubernetes服务。 您可以  通过创建一组规则来配置访问权限，这些规则定义了哪些入站连接可以访问哪些服务。">
@@ -371,7 +371,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2020-08-14 22:21:40" itemprop="dateModified" datetime="2020-08-14T22:21:40+08:00">2020-08-14</time>
+                <time title="修改时间：2021-03-01 11:01:37" itemprop="dateModified" datetime="2021-03-01T11:01:37+08:00">2021-03-01</time>
               
             
           </span>
@@ -411,10 +411,10 @@
 <p>但是要想跑一下，首先要有一个k8s集群。下面首先在mac上安装一个k8s集群。</p>
 <h2 id="在mac上安装k8s集群"><a href="#在mac上安装k8s集群" class="headerlink" title="在mac上安装k8s集群"></a>在mac上安装k8s集群</h2><p>我的mbp的配置是8G内存。</p>
 <ol>
-<li>下载<code>docker desktop for mac</code>的<code>Edge</code>版本，因为这样搭配的几乎是最新的kubernets。</li>
+<li>下载<code>Docker.dmg</code>。</li>
 <li><p>从这里下载搭建k8s所需要的镜像——<code>https://github.com/gotok8s/k8s-docker-desktop-for-mac</code>
-使用的方法就是如下，我用的docker desktop的kubernates的版本是1.18.3所以，相应的要把文件<code>images</code>中的版本号进行修改，以匹配。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ git clone https://github.com/gotok8s/k8s-docker-desktop-for-mac.git</span><br><span class="line">$ cd k8s-docker-desktop-for-mac</span><br><span class="line">$ cat images</span><br><span class="line">k8s.gcr.io/kube-proxy:v1.18.3=gotok8s/kube-proxy:v1.18.3</span><br><span class="line">k8s.gcr.io/kube-controller-manager:v1.18.3=gotok8s/kube-controller-manager:v1.18.3</span><br><span class="line">k8s.gcr.io/kube-scheduler:v1.18.3=gotok8s/kube-scheduler:v1.18.3</span><br><span class="line">k8s.gcr.io/kube-apiserver:v1.18.3=gotok8s/kube-apiserver:v1.18.3</span><br><span class="line">k8s.gcr.io/coredns:1.6.7=gotok8s/coredns:1.6.7</span><br><span class="line">k8s.gcr.io/pause:3.2=gotok8s/pause:3.2</span><br><span class="line">k8s.gcr.io/etcd:3.4.3-0=gotok8s/etcd:3.4.3-0</span><br><span class="line">$ ./load_images.sh</span><br></pre></td></tr></table></figure>
+使用的方法就是如下，我用的docker desktop的kubernates的版本是1.19.3所以，相应的要把文件<code>images</code>中的版本号进行修改，以匹配。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ git clone https://github.com/gotok8s/k8s-docker-desktop-for-mac.git</span><br><span class="line">$ cd k8s-docker-desktop-for-mac</span><br><span class="line">$ cat images</span><br><span class="line">k8s.gcr.io/kube-proxy:v1.19.3=gotok8s/kube-proxy:v1.19.3</span><br><span class="line">k8s.gcr.io/kube-controller-manager:v1.19.3=gotok8s/kube-controller-manager:v1.19.3</span><br><span class="line">k8s.gcr.io/kube-scheduler:v1.19.3=gotok8s/kube-scheduler:v1.19.3</span><br><span class="line">k8s.gcr.io/kube-apiserver:v1.19.3=gotok8s/kube-apiserver:v1.19.3</span><br><span class="line">k8s.gcr.io/coredns:1.7.0=gotok8s/coredns:1.7.0</span><br><span class="line">k8s.gcr.io/pause:3.2=gotok8s/pause:3.2</span><br><span class="line">k8s.gcr.io/etcd:3.4.13-0=gotok8s/etcd:3.4.13-0</span><br><span class="line">$ ./load_images.sh</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>启动docker desktop，并在dashboard中修改docker使用的资源大小。我分配了5G，
 交换内存设置为4G，cpu数量为3</p>
@@ -460,11 +460,11 @@
       
         <div class="post-tags">
           
-            <a href="/tags/docker/" rel="tag"># docker</a>
-          
             <a href="/tags/k8s/" rel="tag"># k8s</a>
           
             <a href="/tags/ingress/" rel="tag"># ingress</a>
+          
+            <a href="/tags/docker/" rel="tag"># docker</a>
           
             <a href="/tags/mac/" rel="tag"># mac</a>
           
