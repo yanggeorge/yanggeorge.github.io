@@ -44,7 +44,49 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/2020/03/09/connect-kafka/</loc>
+    <loc>http://threelambda.com/2016/12/21/get-val-name-and-value/</loc>
+    
+    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/2016/12/22/pandas-read-csv/</loc>
+    
+    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/2016/12/26/leetcode-315/</loc>
+    
+    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/2016/12/31/leetcode-327/</loc>
+    
+    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/2016/09/27/2016-9-27-leetcode-200/</loc>
+    
+    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/2017/01/12/2017-1-12-cython-on-win10/</loc>
+    
+    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/2017/01/18/2017-1-18-venv-no-pip/</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
     
@@ -142,42 +184,7 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/2016/12/22/pandas-read-csv/</loc>
-    
-    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/2016/12/21/get-val-name-and-value/</loc>
-    
-    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/2016/12/31/leetcode-327/</loc>
-    
-    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/2016/12/26/leetcode-315/</loc>
-    
-    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/2016/09/27/2016-9-27-leetcode-200/</loc>
-    
-    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/2017/01/12/2017-1-12-cython-on-win10/</loc>
+    <loc>http://threelambda.com/2020/03/09/connect-kafka/</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
     
@@ -262,13 +269,6 @@
   
   <url>
     <loc>http://threelambda.com/about/2019-4-2-bt-7.html</loc>
-    
-    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/2017/01/18/2017-1-18-venv-no-pip/</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
     
