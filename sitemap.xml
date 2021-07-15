@@ -51,20 +51,6 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/2016/12/21/get-val-name-and-value/</loc>
-    
-    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/2016/12/22/pandas-read-csv/</loc>
-    
-    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://threelambda.com/2016/10/24/leetcode-224/</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
@@ -79,14 +65,14 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/2017/01/12/2017-1-12-cython-on-win10/</loc>
+    <loc>http://threelambda.com/2016/12/21/get-val-name-and-value/</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://threelambda.com/2017/01/18/2017-1-18-venv-no-pip/</loc>
+    <loc>http://threelambda.com/2016/12/22/pandas-read-csv/</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
     
@@ -101,6 +87,27 @@
   
   <url>
     <loc>http://threelambda.com/2016/12/26/leetcode-315/</loc>
+    
+    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/2016/09/27/2016-9-27-leetcode-200/</loc>
+    
+    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/2017/01/18/2017-1-18-venv-no-pip/</loc>
+    
+    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/2017/01/12/2017-1-12-cython-on-win10/</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
     
@@ -142,7 +149,7 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/2016/09/27/2016-9-27-leetcode-200/</loc>
+    <loc>http://threelambda.com/2017/05/19/2017-5-19-javacc-minilisp/</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
     
@@ -170,13 +177,6 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/2017/05/19/2017-5-19-javacc-minilisp/</loc>
-    
-    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://threelambda.com/2018/11/09/minilisp/</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
@@ -184,7 +184,7 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/2018/02/24/2018-2-24-robber-3/</loc>
+    <loc>http://threelambda.com/2018/12/09/macro/</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
     
@@ -198,7 +198,7 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/2018/12/09/macro/</loc>
+    <loc>http://threelambda.com/2018/02/24/2018-2-24-robber-3/</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
     
@@ -226,13 +226,6 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/2019/01/09/2019-1-9-bt-1/</loc>
-    
-    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://threelambda.com/2019/01/25/2019-1-25-bt-5/</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
@@ -240,7 +233,21 @@
   </url>
   
   <url>
+    <loc>http://threelambda.com/2019/01/09/2019-1-9-bt-1/</loc>
+    
+    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://threelambda.com/2019/11/19/debug-k3s/</loc>
+    
+    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/2019/02/18/2019-2-18-bt-6/</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
     
@@ -261,13 +268,6 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/2019/02/18/2019-2-18-bt-6/</loc>
-    
-    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://threelambda.com/2019/01/21/2019-1-21-bt-3/</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
@@ -275,14 +275,14 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/about/2019-4-2-bt-7.html</loc>
+    <loc>http://threelambda.com/tags/index.html</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://threelambda.com/tags/index.html</loc>
+    <loc>http://threelambda.com/about/2019-4-2-bt-7.html</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
     
