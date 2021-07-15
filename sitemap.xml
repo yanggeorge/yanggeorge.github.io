@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://threelambda.com/2021/07/15/2021-7-15-clion-makefile-debug/</loc>
+    
+    <lastmod>2021-07-15T11:54:28.131Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://threelambda.com/2020/07/06/run-ingress-example-on-mac/</loc>
     
     <lastmod>2021-03-01T03:01:37.228Z</lastmod>
@@ -51,6 +58,13 @@
   </url>
   
   <url>
+    <loc>http://threelambda.com/2016/12/19/leetcode-282/</loc>
+    
+    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://threelambda.com/2016/12/22/pandas-read-csv/</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
@@ -65,7 +79,14 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/2016/12/31/leetcode-327/</loc>
+    <loc>http://threelambda.com/2016/10/24/leetcode-224/</loc>
+    
+    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/2017/01/18/2017-1-18-venv-no-pip/</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
     
@@ -86,7 +107,14 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/2017/01/18/2017-1-18-venv-no-pip/</loc>
+    <loc>http://threelambda.com/2017/01/31/2017-1-31-leetcode-295/</loc>
+    
+    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/2016/12/31/leetcode-327/</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
     
@@ -114,14 +142,14 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/2017/03/23/2017-3-23-compile-and-run-clojure/</loc>
+    <loc>http://threelambda.com/2017/03/06/2017-3-6-grails-call-java/</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://threelambda.com/2017/03/06/2017-3-6-grails-call-java/</loc>
+    <loc>http://threelambda.com/2017/03/23/2017-3-23-compile-and-run-clojure/</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
     
@@ -142,14 +170,14 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/2018/11/08/2018-11-8-leetcode-352/</loc>
+    <loc>http://threelambda.com/2017/05/24/2017-5-24-gradle-build-project/</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://threelambda.com/2018/12/09/macro/</loc>
+    <loc>http://threelambda.com/2018/11/08/2018-11-8-leetcode-352/</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
     
@@ -163,70 +191,7 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/2018/08/18/2018-8-18-leetcode-341/</loc>
-    
-    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/2019/11/19/debug-k3s/</loc>
-    
-    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/2019/04/28/2019-4-28-byte-to-string-and-back/</loc>
-    
-    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/2020/03/09/connect-kafka/</loc>
-    
-    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/2016/12/19/leetcode-282/</loc>
-    
-    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/2017/01/31/2017-1-31-leetcode-295/</loc>
-    
-    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/2017/05/24/2017-5-24-gradle-build-project/</loc>
-    
-    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/2019/01/21/2019-1-23-bt-4/</loc>
-    
-    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/2019/01/09/2019-1-9-bt-1/</loc>
-    
-    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/2016/10/24/leetcode-224/</loc>
+    <loc>http://threelambda.com/2018/12/09/macro/</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
     
@@ -240,7 +205,49 @@
   </url>
   
   <url>
+    <loc>http://threelambda.com/2018/08/18/2018-8-18-leetcode-341/</loc>
+    
+    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://threelambda.com/2019/01/10/2019-1-10-bt-2/</loc>
+    
+    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/2019/01/21/2019-1-23-bt-4/</loc>
+    
+    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/2019/11/19/debug-k3s/</loc>
+    
+    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/2019/01/09/2019-1-9-bt-1/</loc>
+    
+    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/2020/03/09/connect-kafka/</loc>
+    
+    <lastmod>2020-06-22T02:14:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/2019/04/28/2019-4-28-byte-to-string-and-back/</loc>
     
     <lastmod>2020-06-22T02:14:48.000Z</lastmod>
     
