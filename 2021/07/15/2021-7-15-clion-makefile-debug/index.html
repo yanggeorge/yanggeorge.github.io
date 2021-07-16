@@ -118,7 +118,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://threelambda.com/images/clion-debug-makefile-config.png">
 <meta property="og:image" content="http://threelambda.com/images/clion-makefile-debug-show.png">
-<meta property="og:updated_time" content="2021-07-15T11:54:28.131Z">
+<meta property="og:updated_time" content="2021-07-16T02:22:05.665Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CLion2021调试Makefile项目">
 <meta name="twitter:description" content="CLion介绍CLion是一款针对C/C++项目的跨平台的集成IDE（A cross-platform IDE for C and C++）。2020版本以前，只支持cmake项目， 但是2021版本对Makefile项目的支持度增加了。我们看看如何对Makefile项目进行断点调试。">
@@ -357,12 +357,24 @@
                 
               
 
-              <time title="创建时间：2021-07-15 00:00:00 / 修改时间：19:54:28" itemprop="dateCreated datePublished" datetime="2021-07-15T00:00:00+08:00">2021-07-15</time>
+              <time title="创建时间：2021-07-15 00:00:00" itemprop="dateCreated datePublished" datetime="2021-07-15T00:00:00+08:00">2021-07-15</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2021-07-16 10:22:05" itemprop="dateModified" datetime="2021-07-16T10:22:05+08:00">2021-07-16</time>
               
             
           </span>
@@ -432,7 +444,7 @@ cmd/dist
 
 <p>那么我们来看看怎么在CLion中调试<code>/cmd/dist/dist env -p</code></p>
 <h2 id="CLion调试cmd-dist"><a href="#CLion调试cmd-dist" class="headerlink" title="CLion调试cmd/dist"></a>CLion调试cmd/dist</h2><p>如果要用CLion直接打开cmd/dist文件夹，会提示创建cmake项目，但是我们想直接使用调试Makefile项目。
-那么我们在创建一个Makefile文件，内容如下</p>
+那么我们在cmd/dist目录下创建一个Makefile文件，内容如下</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">CFLAGS = -mmacosx-version-min=10.6 -g -Wall -Werror &apos;-DGOROOT_FINAL=&quot;/Users/ym/work/go1.4&quot;&apos;</span><br><span class="line">CC = gcc</span><br><span class="line"></span><br><span class="line">SRC=arm.c buf.c build.c buildgc.c buildgo.c buildruntime.c main.c plan9.c unix.c windows.c</span><br><span class="line">INCLUDE_DIR = ./</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">TARGET = dist</span><br><span class="line"></span><br><span class="line">all: $(TARGET)</span><br><span class="line"></span><br><span class="line">$(TARGET):</span><br><span class="line">	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) $(SRC) -o $@</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">clean:</span><br><span class="line">	rm $(TARGET)</span><br><span class="line"></span><br><span class="line">.PHONY: all clean</span><br></pre></td></tr></table></figure>
 <p>其实就是根据make.bash打印的gcc编译命令改写的。需要注意的是要增加<code>-g</code>选项，这样才能调试。</p>
 <p>然后参考<a href="https://www.jetbrains.com/help/clion/run-debug-configuration-makefile-application.html" target="_blank" rel="noopener">Run/Debug Configuration: Makefile Application</a></p>
