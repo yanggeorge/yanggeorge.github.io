@@ -186,7 +186,7 @@ debug的。有图形化界面还是效率高很多，而对于新手，能够方
     <published>2020-03-08T16:00:00.000Z</published>
     <updated>2020-06-22T02:14:48.000Z</updated>
     
-    <content type="html"><![CDATA[<h2 id="从容器内访问主机的kafka"><a href="#从容器内访问主机的kafka" class="headerlink" title="从容器内访问主机的kafka"></a>从容器内访问主机的kafka</h2><p>我最近遇到这样一个需求，需要从容器内的ClickHouse访问安装在mac主机的kafka。这个问题似乎很简单，因为在windows上，虚拟机可以和host组成一个局域网，因此kafka只要绑定此网段的ip地址即可。但是在我的mac主机下，这个方案行不通。</p><a id="more"></a><p>有几个原因，</p><ol><li>ClickHouse无法直接安装在mac上，需要编译（当然8G内存也可以编译，但是ninja需要限制job数量，要花很长时间）。</li><li>我的mac内存只有8G，使用vbox根本不可能，只能使用docker。</li><li>有现成的镜像，直接可以启动。并且host上可以直接连接ClickHouse。</li></ol><p>难点就在于容器和host根本不在一个网段。</p><h2 id="解决步骤"><a href="#解决步骤" class="headerlink" title="解决步骤"></a>解决步骤</h2><ol><li>修改主机上的kafka的相关配置如下</li></ol><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">listeners=PLAINTEXT://0.0.0.0:9092</span><br><span class="line"></span><br><span class="line">advertised.listeners=PLAINTEXT://host.docker.internal:9092</span><br></pre></td></tr></table></figure><ol start="2"><li><code>/etc/hosts</code>文件添加</li></ol><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1       host.docker.internal</span><br></pre></td></tr></table></figure><ol start="3"><li>在容器内，访问<code>host.docker.internal:9092</code></li></ol><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>docker desktop for mac会默认提供一个域名<code>host.docker.internal</code>给容器内的应用访问主机的服务。所以，如果主机上启动一个rest服务<code>localhost:8080</code>，则容器内可以通过<code>host.docker.internal:8080</code>直接访问。</p><p>但是如果kafka只是配置为<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">listeners=PLAINTEXT://localhost:9092</span><br></pre></td></tr></table></figure></p><p>想直接访问kafka的broker则是不行的。我们会发现，在容器内，<code>telnet host.docker.internal 9092</code>是通的。这是为什么呢？</p><p>想要连接kafka的broker会进行基本的两步交互。</p><ol><li>client访问broker的地址”A”，然后broker会发送回去一个<code>advertised</code>地址”B”</li><li>client接收到地址”B”，然后尝试访问”B”</li></ol><p>如果不设置<code>advertised.listeners</code>，那么默认等于<code>listeners</code>的值。</p><p>所以对于这样的设置<code>B=A=PLAINTEXT://localhost:9092</code>。容器内尝试访问”host.docker.internal:9092”，则会这样子，</p><ol><li>容器内访问host.docker.internal:9092，接收到地址B=PLAINTEXT://localhost:9092</li><li>然后访问地址localhost:9092，失败。</li></ol><p>而如果在主机上访问则显然是成功的。</p><p>而我们的解决方法配置是这样的<code>A=PLAINTEXT://localhost:9092, B=PLAINTEXT://host.docker.internal:9092</code></p><p>所以如果容器内访问的过程就是，</p><ol><li>容器内访问host.docker.internal:9092，接收到地址B=PLAINTEXT://host.docker.internal:9092</li><li>然后访问host.docker.internal:9092，成功。</li></ol><p>而主机上的过程是，</p><ol><li>主机上访问localhost:9092,接收到地址B=PLAINTEXT://host.docker.internal:9092</li><li>然后访问host.docker.internal:9092，根据/etc/hosts的域名解析为127.0.0.1:9092，成功。</li></ol><h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>我这里用<code>kafkacat</code>测试，实际上容器内的应用可以使用其他kafka客户端。</p><p>连接broker,并显示metadata<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">root@bb6b85562200:/# kafkacat -b host.docker.internal:9092 -L</span><br><span class="line">Metadata for all topics (from broker 0: host.docker.internal:9092/0):</span><br><span class="line"> 1 brokers:</span><br><span class="line">  broker 0 at host.docker.internal:9092</span><br><span class="line"> 8 topics:</span><br><span class="line">  topic "test-topic" with 1 partitions:</span><br><span class="line">    partition 0, leader 0, replicas: 0, isrs: 0</span><br><span class="line">  topic "flink-test" with 1 partitions:</span><br><span class="line">    partition 0, leader 0, replicas: 0, isrs: 0</span><br><span class="line">  topic "__consumer_offsets" with 50 partitions:</span><br><span class="line">    partition 0, leader 0, replicas: 0, isrs: 0</span><br><span class="line">    partition 10, leader 0, replicas: 0, isrs: 0</span><br><span class="line">...</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p><p>显示消息<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">^Croot@bb6b85562200:/# kafkacat -b host.docker.internal:9092 -C -t flink-test -o beginning</span><br><span class="line">&#123;seqNo: 1, eventTs: 1583739799986, id: even偶数, value: 4.57&#125;</span><br><span class="line"><span class="meta">%</span><span class="bash"> Reached end of topic flink-test [0] at offset 1</span></span><br></pre></td></tr></table></figure></p>]]></content>
+    <content type="html"><![CDATA[<h2 id="从容器内访问主机的kafka"><a href="#从容器内访问主机的kafka" class="headerlink" title="从容器内访问主机的kafka"></a>从容器内访问主机的kafka</h2><p>我最近遇到这样一个需求，需要从容器内的ClickHouse访问安装在mac主机的kafka。这个问题似乎很简单，因为在windows上，虚拟机可以和host组成一个局域网，因此kafka只要绑定此网段的ip地址即可。但是在我的mac主机下，这个方案行不通。</p><a id="more"></a><p>有几个原因，</p><ol><li>ClickHouse无法直接安装在mac上，需要编译（当然8G内存也可以编译，但是ninja需要限制job数量，要花很长时间）。</li><li>我的mac内存只有8G，使用vbox根本不可能，只能使用docker。</li><li>有现成的镜像，直接可以启动。并且host上可以直接连接ClickHouse。</li></ol><p>难点就在于容器和host根本不在一个网段。</p><h2 id="解决步骤"><a href="#解决步骤" class="headerlink" title="解决步骤"></a>解决步骤</h2><ol><li>修改主机上的kafka的相关配置如下</li></ol><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">listeners=PLAINTEXT://0.0.0.0:9092</span><br><span class="line"></span><br><span class="line">advertised.listeners=PLAINTEXT://host.docker.internal:9092</span><br></pre></td></tr></table></figure><ol start="2"><li><code>/etc/hosts</code>文件添加</li></ol><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1       host.docker.internal</span><br></pre></td></tr></table></figure><ol start="3"><li>在容器内，访问<code>host.docker.internal:9092</code></li></ol><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>docker desktop for mac会默认提供一个域名<code>host.docker.internal</code>给容器内的应用访问主机的服务。所以，如果主机上启动一个rest服务<code>localhost:8080</code>，则容器内可以通过<code>host.docker.internal:8080</code>直接访问。</p><p>但是如果kafka只是配置为<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">listeners=PLAINTEXT://localhost:9092</span><br></pre></td></tr></table></figure></p><p>想直接访问kafka的broker则是不行的。我们会发现，在容器内，<code>telnet host.docker.internal 9092</code>是通的。这是为什么呢？</p><p>想要连接kafka的broker会进行基本的两步交互。</p><ol><li>client访问broker的地址”A”，然后broker会发送回去一个<code>advertised</code>地址”B”</li><li>client接收到地址”B”，然后尝试访问”B”</li></ol><p>如果不设置<code>advertised.listeners</code>，那么默认等于<code>listeners</code>的值。</p><p>所以对于这样的设置<code>B=A=PLAINTEXT://localhost:9092</code>。容器内尝试访问”host.docker.internal:9092”，则会这样子，</p><ol><li>容器内访问host.docker.internal:9092，接收到地址B=PLAINTEXT://localhost:9092</li><li>然后访问地址localhost:9092，失败。</li></ol><p>而如果在主机上访问则显然是成功的。</p><p>而我们的解决方法配置是这样的<code>A=PLAINTEXT://localhost:9092, B=PLAINTEXT://host.docker.internal:9092</code></p><p>所以如果容器内访问的过程就是，</p><ol><li>容器内访问host.docker.internal:9092，接收到地址B=PLAINTEXT://host.docker.internal:9092</li><li>然后访问host.docker.internal:9092，成功。</li></ol><p>而主机上的过程是，</p><ol><li>主机上访问localhost:9092,接收到地址B=PLAINTEXT://host.docker.internal:9092</li><li>然后访问host.docker.internal:9092，根据/etc/hosts的域名解析为127.0.0.1:9092，成功。</li></ol><h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>我这里用<code>kafkacat</code>测试，实际上容器内的应用可以使用其他kafka客户端。</p><p>连接broker,并显示metadata<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">root@bb6b85562200:/# kafkacat -b host.docker.internal:9092 -L</span><br><span class="line">Metadata for all topics (from broker 0: host.docker.internal:9092/0):</span><br><span class="line"> 1 brokers:</span><br><span class="line">  broker 0 at host.docker.internal:9092</span><br><span class="line"> 8 topics:</span><br><span class="line">  topic "test-topic" with 1 partitions:</span><br><span class="line">    partition 0, leader 0, replicas: 0, isrs: 0</span><br><span class="line">  topic "flink-test" with 1 partitions:</span><br><span class="line">    partition 0, leader 0, replicas: 0, isrs: 0</span><br><span class="line">  topic "__consumer_offsets" with 50 partitions:</span><br><span class="line">    partition 0, leader 0, replicas: 0, isrs: 0</span><br><span class="line">    partition 10, leader 0, replicas: 0, isrs: 0</span><br><span class="line">...</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p><p>显示消息<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">^Croot@bb6b85562200:/# kafkacat -b host.docker.internal:9092 -C -t flink-test -o beginning</span><br><span class="line">&#123;seqNo: 1, eventTs: 1583739799986, id: even偶数, value: 4.57&#125;</span><br><span class="line"><span class="meta">%</span> Reached end of topic flink-test [0] at offset 1</span><br></pre></td></tr></table></figure></p>]]></content>
     
     <summary type="html">
     
@@ -223,11 +223,11 @@ debug的。有图形化界面还是效率高很多，而对于新手，能够方
     </summary>
     
     
+      <category term="golang" scheme="http://threelambda.com/tags/golang/"/>
+    
       <category term="k3s" scheme="http://threelambda.com/tags/k3s/"/>
     
       <category term="delve" scheme="http://threelambda.com/tags/delve/"/>
-    
-      <category term="golang" scheme="http://threelambda.com/tags/golang/"/>
     
   </entry>
   
@@ -495,11 +495,11 @@ debug的。有图形化界面还是效率高很多，而对于新手，能够方
     </summary>
     
     
-      <category term="python" scheme="http://threelambda.com/tags/python/"/>
-    
       <category term="leetcode" scheme="http://threelambda.com/tags/leetcode/"/>
     
       <category term="算法" scheme="http://threelambda.com/tags/%E7%AE%97%E6%B3%95/"/>
+    
+      <category term="python" scheme="http://threelambda.com/tags/python/"/>
     
   </entry>
   
@@ -525,11 +525,11 @@ debug的。有图形化界面还是效率高很多，而对于新手，能够方
     </summary>
     
     
-      <category term="python" scheme="http://threelambda.com/tags/python/"/>
-    
       <category term="leetcode" scheme="http://threelambda.com/tags/leetcode/"/>
     
       <category term="算法" scheme="http://threelambda.com/tags/%E7%AE%97%E6%B3%95/"/>
+    
+      <category term="python" scheme="http://threelambda.com/tags/python/"/>
     
   </entry>
   
@@ -552,11 +552,11 @@ Determine the maximum amount of money the thief can rob tonight without alerting
     </summary>
     
     
-      <category term="python" scheme="http://threelambda.com/tags/python/"/>
-    
       <category term="leetcode" scheme="http://threelambda.com/tags/leetcode/"/>
     
       <category term="算法" scheme="http://threelambda.com/tags/%E7%AE%97%E6%B3%95/"/>
+    
+      <category term="python" scheme="http://threelambda.com/tags/python/"/>
     
   </entry>
   
