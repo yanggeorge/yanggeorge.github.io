@@ -169,11 +169,11 @@ debug的。有图形化界面还是效率高很多，而对于新手，能够方
     </summary>
     
     
+      <category term="docker" scheme="http://threelambda.com/tags/docker/"/>
+    
       <category term="k8s" scheme="http://threelambda.com/tags/k8s/"/>
     
       <category term="ingress" scheme="http://threelambda.com/tags/ingress/"/>
-    
-      <category term="docker" scheme="http://threelambda.com/tags/docker/"/>
     
       <category term="mac" scheme="http://threelambda.com/tags/mac/"/>
     
@@ -197,11 +197,11 @@ debug的。有图形化界面还是效率高很多，而对于新手，能够方
     </summary>
     
     
-      <category term="docker" scheme="http://threelambda.com/tags/docker/"/>
-    
       <category term="kafka" scheme="http://threelambda.com/tags/kafka/"/>
     
       <category term="container" scheme="http://threelambda.com/tags/container/"/>
+    
+      <category term="docker" scheme="http://threelambda.com/tags/docker/"/>
     
   </entry>
   
