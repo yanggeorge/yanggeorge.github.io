@@ -2,6 +2,24 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://threelambda.com/2022/02/06/2022-2-26-leetcode-390/</loc>
+    
+    <lastmod>2022-02-06</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/about/2019-4-2-bt-7.html</loc>
+    
+    <lastmod>2022-02-06</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://threelambda.com/about/index.html</loc>
     
     <lastmod>2022-02-06</lastmod>
@@ -174,15 +192,6 @@
   
   <url>
     <loc>http://threelambda.com/tags/index.html</loc>
-    
-    <lastmod>2022-02-06</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/about/2019-4-2-bt-7.html</loc>
     
     <lastmod>2022-02-06</lastmod>
     
@@ -740,6 +749,13 @@
   
   <url>
     <loc>http://threelambda.com/tags/javacc/</loc>
+    <lastmod>2022-02-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/tags/go/</loc>
     <lastmod>2022-02-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
