@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"threelambda.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="CLion介绍CLion是一款针对C&#x2F;C++项目的跨平台的集成IDE（A cross-platform IDE for C and C++）。2020版本以前，只支持cmake项目， 但是2021版本对Makefile项目的支持度增加了。我们看看如何对Makefile项目进行断点调试。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CLion2021调试Makefile项目">
+<meta property="og:url" content="http://threelambda.com/2021/07/15/2021-7-15-clion-makefile-debug/index.html">
+<meta property="og:site_name" content="3.λ.形而下技术博客">
+<meta property="og:description" content="CLion介绍CLion是一款针对C&#x2F;C++项目的跨平台的集成IDE（A cross-platform IDE for C and C++）。2020版本以前，只支持cmake项目， 但是2021版本对Makefile项目的支持度增加了。我们看看如何对Makefile项目进行断点调试。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://threelambda.com/images/clion-debug-makefile-config.png">
+<meta property="og:image" content="http://threelambda.com/images/clion-makefile-debug-show.png">
+<meta property="article:published_time" content="2021-07-14T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-02-06T09:04:19.372Z">
+<meta property="article:author" content="alenym@qq.com">
+<meta property="article:tag" content="debug">
+<meta property="article:tag" content="clion">
+<meta property="article:tag" content="makefile">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://threelambda.com/images/clion-debug-makefile-config.png">
+
+<link rel="canonical" href="http://threelambda.com/2021/07/15/2021-7-15-clion-makefile-debug/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>CLion2021调试Makefile项目 | 3.λ.形而下技术博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">3.λ.形而下技术博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">这里只关注技术实现，用代码说话。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://threelambda.com/2021/07/15/2021-7-15-clion-makefile-debug/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="alenym@qq.com">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="3.λ.形而下技术博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CLion2021调试Makefile项目
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-07-15 00:00:00" itemprop="dateCreated datePublished" datetime="2021-07-15T00:00:00+08:00">2021-07-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-02-06 17:04:19" itemprop="dateModified" datetime="2022-02-06T17:04:19+08:00">2022-02-06</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="CLion介绍"><a href="#CLion介绍" class="headerlink" title="CLion介绍"></a>CLion介绍</h2><p><code>CLion</code>是一款针对C&#x2F;C++项目的跨平台的集成IDE（A cross-platform IDE for C and C++）。2020版本以前，只支持cmake项目，
+但是2021版本对Makefile项目的支持度增加了。我们看看如何对Makefile项目进行断点调试。</p>
+<span id="more"></span>
+
+<p>我们用一个实际的项目作为例子。</p>
+<h2 id="Go1-4源码"><a href="#Go1-4源码" class="headerlink" title="Go1.4源码"></a>Go1.4源码</h2><p>Go语言项目从源码编译有几种方式，其中一种方式是基于<a target="_blank" rel="noopener" href="https://golang.org/doc/install/source#bootstrapFromSource">Bootstrap toolchain from C source code</a>,
+也就是说，首先编译Go 1.4版本，然后用编译出来的<code>Go</code>，编译最新的Go版本。(<strong>UPDATE: Mac12.1 Monterey系统上不支持</strong>)</p>
+<p>那么我下载这个Go1.4版本，<a target="_blank" rel="noopener" href="https://dl.google.com/go/go1.4-bootstrap-20171003.tar.gz">go1.4-bootstrap-20171003.tar.gz</a>，
+解压到某个路径下。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">~/work/go1.4/ ls          </span><br><span class="line">AUTHORS      LICENSE      README       api          doc          include      misc         robots.txt   test</span><br><span class="line">CONTRIBUTORS PATENTS      VERSION      bin          favicon.ico  lib          pkg          src</span><br></pre></td></tr></table></figure>
+
+<p>进入src路径下，运行make.bash文件，则开始编译。（当然需要build相关的工具）。为了看清楚bash脚本执行的内容，我们修改make.bash的
+第一行改为 <code>set -ex</code>, 这样会打印详细的执行内容如下，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br></pre></td><td class="code"><pre><span class="line">g1.4/src/ $  ./make.bash </span><br><span class="line">+ &#x27;[&#x27; &#x27;!&#x27; -f run.bash &#x27;]&#x27;</span><br><span class="line">+ case &quot;$(uname)&quot; in</span><br><span class="line">++ uname</span><br><span class="line">+ ld --version</span><br><span class="line">+ grep &#x27;gold.* 2\.20&#x27;</span><br><span class="line">+ for se_mount in /selinux /sys/fs/selinux</span><br><span class="line">+ &#x27;[&#x27; -d /selinux -a -f /selinux/booleans/allow_execstack -a -x /usr/sbin/selinuxenabled &#x27;]&#x27;</span><br><span class="line">+ for se_mount in /selinux /sys/fs/selinux</span><br><span class="line">+ &#x27;[&#x27; -d /sys/fs/selinux -a -f /sys/fs/selinux/booleans/allow_execstack -a -x /usr/sbin/selinuxenabled &#x27;]&#x27;</span><br><span class="line">++ uname -s</span><br><span class="line">+ &#x27;[&#x27; Darwin == GNU/kFreeBSD &#x27;]&#x27;</span><br><span class="line">+ rm -f ./runtime/runtime_defs.go</span><br><span class="line">+ echo &#x27;# Building C bootstrap tool.&#x27;</span><br><span class="line"># Building C bootstrap tool.</span><br><span class="line">+ echo cmd/dist</span><br><span class="line">cmd/dist</span><br><span class="line">++ cd ..</span><br><span class="line">++ pwd</span><br><span class="line">+ export GOROOT=/Users/ym/work/go1.4</span><br><span class="line">+ GOROOT=/Users/ym/work/go1.4</span><br><span class="line">+ GOROOT_FINAL=/Users/ym/work/go1.4</span><br><span class="line">+ DEFGOROOT=&#x27;-DGOROOT_FINAL=&quot;/Users/ym/work/go1.4&quot;&#x27;</span><br><span class="line">+ mflag=</span><br><span class="line">+ case &quot;$GOHOSTARCH&quot; in</span><br><span class="line">++ uname</span><br><span class="line">+ &#x27;[&#x27; Darwin == Darwin &#x27;]&#x27;</span><br><span class="line">+ mflag=&#x27; -mmacosx-version-min=10.6&#x27;</span><br><span class="line">++ type -t gcc</span><br><span class="line">++ type -t clang</span><br><span class="line">+ &#x27;[&#x27; -z &#x27;&#x27; -a -z file -a -n file &#x27;]&#x27;</span><br><span class="line">+ gcc -mmacosx-version-min=10.6 -O2 -Wall -Werror -o cmd/dist/dist -Icmd/dist &#x27;-DGOROOT_FINAL=&quot;/Users/ym/work/go1.4&quot;&#x27; cmd/dist/arm.c cmd/dist/buf.c cmd/dist/build.c cmd/dist/buildgc.c cmd/dist/buildgo.c cmd/dist/buildruntime.c cmd/dist/main.c cmd/dist/plan9.c cmd/dist/unix.c cmd/dist/windows.c</span><br><span class="line">++ ./cmd/dist/dist env -p</span><br><span class="line">+ eval &#x27;CC=&quot;clang&quot;&#x27; &#x27;CC_FOR_TARGET=&quot;clang&quot;&#x27; &#x27;GOROOT=&quot;/Users/ym/work/go1.4&quot;&#x27; &#x27;GOBIN=&quot;/Users/ym/me/go/test/bin&quot;&#x27; &#x27;GOARCH=&quot;amd64&quot;&#x27; &#x27;GOOS=&quot;darwin&quot;&#x27; &#x27;GOHOSTARCH=&quot;amd64&quot;&#x27; &#x27;GOHOSTOS=&quot;darwin&quot;&#x27; &#x27;GOTOOLDIR=&quot;/Users/ym/work/go1.4/pkg/tool/darwin_amd64&quot;&#x27; &#x27;GOCHAR=&quot;6&quot;&#x27; &#x27;PATH=&quot;/Users/ym/me/go/test/bin:/usr/local/opt/openssl@1.1/bin:/usr/local/opt/postgresql@12/bin:/Users/ym/work/go1.4/bin:/usr/local/Homebrew/bin:/usr/local/sbin:/usr/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/usr/local/share/dotnet:~/.dotnet/tools:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/ym/mybin/apache-maven-3.6.0/bin:/Users/ym/me/go/test/bin:/Users/ym/.rvm/bin:/Users/ym/mybin/spark-2.4.3-bin-hadoop2.7/bin/&quot;&#x27;</span><br><span class="line">++ CC=clang</span><br><span class="line">++ CC_FOR_TARGET=clang</span><br><span class="line">++ GOROOT=/Users/ym/work/go1.4</span><br><span class="line">++ GOBIN=/Users/ym/me/go/test/bin</span><br><span class="line">++ GOARCH=amd64</span><br><span class="line">++ GOOS=darwin</span><br><span class="line">++ GOHOSTARCH=amd64</span><br><span class="line">++ GOHOSTOS=darwin</span><br><span class="line">++ GOTOOLDIR=/Users/ym/work/go1.4/pkg/tool/darwin_amd64</span><br><span class="line">++ GOCHAR=6</span><br><span class="line">++ PATH=&#x27;/Users/ym/me/go/test/bin:/usr/local/opt/openssl@1.1/bin:/usr/local/opt/postgresql@12/bin:/Users/ym/work/go1.4/bin:/usr/local/Homebrew/bin:/usr/local/sbin:/usr/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/usr/local/share/dotnet:~/.dotnet/tools:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/ym/mybin/apache-maven-3.6.0/bin:/Users/ym/me/go/test/bin:/Users/ym/.rvm/bin:/Users/ym/mybin/spark-2.4.3-bin-hadoop2.7/bin/&#x27;</span><br><span class="line">+ &#x27;[&#x27; &#x27;&#x27; = true &#x27;]&#x27;</span><br><span class="line">+ echo</span><br><span class="line"></span><br><span class="line">+ &#x27;[&#x27; &#x27;&#x27; = --dist-tool &#x27;]&#x27;</span><br><span class="line">+ echo &#x27;# Building compilers and Go bootstrap tool for host, darwin/amd64.&#x27;</span><br><span class="line"># Building compilers and Go bootstrap tool for host, darwin/amd64.</span><br><span class="line">+ buildall=-a</span><br><span class="line">+ &#x27;[&#x27; &#x27;&#x27; = --no-clean &#x27;]&#x27;</span><br><span class="line">+ ./cmd/dist/dist bootstrap -a -v</span><br><span class="line">lib9</span><br><span class="line">libbio</span><br><span class="line">liblink</span><br><span class="line">cmd/cc</span><br><span class="line">cmd/gc</span><br><span class="line">cmd/6l</span><br><span class="line">/Users/ym/work/go1.4/src/cmd/6l/../ld/dwarf.c:1479:15: warning: implicit conversion from &#x27;int&#x27; to &#x27;char&#x27; changes value from 156 to -100 [-Wconstant-conversion]</span><br><span class="line">/Users/ym/work/go1.4/src/cmd/6l/../ld/dwarf.c:1763:21: warning: implicit conversion from &#x27;int&#x27; to &#x27;char&#x27; changes value from 144 to -112 [-Wconstant-conversion]</span><br><span class="line">/Users/ym/work/go1.4/src/cmd/6l/../ld/lib.h:168:13: note: expanded from macro &#x27;cput&#x27;</span><br><span class="line">cmd/6a</span><br><span class="line">cmd/6c</span><br><span class="line">/Users/ym/work/go1.4/src/cmd/6c/txt.c:995:28: warning: shifting a negative signed value is undefined [-Wshift-negative-value]</span><br><span class="line">/Users/ym/work/go1.4/src/cmd/6c/txt.c:1045:28: warning: shifting a negative signed value is undefined [-Wshift-negative-value]</span><br><span class="line">cmd/6g</span><br><span class="line">/Users/ym/work/go1.4/src/cmd/6g/peep.c:771:13: warning: converting the enum constant to a boolean [-Wint-in-bool-context]</span><br><span class="line">runtime</span><br><span class="line">errors</span><br><span class="line">sync/atomic</span><br><span class="line">sync</span><br><span class="line">io</span><br><span class="line">unicode</span><br><span class="line">unicode/utf8</span><br><span class="line">unicode/utf16</span><br><span class="line">bytes</span><br><span class="line">math</span><br><span class="line">strings</span><br><span class="line">strconv</span><br><span class="line">bufio</span><br><span class="line">sort</span><br><span class="line">container/heap</span><br><span class="line">encoding/base64</span><br><span class="line">syscall</span><br><span class="line">time</span><br><span class="line">os</span><br><span class="line">reflect</span><br><span class="line">fmt</span><br><span class="line">encoding</span><br><span class="line">encoding/json</span><br><span class="line">flag</span><br><span class="line">path/filepath</span><br><span class="line">path</span><br><span class="line">io/ioutil</span><br><span class="line">log</span><br><span class="line">regexp/syntax</span><br><span class="line">regexp</span><br><span class="line">go/token</span><br><span class="line">go/scanner</span><br><span class="line">go/ast</span><br><span class="line">go/parser</span><br><span class="line">os/exec</span><br><span class="line">os/signal</span><br><span class="line">net/url</span><br><span class="line">text/template/parse</span><br><span class="line">text/template</span><br><span class="line">go/doc</span><br><span class="line">go/build</span><br><span class="line">cmd/go</span><br><span class="line">+ cp cmd/dist/dist /Users/ym/work/go1.4/pkg/tool/darwin_amd64/dist</span><br><span class="line">+ /Users/ym/work/go1.4/pkg/tool/darwin_amd64/go_bootstrap clean -i std</span><br><span class="line">+ echo</span><br><span class="line"></span><br><span class="line">+ &#x27;[&#x27; amd64 &#x27;!=&#x27; amd64 -o darwin &#x27;!=&#x27; darwin &#x27;]&#x27;</span><br><span class="line">+ echo &#x27;# Building packages and commands for darwin/amd64.&#x27;</span><br><span class="line"># Building packages and commands for darwin/amd64.</span><br><span class="line">+ CC=clang</span><br><span class="line">+ /Users/ym/work/go1.4/pkg/tool/darwin_amd64/go_bootstrap install -ccflags &#x27;&#x27; -gcflags &#x27;&#x27; -ldflags &#x27;&#x27; -v std</span><br><span class="line">runtime</span><br><span class="line">errors</span><br><span class="line">sync/atomic</span><br><span class="line">unicode</span><br><span class="line">unicode/utf8</span><br><span class="line">math</span><br><span class="line">sort</span><br><span class="line">encoding</span><br><span class="line">unicode/utf16</span><br><span class="line">container/list</span><br><span class="line">sync</span><br><span class="line">crypto/subtle</span><br><span class="line">container/ring</span><br><span class="line">image/color</span><br><span class="line">runtime/race</span><br><span class="line">container/heap</span><br><span class="line">io</span><br><span class="line">syscall</span><br><span class="line">image/color/palette</span><br><span class="line">hash</span><br><span class="line">crypto/cipher</span><br><span class="line">hash/crc32</span><br><span class="line">crypto/hmac</span><br><span class="line">hash/adler32</span><br><span class="line">hash/crc64</span><br><span class="line">hash/fnv</span><br><span class="line">bytes</span><br><span class="line">strings</span><br><span class="line">bufio</span><br><span class="line">text/tabwriter</span><br><span class="line">path</span><br><span class="line">html</span><br><span class="line">compress/bzip2</span><br><span class="line">time</span><br><span class="line">strconv</span><br><span class="line">math/rand</span><br><span class="line">math/cmplx</span><br><span class="line">os</span><br><span class="line">reflect</span><br><span class="line">regexp/syntax</span><br><span class="line">crypto</span><br><span class="line">encoding/base64</span><br><span class="line">net/url</span><br><span class="line">crypto/aes</span><br><span class="line">crypto/rc4</span><br><span class="line">crypto/md5</span><br><span class="line">crypto/sha1</span><br><span class="line">crypto/sha256</span><br><span class="line">crypto/sha512</span><br><span class="line">encoding/pem</span><br><span class="line">encoding/ascii85</span><br><span class="line">encoding/base32</span><br><span class="line">image</span><br><span class="line">path/filepath</span><br><span class="line">net</span><br><span class="line">os/signal</span><br><span class="line">io/ioutil</span><br><span class="line">os/exec</span><br><span class="line">regexp</span><br><span class="line">image/draw</span><br><span class="line">image/jpeg</span><br><span class="line">fmt</span><br><span class="line">encoding/binary</span><br><span class="line">cmd/pprof/internal/svg</span><br><span class="line">crypto/des</span><br><span class="line">index/suffixarray</span><br><span class="line">cmd/internal/goobj</span><br><span class="line">cmd/internal/rsc.io/arm/armasm</span><br><span class="line">cmd/internal/rsc.io/x86/x86asm</span><br><span class="line">debug/dwarf</span><br><span class="line">debug/gosym</span><br><span class="line">debug/plan9obj</span><br><span class="line">flag</span><br><span class="line">log</span><br><span class="line">go/token</span><br><span class="line">encoding/json</span><br><span class="line">encoding/xml</span><br><span class="line">text/template/parse</span><br><span class="line">go/scanner</span><br><span class="line">debug/elf</span><br><span class="line">debug/macho</span><br><span class="line">debug/pe</span><br><span class="line">go/ast</span><br><span class="line">compress/flate</span><br><span class="line">text/template</span><br><span class="line">math/big</span><br><span class="line">encoding/hex</span><br><span class="line">mime</span><br><span class="line">net/textproto</span><br><span class="line">cmd/internal/objfile</span><br><span class="line">net/http/internal</span><br><span class="line">compress/gzip</span><br><span class="line">runtime/pprof</span><br><span class="line">cmd/pack</span><br><span class="line">cmd/pprof/internal/profile</span><br><span class="line">cmd/pprof/internal/tempfile</span><br><span class="line">archive/tar</span><br><span class="line">archive/zip</span><br><span class="line">cmd/addr2line</span><br><span class="line">cmd/nm</span><br><span class="line">crypto/elliptic</span><br><span class="line">encoding/asn1</span><br><span class="line">crypto/rand</span><br><span class="line">go/parser</span><br><span class="line">go/printer</span><br><span class="line">go/doc</span><br><span class="line">crypto/ecdsa</span><br><span class="line">crypto/rsa</span><br><span class="line">crypto/dsa</span><br><span class="line">crypto/x509/pkix</span><br><span class="line">mime/multipart</span><br><span class="line">cmd/objdump</span><br><span class="line">cmd/pprof/internal/plugin</span><br><span class="line">crypto/x509</span><br><span class="line">html/template</span><br><span class="line">go/build</span><br><span class="line">cmd/cgo</span><br><span class="line">go/format</span><br><span class="line">cmd/fix</span><br><span class="line">cmd/gofmt</span><br><span class="line">crypto/tls</span><br><span class="line">cmd/pprof/internal/symbolizer</span><br><span class="line">cmd/pprof/internal/symbolz</span><br><span class="line">cmd/pprof/internal/report</span><br><span class="line">cmd/yacc</span><br><span class="line">compress/lzw</span><br><span class="line">compress/zlib</span><br><span class="line">database/sql/driver</span><br><span class="line">database/sql</span><br><span class="line">encoding/csv</span><br><span class="line">encoding/gob</span><br><span class="line">cmd/pprof/internal/commands</span><br><span class="line">image/gif</span><br><span class="line">cmd/pprof/internal/driver</span><br><span class="line">image/png</span><br><span class="line">log/syslog</span><br><span class="line">net/mail</span><br><span class="line">os/user</span><br><span class="line">runtime/debug</span><br><span class="line">testing</span><br><span class="line">testing/iotest</span><br><span class="line">net/http</span><br><span class="line">net/smtp</span><br><span class="line">testing/quick</span><br><span class="line">text/scanner</span><br><span class="line">cmd/go</span><br><span class="line">cmd/pprof/internal/fetch</span><br><span class="line">expvar</span><br><span class="line">net/http/cgi</span><br><span class="line">net/http/cookiejar</span><br><span class="line">net/http/httptest</span><br><span class="line">net/http/httputil</span><br><span class="line">net/http/pprof</span><br><span class="line">cmd/pprof</span><br><span class="line">net/rpc</span><br><span class="line">net/http/fcgi</span><br><span class="line">net/rpc/jsonrpc</span><br><span class="line">+ echo</span><br><span class="line"></span><br><span class="line">+ rm -f /Users/ym/work/go1.4/pkg/tool/darwin_amd64/go_bootstrap</span><br><span class="line">+ &#x27;[&#x27; &#x27;&#x27; &#x27;!=&#x27; --no-banner &#x27;]&#x27;</span><br><span class="line">+ /Users/ym/work/go1.4/pkg/tool/darwin_amd64/dist banner</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">Installed Go for darwin/amd64 in /Users/ym/work/go1.4</span><br><span class="line">Installed commands in /Users/ym/me/go/test/bin</span><br></pre></td></tr></table></figure>
+
+<p>我们看到15-33行, 首先编译了<code>cmd/dist</code>文件夹下的c代码，生成了一个dist可执行文件，并调用了 <code>/cmd/dist/dist env -p</code></p>
+<pre>
+<b># Building C bootstrap tool.</b>
++ echo cmd/dist
+cmd/dist
+++ cd ..
+++ pwd
++ export GOROOT=/Users/ym/work/go1.4
++ GOROOT=/Users/ym/work/go1.4
++ GOROOT_FINAL=/Users/ym/work/go1.4
++ DEFGOROOT='-DGOROOT_FINAL="/Users/ym/work/go1.4"'
++ mflag=
++ case "$GOHOSTARCH" in
+++ uname
++ '[' Darwin == Darwin ']'
++ mflag=' -mmacosx-version-min=10.6'
+++ type -t gcc
+++ type -t clang
++ '[' -z '' -a -z file -a -n file ']'
+<b>+ gcc -mmacosx-version-min=10.6 -O2 -Wall -Werror -o cmd/dist/dist -Icmd/dist '-DGOROOT_FINAL="/Users/ym/work/go1.4"' cmd/dist/arm.c cmd/dist/buf.c cmd/dist/build.c cmd/dist/buildgc.c cmd/dist/buildgo.c cmd/dist/buildruntime.c cmd/dist/main.c cmd/dist/plan9.c cmd/dist/unix.c cmd/dist/windows.c 
+++ ./cmd/dist/dist env -p</b>
+</pre>
+
+<p>那么我们来看看怎么在CLion中调试<code>/cmd/dist/dist env -p</code></p>
+<h2 id="CLion调试cmd-x2F-dist"><a href="#CLion调试cmd-x2F-dist" class="headerlink" title="CLion调试cmd&#x2F;dist"></a>CLion调试cmd&#x2F;dist</h2><p>如果要用CLion直接打开cmd&#x2F;dist文件夹，会提示创建cmake项目，但是我们想直接使用调试Makefile项目。
+那么我们在cmd&#x2F;dist目录下创建一个Makefile文件，内容如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">CFLAGS = -mmacosx-version-min=10.6 -g -Wall -Werror &#x27;-DGOROOT_FINAL=&quot;/Users/ym/work/go1.4&quot;&#x27;</span><br><span class="line">CC = gcc</span><br><span class="line"></span><br><span class="line">SRC=arm.c buf.c build.c buildgc.c buildgo.c buildruntime.c main.c plan9.c unix.c windows.c</span><br><span class="line">INCLUDE_DIR = ./</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">TARGET = dist</span><br><span class="line"></span><br><span class="line">all: $(TARGET)</span><br><span class="line"></span><br><span class="line">$(TARGET):</span><br><span class="line">	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) $(SRC) -o $@</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">clean:</span><br><span class="line">	rm $(TARGET)</span><br><span class="line"></span><br><span class="line">.PHONY: all clean</span><br></pre></td></tr></table></figure>
+
+<p>其实就是根据make.bash打印的gcc编译命令改写的。需要注意的是要增加<code>-g</code>选项，这样才能调试。</p>
+<p>然后参考<a target="_blank" rel="noopener" href="https://www.jetbrains.com/help/clion/run-debug-configuration-makefile-application.html">Run&#x2F;Debug Configuration: Makefile Application</a></p>
+<p>配置几个参数，核心要指定的就是Target和Executable文件 
+<img src="/images/clion-debug-makefile-config.png" alt="clion-debug-makefile-config"></p>
+<p>最后先clean，然后断点调试<code>unix.c</code>文件中的main入口函数。</p>
+<p><img src="/images/clion-makefile-debug-show.png" alt="clion-makefile-debug-show"></p>
+<p>成功了。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/debug/" rel="tag"># debug</a>
+              <a href="/tags/clion/" rel="tag"># clion</a>
+              <a href="/tags/makefile/" rel="tag"># makefile</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/08/asn-1/" rel="prev" title="ASN.1语言规范介绍">
+      <i class="fa fa-chevron-left"></i> ASN.1语言规范介绍
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/12/26/pod-resolve-dn/" rel="next" title="k3s的Pod无法解析内网域名">
+      k3s的Pod无法解析内网域名 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#CLion%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">CLion介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go1-4%E6%BA%90%E7%A0%81"><span class="nav-number">2.</span> <span class="nav-text">Go1.4源码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CLion%E8%B0%83%E8%AF%95cmd-x2F-dist"><span class="nav-number">3.</span> <span class="nav-text">CLion调试cmd&#x2F;dist</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">alenym@qq.com</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alenym@qq.com</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

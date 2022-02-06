@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"threelambda.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="题目概述224原题链接 227原题链接 Implement a basic calculator to evaluate a simple expression string.  这两道题可以使用一种通用的解法来解。所以就放在一起了。 &quot;1 + 1&quot; &#x3D; 2 &quot; 2-1 + 2 &quot; &#x3D; 3 &quot;(1+(4+5+2)-3)+(6+8)&quot; &#x3D;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[leetcode 224 &amp; 227]Basic Calculator I &amp; II 原创解法">
+<meta property="og:url" content="http://threelambda.com/2016/10/24/leetcode-224/index.html">
+<meta property="og:site_name" content="3.λ.形而下技术博客">
+<meta property="og:description" content="题目概述224原题链接 227原题链接 Implement a basic calculator to evaluate a simple expression string.  这两道题可以使用一种通用的解法来解。所以就放在一起了。 &quot;1 + 1&quot; &#x3D; 2 &quot; 2-1 + 2 &quot; &#x3D; 3 &quot;(1+(4+5+2)-3)+(6+8)&quot; &#x3D;">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-10-23T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-02-06T08:15:16.673Z">
+<meta property="article:author" content="alenym@qq.com">
+<meta property="article:tag" content="leetcode">
+<meta property="article:tag" content="算法">
+<meta property="article:tag" content="python">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://threelambda.com/2016/10/24/leetcode-224/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>[leetcode 224 & 227]Basic Calculator I & II 原创解法 | 3.λ.形而下技术博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">3.λ.形而下技术博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">这里只关注技术实现，用代码说话。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://threelambda.com/2016/10/24/leetcode-224/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="alenym@qq.com">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="3.λ.形而下技术博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [leetcode 224 & 227]Basic Calculator I & II 原创解法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-10-24 00:00:00" itemprop="dateCreated datePublished" datetime="2016-10-24T00:00:00+08:00">2016-10-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-02-06 16:15:16" itemprop="dateModified" datetime="2022-02-06T16:15:16+08:00">2022-02-06</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="题目概述"><a href="#题目概述" class="headerlink" title=" 题目概述"></a><a name="hh0"></a> 题目概述</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/basic-calculator/">224原题链接</a></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/basic-calculator-ii/">227原题链接</a></p>
+<pre><code>Implement a basic calculator to evaluate a simple expression string.
+</code></pre>
+<p>这两道题可以使用一种通用的解法来解。所以就放在一起了。</p>
+<pre><code>&quot;1 + 1&quot; = 2
+&quot; 2-1 + 2 &quot; = 3
+&quot;(1+(4+5+2)-3)+(6+8)&quot; = 23
+
+&quot;3+2*2&quot; = 7
+&quot; 3/2 &quot; = 1
+&quot; 3+5 / 2 &quot; = 5
+</code></pre>
+<span id="more"></span>
+
+<h2 id="波兰计数法"><a href="#波兰计数法" class="headerlink" title=" 波兰计数法"></a><a name="hh1"></a> 波兰计数法</h2><p><code>波兰计数法</code>是一种非常巧妙的方法，只使用一个栈结构就能计算表达式。
+但是呢，我们常用的表达式是一种<code>infix</code>表达式，而<code>波兰计数法</code>是一种
+<code>postfix</code>表达式。所以需要一种把<code>infix expression</code>转换成<code>postfix expression</code>
+。<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Shunting-yard_algorithm">转换方法</a></p>
+<h2 id="抽象语法树"><a href="#抽象语法树" class="headerlink" title=" 抽象语法树"></a><a name="hh2"></a> 抽象语法树</h2><p>我还是想用抽象语法树的形式来解。也就是说先把表达式转换成一棵二叉树。
+然后再计算这棵树。思路很简单，所以呢，为了直观的看到树状结构。
+我发现<code>Python</code>下有一个不错的包<code>binarytree</code>，这个包可以打印树状图。
+我们先来看看打印的结果吧。是不是很不错。</p>
+<pre><code>0-(1+2)*3*(4-3/5/5)+1+1
+
+                                __+  
+                               /   \ 
+    __________________________+     1
+   /                           \     
+  -__________                   1    
+ /           \                       
+0           __*__                    
+           /     \                   
+        __*       -______            
+       /   \     /       \           
+      +     3   4       __/          
+     / \               /   \         
+    1   2             /     5        
+                     / \             
+                    3   5  
+</code></pre>
+<h2 id="初步解法"><a href="#初步解法" class="headerlink" title=" 初步解法"></a><a name="hh3"></a> 初步解法</h2><p>根据以上的思路，我们首先定义一个<code>Tree</code>，继承自<code>binarytree</code>的<code>Node</code>。
+然后就先对字符串处理成<code>token</code>流，其实这题没这个要求。简单的去掉
+空格就行了。也没有复杂的数字。下面给出了生成<code>AST</code>的初步代码。
+算是递归下降法吧。
+然后再计算树的值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># python2</span></span><br><span class="line"><span class="keyword">from</span> binarytree <span class="keyword">import</span> Node</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">TreeNode</span>(<span class="title class_ inherited__">Node</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, value=<span class="literal">None</span></span>):</span><br><span class="line">        <span class="built_in">super</span>(TreeNode, self).__init__(value)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">compute</span>(<span class="params">self, root</span>):</span><br><span class="line">        <span class="keyword">if</span> root:</span><br><span class="line">            <span class="keyword">if</span> root.left == <span class="literal">None</span> <span class="keyword">and</span> root.right == <span class="literal">None</span>:</span><br><span class="line">                <span class="keyword">return</span> <span class="built_in">int</span>(root.value)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line"></span><br><span class="line">                left = self.compute(root.left)</span><br><span class="line">                right = self.compute(root.right)</span><br><span class="line">                result = <span class="literal">None</span></span><br><span class="line">                char = root.value</span><br><span class="line">                <span class="keyword">if</span> char == <span class="string">&quot;+&quot;</span>:</span><br><span class="line">                    result = left + right</span><br><span class="line">                <span class="keyword">elif</span> char == <span class="string">&quot;-&quot;</span>:</span><br><span class="line">                    result = left - right</span><br><span class="line">                <span class="keyword">elif</span> char == <span class="string">&quot;*&quot;</span>:</span><br><span class="line">                    result = left * right</span><br><span class="line">                <span class="keyword">elif</span> char == <span class="string">&quot;/&quot;</span>:</span><br><span class="line">                    result = left / right</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Test</span>(<span class="title class_ inherited__">object</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, s</span>):</span><br><span class="line">        self.s = self.tokenize(s + <span class="string">&quot;$&quot;</span>)</span><br><span class="line">        <span class="comment"># print(self.s)</span></span><br><span class="line">        self.i = <span class="number">0</span></span><br><span class="line">        self.n = <span class="built_in">len</span>(self.s)</span><br><span class="line">        self.t = <span class="literal">None</span></span><br><span class="line">        self.precedences = &#123;<span class="string">&#x27;+&#x27;</span>: <span class="number">0</span>, <span class="string">&#x27;-&#x27;</span>: <span class="number">0</span>, <span class="string">&#x27;*&#x27;</span>: <span class="number">1</span>, <span class="string">&#x27;/&#x27;</span>: <span class="number">1</span>&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">tokenize</span>(<span class="params">self, s</span>):</span><br><span class="line">        n = <span class="built_in">len</span>(s)</span><br><span class="line">        result = []</span><br><span class="line">        tmp = <span class="string">&quot;&quot;</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, n):</span><br><span class="line">            char = s[i]</span><br><span class="line">            <span class="keyword">if</span> char == <span class="string">&#x27; &#x27;</span>:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">if</span> char <span class="keyword">in</span> <span class="string">&#x27;+-*/()$&#x27;</span>:</span><br><span class="line">                <span class="keyword">if</span> tmp:</span><br><span class="line">                    result.append(tmp)</span><br><span class="line">                    tmp = <span class="string">&quot;&quot;</span></span><br><span class="line">                result.append(char)</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">if</span> char <span class="keyword">in</span> [<span class="built_in">str</span>(i) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, <span class="number">10</span>)]:</span><br><span class="line">                tmp += char</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">parse</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">while</span> self.s[self.i] != <span class="string">&#x27;$&#x27;</span>:</span><br><span class="line">            self.parse_expr()</span><br><span class="line">        <span class="keyword">return</span> self.t</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">parse_expr</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">            char = self.s[self.i]</span><br><span class="line">            t = <span class="literal">None</span></span><br><span class="line">            <span class="keyword">if</span> char <span class="keyword">in</span> <span class="string">&#x27;$)&#x27;</span>:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">elif</span> char <span class="keyword">in</span> <span class="string">&#x27;(&#x27;</span>:</span><br><span class="line">                self.i += <span class="number">1</span></span><br><span class="line">                self.t = self.parse_expr()</span><br><span class="line">                c = self.s[self.i]</span><br><span class="line">                <span class="keyword">if</span> c != <span class="string">&quot;)&quot;</span>:</span><br><span class="line">                    <span class="keyword">raise</span> Exception(<span class="string">&quot;&#123;0&#125; shoud be )&quot;</span>.<span class="built_in">format</span>(self.i))</span><br><span class="line">                self.i += <span class="number">1</span></span><br><span class="line">            <span class="keyword">elif</span> char <span class="keyword">in</span> <span class="string">&quot;+-&quot;</span>:</span><br><span class="line">                lhs = self.t</span><br><span class="line">                self.t = self.parse_binary_operator(lhs, self.precedences[char])</span><br><span class="line">            <span class="keyword">elif</span> char <span class="keyword">in</span> <span class="string">&quot;*/&quot;</span>:</span><br><span class="line">                lhs = self.t</span><br><span class="line">                self.t = self.parse_binary_operator(lhs, self.precedences[char])</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                self.t = self.parse_term()</span><br><span class="line">        <span class="keyword">return</span> self.t</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">parse_term</span>(<span class="params">self</span>):</span><br><span class="line">        c = self.s[self.i]</span><br><span class="line">        <span class="keyword">if</span> c == <span class="string">&quot;(&quot;</span>:</span><br><span class="line">            self.i += <span class="number">1</span></span><br><span class="line">            t = self.parse_expr()</span><br><span class="line">            <span class="comment"># print(t)</span></span><br><span class="line">            c = self.s[self.i]</span><br><span class="line">            <span class="keyword">if</span> c != <span class="string">&quot;)&quot;</span>:</span><br><span class="line">                <span class="keyword">raise</span> Exception(<span class="string">&quot;&#123;0&#125; shoud be )&quot;</span>.<span class="built_in">format</span>(self.i))</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                self.i += <span class="number">1</span></span><br><span class="line">                <span class="keyword">return</span> t</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            t = TreeNode(c)</span><br><span class="line">            self.i += <span class="number">1</span></span><br><span class="line">            <span class="keyword">return</span> t</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">parse_binary_operator</span>(<span class="params">self, lhs, precedence</span>):</span><br><span class="line">        c = self.s[self.i]</span><br><span class="line">        oper = TreeNode(c)</span><br><span class="line">        self.i += <span class="number">1</span></span><br><span class="line">        oper.left = lhs</span><br><span class="line">        rhs = self.parse_term()</span><br><span class="line">        <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">            lookahead = self.s[self.i]</span><br><span class="line">            <span class="keyword">if</span> lookahead <span class="keyword">not</span> <span class="keyword">in</span> <span class="string">&quot;$)&quot;</span>:</span><br><span class="line">                lookahead_precedence = self.precedences[lookahead]</span><br><span class="line">                <span class="keyword">if</span> lookahead_precedence &gt; precedence:</span><br><span class="line">                    rhs = self.parse_binary_operator(rhs, lookahead_precedence)</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    oper.right = rhs</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                oper.right = rhs</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> oper</span><br><span class="line"><span class="comment">#测试</span></span><br><span class="line">s = <span class="string">&quot;0-(1+2)*3*(4-3/5/5)+1+1&quot;</span></span><br><span class="line"><span class="built_in">print</span>(s)</span><br><span class="line">t = Test(s).parse()</span><br><span class="line"><span class="built_in">print</span>(t)</span><br><span class="line"><span class="built_in">print</span>(t.compute(t))</span><br></pre></td></tr></table></figure>
+
+<h2 id="栈调用过深了"><a href="#栈调用过深了" class="headerlink" title=" 栈调用过深了"></a><a name="hh4"></a> 栈调用过深了</h2><p>以上的解法中生成语法树的过程因为使用了多个递归，结果调用的栈过深，结果
+出错了。因为
+python默认的递归栈深度是10000。</p>
+<pre><code>RecursionError: maximum recursion depth exceeded while calling a Python object
+</code></pre>
+<p>怎么办呢，想办法把递归改成非递归吧。但是看了又看还是没有发现如何改，
+因为存在两个函数相互调用的嵌套递归。不管怎样，先减少一个递归函数吧。
+去掉了<code>parse_term</code>函数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Test2</span>(<span class="title class_ inherited__">object</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    并没有完全把递归改成stack方式。但是因为比Test少了一个parse_term所以减少了递归栈的深度，</span></span><br><span class="line"><span class="string">    从而侥幸没有栈溢出。</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, s</span>):</span><br><span class="line">        self.s = self.tokenize(s + <span class="string">&quot;$&quot;</span>)</span><br><span class="line">        <span class="comment"># print(self.s)</span></span><br><span class="line">        self.i = <span class="number">0</span></span><br><span class="line">        self.n = <span class="built_in">len</span>(self.s)</span><br><span class="line">        self.t = <span class="literal">None</span></span><br><span class="line">        self.precedences = &#123;<span class="string">&#x27;+&#x27;</span>: <span class="number">0</span>, <span class="string">&#x27;-&#x27;</span>: <span class="number">0</span>, <span class="string">&#x27;*&#x27;</span>: <span class="number">1</span>, <span class="string">&#x27;/&#x27;</span>: <span class="number">1</span>&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">tokenize</span>(<span class="params">self, s</span>):</span><br><span class="line">        n = <span class="built_in">len</span>(s)</span><br><span class="line">        result = []</span><br><span class="line">        tmp = <span class="string">&quot;&quot;</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, n):</span><br><span class="line">            char = s[i]</span><br><span class="line">            <span class="keyword">if</span> char == <span class="string">&#x27; &#x27;</span>:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">if</span> char <span class="keyword">in</span> <span class="string">&#x27;+-*/()$&#x27;</span>:</span><br><span class="line">                <span class="keyword">if</span> tmp:</span><br><span class="line">                    result.append(tmp)</span><br><span class="line">                    tmp = <span class="string">&quot;&quot;</span></span><br><span class="line">                result.append(char)</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">if</span> char <span class="keyword">in</span> [<span class="built_in">str</span>(i) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, <span class="number">10</span>)]:</span><br><span class="line">                tmp += char</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">parse</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> self.parse_expr()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">parse_expr</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">            char = self.s[self.i]</span><br><span class="line">            t = <span class="literal">None</span></span><br><span class="line">            <span class="keyword">if</span> char <span class="keyword">in</span> <span class="string">&#x27;$)&#x27;</span>:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">elif</span> char <span class="keyword">in</span> <span class="string">&#x27;(&#x27;</span>:</span><br><span class="line">                self.i += <span class="number">1</span></span><br><span class="line">                self.t = self.parse_expr()</span><br><span class="line">                c = self.s[self.i]</span><br><span class="line">                <span class="keyword">if</span> c != <span class="string">&quot;)&quot;</span>:</span><br><span class="line">                    <span class="keyword">raise</span> Exception(<span class="string">&quot;&#123;0&#125; shoud be )&quot;</span>.<span class="built_in">format</span>(self.i))</span><br><span class="line">                self.i += <span class="number">1</span></span><br><span class="line">            <span class="keyword">elif</span> char <span class="keyword">in</span> <span class="string">&quot;+-&quot;</span>:</span><br><span class="line">                lhs = self.t</span><br><span class="line">                self.t = self.parse_binary_operator(lhs, self.precedences[char])</span><br><span class="line">            <span class="keyword">elif</span> char <span class="keyword">in</span> <span class="string">&quot;*/&quot;</span>:</span><br><span class="line">                lhs = self.t</span><br><span class="line">                self.t = self.parse_binary_operator(lhs, self.precedences[char])</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                t = TreeNode(char)</span><br><span class="line">                self.i += <span class="number">1</span></span><br><span class="line">                self.t = t</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> self.t</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">parse_binary_operator</span>(<span class="params">self, lhs, precedence</span>):</span><br><span class="line">        c = self.s[self.i]</span><br><span class="line">        oper = TreeNode(c)</span><br><span class="line">        self.i += <span class="number">1</span></span><br><span class="line">        oper.left = lhs</span><br><span class="line"></span><br><span class="line">        c = self.s[self.i]</span><br><span class="line">        rhs = <span class="literal">None</span></span><br><span class="line">        <span class="keyword">if</span> c == <span class="string">&quot;(&quot;</span>:</span><br><span class="line">            self.i += <span class="number">1</span></span><br><span class="line">            t = self.parse_expr()</span><br><span class="line">            <span class="comment"># print(t)</span></span><br><span class="line">            c = self.s[self.i]</span><br><span class="line">            <span class="keyword">if</span> c != <span class="string">&quot;)&quot;</span>:</span><br><span class="line">                <span class="keyword">raise</span> Exception(<span class="string">&quot;&#123;0&#125; shoud be )&quot;</span>.<span class="built_in">format</span>(self.i))</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                self.i += <span class="number">1</span></span><br><span class="line">                rhs = t</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            t = TreeNode(c)</span><br><span class="line">            self.i += <span class="number">1</span></span><br><span class="line">            rhs = t</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">            lookahead = self.s[self.i]</span><br><span class="line">            <span class="keyword">if</span> lookahead <span class="keyword">not</span> <span class="keyword">in</span> <span class="string">&quot;$)&quot;</span>:</span><br><span class="line">                lookahead_precedence = self.precedences[lookahead]</span><br><span class="line">                <span class="keyword">if</span> lookahead_precedence &gt; precedence:</span><br><span class="line">                    rhs = self.parse_binary_operator(rhs, lookahead_precedence)</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    oper.right = rhs</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                oper.right = rhs</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> oper</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p>居然不出现栈溢出了。呵呵。<code>(其实还是存在这个问题，只是能够通过leetcode测试了)</code>
+但是计算的过程<code>TreeNode::compute</code>还是出现了调用过深的错误<code>RecursionError</code>。
+这个没关系啊，我们可以改成<code>非递归的栈模拟方式</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">TreeNode</span>(<span class="title class_ inherited__">Node</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, value=<span class="literal">None</span></span>):</span><br><span class="line">        <span class="built_in">super</span>(TreeNode, self).__init__(value)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">compute</span>(<span class="params">self, root</span>):</span><br><span class="line">        <span class="keyword">if</span> root:</span><br><span class="line">            <span class="keyword">if</span> root.left == <span class="literal">None</span> <span class="keyword">and</span> root.right == <span class="literal">None</span>:</span><br><span class="line">                <span class="keyword">return</span> <span class="built_in">int</span>(root.value)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line"></span><br><span class="line">                left = self.compute(root.left)</span><br><span class="line">                right = self.compute(root.right)</span><br><span class="line">                result = <span class="literal">None</span></span><br><span class="line">                char = root.value</span><br><span class="line">                <span class="keyword">if</span> char == <span class="string">&quot;+&quot;</span>:</span><br><span class="line">                    result = left + right</span><br><span class="line">                <span class="keyword">elif</span> char == <span class="string">&quot;-&quot;</span>:</span><br><span class="line">                    result = left - right</span><br><span class="line">                <span class="keyword">elif</span> char == <span class="string">&quot;*&quot;</span>:</span><br><span class="line">                    result = left * right</span><br><span class="line">                <span class="keyword">elif</span> char == <span class="string">&quot;/&quot;</span>:</span><br><span class="line">                    result = left / right</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">compute2</span>(<span class="params">self, root</span>):</span><br><span class="line">        <span class="comment"># compute的非递归形式。</span></span><br><span class="line">        q = []</span><br><span class="line">        result = <span class="literal">None</span></span><br><span class="line">        prog = <span class="number">1</span></span><br><span class="line">        left = <span class="literal">None</span></span><br><span class="line">        right = <span class="literal">None</span></span><br><span class="line">        tup = (prog, root, left, right)</span><br><span class="line">        q.append(tup)</span><br><span class="line">        <span class="keyword">while</span> q:</span><br><span class="line">            prog, root, left, right = q.pop()</span><br><span class="line">            <span class="keyword">if</span> prog == <span class="number">1</span>:</span><br><span class="line">                <span class="keyword">if</span> root.left == <span class="literal">None</span> <span class="keyword">and</span> root.right == <span class="literal">None</span>:</span><br><span class="line">                    result = <span class="built_in">int</span>(root.value)</span><br><span class="line">                    <span class="keyword">continue</span></span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    prog = <span class="number">2</span></span><br><span class="line">            <span class="keyword">if</span> prog == <span class="number">2</span>:</span><br><span class="line">                tup = (prog + <span class="number">1</span>, root, left, right)</span><br><span class="line">                q.append(tup)</span><br><span class="line">                tup_new = (<span class="number">1</span>, root.left, left, right)</span><br><span class="line">                q.append(tup_new)</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">if</span> prog == <span class="number">3</span>:</span><br><span class="line">                left = result</span><br><span class="line">                prog = <span class="number">4</span></span><br><span class="line">            <span class="keyword">if</span> prog == <span class="number">4</span>:</span><br><span class="line">                tup = (prog + <span class="number">1</span>, root, left, right)</span><br><span class="line">                q.append(tup)</span><br><span class="line">                tup_new = (<span class="number">1</span>, root.right, left, right)</span><br><span class="line">                q.append(tup_new)</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">if</span> prog == <span class="number">5</span>:</span><br><span class="line">                right = result</span><br><span class="line">                char = root.value</span><br><span class="line">                <span class="keyword">if</span> char == <span class="string">&quot;+&quot;</span>:</span><br><span class="line">                    result = left + right</span><br><span class="line">                <span class="keyword">elif</span> char == <span class="string">&quot;-&quot;</span>:</span><br><span class="line">                    result = left - right</span><br><span class="line">                <span class="keyword">elif</span> char == <span class="string">&quot;*&quot;</span>:</span><br><span class="line">                    result = left * right</span><br><span class="line">                <span class="keyword">elif</span> char == <span class="string">&quot;/&quot;</span>:</span><br><span class="line">                    result = left / right</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> result</span><br></pre></td></tr></table></figure>
+
+<h2 id="通过的代码"><a href="#通过的代码" class="headerlink" title=" 通过的代码"></a><a name="hh5"></a> 通过的代码</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> binarytree <span class="keyword">import</span> Node</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">TreeNode</span>(<span class="title class_ inherited__">Node</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, value=<span class="literal">None</span></span>):</span><br><span class="line">        <span class="built_in">super</span>(TreeNode, self).__init__(value)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">compute</span>(<span class="params">self, root</span>):</span><br><span class="line">        <span class="keyword">if</span> root:</span><br><span class="line">            <span class="keyword">if</span> root.left == <span class="literal">None</span> <span class="keyword">and</span> root.right == <span class="literal">None</span>:</span><br><span class="line">                <span class="keyword">return</span> <span class="built_in">int</span>(root.value)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line"></span><br><span class="line">                left = self.compute(root.left)</span><br><span class="line">                right = self.compute(root.right)</span><br><span class="line">                result = <span class="literal">None</span></span><br><span class="line">                char = root.value</span><br><span class="line">                <span class="keyword">if</span> char == <span class="string">&quot;+&quot;</span>:</span><br><span class="line">                    result = left + right</span><br><span class="line">                <span class="keyword">elif</span> char == <span class="string">&quot;-&quot;</span>:</span><br><span class="line">                    result = left - right</span><br><span class="line">                <span class="keyword">elif</span> char == <span class="string">&quot;*&quot;</span>:</span><br><span class="line">                    result = left * right</span><br><span class="line">                <span class="keyword">elif</span> char == <span class="string">&quot;/&quot;</span>:</span><br><span class="line">                    result = left / right</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">compute2</span>(<span class="params">self, root</span>):</span><br><span class="line">        <span class="comment"># compute的非递归形式。</span></span><br><span class="line">        q = []</span><br><span class="line">        result = <span class="literal">None</span></span><br><span class="line">        prog = <span class="number">1</span></span><br><span class="line">        left = <span class="literal">None</span></span><br><span class="line">        right = <span class="literal">None</span></span><br><span class="line">        tup = (prog, root, left, right)</span><br><span class="line">        q.append(tup)</span><br><span class="line">        <span class="keyword">while</span> q:</span><br><span class="line">            prog, root, left, right = q.pop()</span><br><span class="line">            <span class="keyword">if</span> prog == <span class="number">1</span>:</span><br><span class="line">                <span class="keyword">if</span> root.left == <span class="literal">None</span> <span class="keyword">and</span> root.right == <span class="literal">None</span>:</span><br><span class="line">                    result = <span class="built_in">int</span>(root.value)</span><br><span class="line">                    <span class="keyword">continue</span></span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    prog = <span class="number">2</span></span><br><span class="line">            <span class="keyword">if</span> prog == <span class="number">2</span>:</span><br><span class="line">                tup = (prog + <span class="number">1</span>, root, left, right)</span><br><span class="line">                q.append(tup)</span><br><span class="line">                tup_new = (<span class="number">1</span>, root.left, left, right)</span><br><span class="line">                q.append(tup_new)</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">if</span> prog == <span class="number">3</span>:</span><br><span class="line">                left = result</span><br><span class="line">                prog = <span class="number">4</span></span><br><span class="line">            <span class="keyword">if</span> prog == <span class="number">4</span>:</span><br><span class="line">                tup = (prog + <span class="number">1</span>, root, left, right)</span><br><span class="line">                q.append(tup)</span><br><span class="line">                tup_new = (<span class="number">1</span>, root.right, left, right)</span><br><span class="line">                q.append(tup_new)</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">if</span> prog == <span class="number">5</span>:</span><br><span class="line">                right = result</span><br><span class="line">                char = root.value</span><br><span class="line">                <span class="keyword">if</span> char == <span class="string">&quot;+&quot;</span>:</span><br><span class="line">                    result = left + right</span><br><span class="line">                <span class="keyword">elif</span> char == <span class="string">&quot;-&quot;</span>:</span><br><span class="line">                    result = left - right</span><br><span class="line">                <span class="keyword">elif</span> char == <span class="string">&quot;*&quot;</span>:</span><br><span class="line">                    result = left * right</span><br><span class="line">                <span class="keyword">elif</span> char == <span class="string">&quot;/&quot;</span>:</span><br><span class="line">                    result = left / right</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Test2</span>(<span class="title class_ inherited__">object</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    并没有完全把递归改成stack方式。但是因为比Test少了一个parse_term所以减少了递归栈的深度，</span></span><br><span class="line"><span class="string">    从而侥幸没有栈溢出。</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, s</span>):</span><br><span class="line">        self.s = self.tokenize(s + <span class="string">&quot;$&quot;</span>)</span><br><span class="line">        <span class="comment"># print(self.s)</span></span><br><span class="line">        self.i = <span class="number">0</span></span><br><span class="line">        self.n = <span class="built_in">len</span>(self.s)</span><br><span class="line">        self.t = <span class="literal">None</span></span><br><span class="line">        self.precedences = &#123;<span class="string">&#x27;+&#x27;</span>: <span class="number">0</span>, <span class="string">&#x27;-&#x27;</span>: <span class="number">0</span>, <span class="string">&#x27;*&#x27;</span>: <span class="number">1</span>, <span class="string">&#x27;/&#x27;</span>: <span class="number">1</span>&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">tokenize</span>(<span class="params">self, s</span>):</span><br><span class="line">        n = <span class="built_in">len</span>(s)</span><br><span class="line">        result = []</span><br><span class="line">        tmp = <span class="string">&quot;&quot;</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, n):</span><br><span class="line">            char = s[i]</span><br><span class="line">            <span class="keyword">if</span> char == <span class="string">&#x27; &#x27;</span>:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">if</span> char <span class="keyword">in</span> <span class="string">&#x27;+-*/()$&#x27;</span>:</span><br><span class="line">                <span class="keyword">if</span> tmp:</span><br><span class="line">                    result.append(tmp)</span><br><span class="line">                    tmp = <span class="string">&quot;&quot;</span></span><br><span class="line">                result.append(char)</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">if</span> char <span class="keyword">in</span> [<span class="built_in">str</span>(i) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, <span class="number">10</span>)]:</span><br><span class="line">                tmp += char</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">parse</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> self.parse_expr()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">parse_expr</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">            char = self.s[self.i]</span><br><span class="line">            t = <span class="literal">None</span></span><br><span class="line">            <span class="keyword">if</span> char <span class="keyword">in</span> <span class="string">&#x27;$)&#x27;</span>:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">elif</span> char <span class="keyword">in</span> <span class="string">&#x27;(&#x27;</span>:</span><br><span class="line">                self.i += <span class="number">1</span></span><br><span class="line">                self.t = self.parse_expr()</span><br><span class="line">                c = self.s[self.i]</span><br><span class="line">                <span class="keyword">if</span> c != <span class="string">&quot;)&quot;</span>:</span><br><span class="line">                    <span class="keyword">raise</span> Exception(<span class="string">&quot;&#123;0&#125; shoud be )&quot;</span>.<span class="built_in">format</span>(self.i))</span><br><span class="line">                self.i += <span class="number">1</span></span><br><span class="line">            <span class="keyword">elif</span> char <span class="keyword">in</span> <span class="string">&quot;+-&quot;</span>:</span><br><span class="line">                lhs = self.t</span><br><span class="line">                self.t = self.parse_binary_operator(lhs, self.precedences[char])</span><br><span class="line">            <span class="keyword">elif</span> char <span class="keyword">in</span> <span class="string">&quot;*/&quot;</span>:</span><br><span class="line">                lhs = self.t</span><br><span class="line">                self.t = self.parse_binary_operator(lhs, self.precedences[char])</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                t = TreeNode(char)</span><br><span class="line">                self.i += <span class="number">1</span></span><br><span class="line">                self.t = t</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> self.t</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">parse_binary_operator</span>(<span class="params">self, lhs, precedence</span>):</span><br><span class="line">        c = self.s[self.i]</span><br><span class="line">        oper = TreeNode(c)</span><br><span class="line">        self.i += <span class="number">1</span></span><br><span class="line">        oper.left = lhs</span><br><span class="line"></span><br><span class="line">        c = self.s[self.i]</span><br><span class="line">        rhs = <span class="literal">None</span></span><br><span class="line">        <span class="keyword">if</span> c == <span class="string">&quot;(&quot;</span>:</span><br><span class="line">            self.i += <span class="number">1</span></span><br><span class="line">            t = self.parse_expr()</span><br><span class="line">            <span class="comment"># print(t)</span></span><br><span class="line">            c = self.s[self.i]</span><br><span class="line">            <span class="keyword">if</span> c != <span class="string">&quot;)&quot;</span>:</span><br><span class="line">                <span class="keyword">raise</span> Exception(<span class="string">&quot;&#123;0&#125; shoud be )&quot;</span>.<span class="built_in">format</span>(self.i))</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                self.i += <span class="number">1</span></span><br><span class="line">                rhs = t</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            t = TreeNode(c)</span><br><span class="line">            self.i += <span class="number">1</span></span><br><span class="line">            rhs = t</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">            lookahead = self.s[self.i]</span><br><span class="line">            <span class="keyword">if</span> lookahead <span class="keyword">not</span> <span class="keyword">in</span> <span class="string">&quot;$)&quot;</span>:</span><br><span class="line">                lookahead_precedence = self.precedences[lookahead]</span><br><span class="line">                <span class="keyword">if</span> lookahead_precedence &gt; precedence:</span><br><span class="line">                    rhs = self.parse_binary_operator(rhs, lookahead_precedence)</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    oper.right = rhs</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                oper.right = rhs</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> oper</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试</span></span><br><span class="line">s = <span class="string">&quot;0-(1+2)*3*(4-3/5/5)+1+1&quot;</span></span><br><span class="line"><span class="built_in">print</span>(s)</span><br><span class="line">t = Test2(s).parse()</span><br><span class="line"><span class="built_in">print</span>(t)</span><br><span class="line"><span class="built_in">print</span>(t.compute2(t))</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title=" 总结"></a><a name="hh6"></a> 总结</h2><p>虽然代码长了点，但是练习了一下如何生成一个<code>抽象语法树</code>。并且练习了
+如何把一个调用自身的递归改成非递归。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/leetcode/" rel="tag"># leetcode</a>
+              <a href="/tags/%E7%AE%97%E6%B3%95/" rel="tag"># 算法</a>
+              <a href="/tags/python/" rel="tag"># python</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/09/27/2016-9-27-leetcode-200/" rel="prev" title="[leetcode 200]Number of Islands 原创解法">
+      <i class="fa fa-chevron-left"></i> [leetcode 200]Number of Islands 原创解法
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/12/19/leetcode-282/" rel="next" title="[leetcode 282]Expression Add Operators 原创解法">
+      [leetcode 282]Expression Add Operators 原创解法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text"> 题目概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A2%E5%85%B0%E8%AE%A1%E6%95%B0%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text"> 波兰计数法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%BD%E8%B1%A1%E8%AF%AD%E6%B3%95%E6%A0%91"><span class="nav-number">3.</span> <span class="nav-text"> 抽象语法树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9D%E6%AD%A5%E8%A7%A3%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text"> 初步解法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%88%E8%B0%83%E7%94%A8%E8%BF%87%E6%B7%B1%E4%BA%86"><span class="nav-number">5.</span> <span class="nav-text"> 栈调用过深了</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E7%9A%84%E4%BB%A3%E7%A0%81"><span class="nav-number">6.</span> <span class="nav-text"> 通过的代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text"> 总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">alenym@qq.com</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alenym@qq.com</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

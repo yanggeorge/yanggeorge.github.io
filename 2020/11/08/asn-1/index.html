@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"threelambda.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="ASN.1介绍X.509证书常用的编码方式有DER格式和PEM格式。证书是一个对象的话，那么需要一个描述这个对象的语言。ASN.1就是这样的一个语言规范。而DER是ASN.1编码的一种方式。如果要解析DER编码文件，就需要了解ASN.1语言规范的编解码。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ASN.1语言规范介绍">
+<meta property="og:url" content="http://threelambda.com/2020/11/08/asn-1/index.html">
+<meta property="og:site_name" content="3.λ.形而下技术博客">
+<meta property="og:description" content="ASN.1介绍X.509证书常用的编码方式有DER格式和PEM格式。证书是一个对象的话，那么需要一个描述这个对象的语言。ASN.1就是这样的一个语言规范。而DER是ASN.1编码的一种方式。如果要解析DER编码文件，就需要了解ASN.1语言规范的编解码。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://threelambda.com/images/2020-11-09.jpg">
+<meta property="article:published_time" content="2020-11-07T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-02-06T09:04:19.372Z">
+<meta property="article:author" content="alenym@qq.com">
+<meta property="article:tag" content="X.509">
+<meta property="article:tag" content="ASN.1">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://threelambda.com/images/2020-11-09.jpg">
+
+<link rel="canonical" href="http://threelambda.com/2020/11/08/asn-1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>ASN.1语言规范介绍 | 3.λ.形而下技术博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">3.λ.形而下技术博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">这里只关注技术实现，用代码说话。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://threelambda.com/2020/11/08/asn-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="alenym@qq.com">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="3.λ.形而下技术博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ASN.1语言规范介绍
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-08 00:00:00" itemprop="dateCreated datePublished" datetime="2020-11-08T00:00:00+08:00">2020-11-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-02-06 17:04:19" itemprop="dateModified" datetime="2022-02-06T17:04:19+08:00">2022-02-06</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="ASN-1介绍"><a href="#ASN-1介绍" class="headerlink" title="ASN.1介绍"></a>ASN.1介绍</h2><p><code>X.509</code>证书常用的编码方式有DER格式和PEM格式。证书是一个对象的话，那么需要一个描述这个对象的语言。ASN.1就是这样的一个语言规范。而DER是ASN.1编码的一种方式。如果要解析DER编码文件，就需要了解ASN.1语言规范的编解码。</p>
+<span id="more"></span>
+
+<p>ASN.1（Abstract Syntax Notation One）是OSI（Open Source Interconnection）使用的描述对象的语言规范。OSI是X.200中定义的。而ASN.1是X.208中描述的。</p>
+<p>下面是一个ASN.1的例子</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Foo DEFINITIONS ::= BEGIN</span><br><span class="line"></span><br><span class="line">    Question ::= SEQUENCE &#123;</span><br><span class="line">        id        INTEGER,</span><br><span class="line">        question  IA5String</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Answer ::= SEQUENCE &#123;</span><br><span class="line">        id        INTEGER,</span><br><span class="line">        answer    BOOLEAN</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">END</span><br></pre></td></tr></table></figure>
+
+<h2 id="以一个证书分析ASN-1语法"><a href="#以一个证书分析ASN-1语法" class="headerlink" title="以一个证书分析ASN.1语法"></a>以一个证书分析ASN.1语法</h2><p>以下是一个<code>PEM</code>格式的证书。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line">-----BEGIN CERTIFICATE-----</span><br><span class="line"></span><br><span class="line">MIIFwTCCA6mgAwIBAgIUNQk34EiXUjqgxnfhOZtv6zxIiekwDQYJKoZIhvcNAQEN</span><br><span class="line"></span><br><span class="line">BQAwcDELMAkGA1UEBhMCQ04xEDAOBgNVBAgMB0JlaWppbmcxEDAOBgNVBAcMB0Jl</span><br><span class="line"></span><br><span class="line">aWppbmcxEDAOBgNVBAoMB2V4YW1wbGUxETAPBgNVBAsMCFBlcnNvbmFsMRgwFgYD</span><br><span class="line"></span><br><span class="line">VQQDDA9yZXBvLmVubmlvdC5uZXQwHhcNMjAwODExMDMwMzE0WhcNMzAwODA5MDMw</span><br><span class="line"></span><br><span class="line">MzE0WjBwMQswCQYDVQQGEwJDTjEQMA4GA1UECAwHQmVpamluZzEQMA4GA1UEBwwH</span><br><span class="line"></span><br><span class="line">QmVpamluZzEQMA4GA1UECgwHZXhhbXBsZTERMA8GA1UECwwIUGVyc29uYWwxGDAW</span><br><span class="line"></span><br><span class="line">BgNVBAMMD3JlcG8uZW5uaW90Lm5ldDCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCC</span><br><span class="line"></span><br><span class="line">AgoCggIBAN6xDFkixeboRBjaVLi1/IjCfHvGS2xGihWrx2dN9jXIZWQqU2Lw8rLy</span><br><span class="line"></span><br><span class="line">yzrnzSEJDRcUFGaXpRagHTYJPhcr31Sa4OkCsoorwElagcOOPQXAc1A87vBk1+r/</span><br><span class="line"></span><br><span class="line">3eQu+IPGjr+3DU/yqNNuaq0CZgDDww9ttbyTb8JxZweXdAMjK0D7LiNCkpvwM1l6</span><br><span class="line"></span><br><span class="line">ylVl9o5+ACA34qb81IyVAsGFSHP/ukcFIaC79Zf/7p3Tjm4uRkAdtQYJGwA0Oafk</span><br><span class="line"></span><br><span class="line">HbPaPLOHPJdi+3+a/OmmBJamxyWXF9pJ/BRrxFrqtssnAhIyPsNqKsPDCknJOzwS</span><br><span class="line"></span><br><span class="line">6vdTVsuMkLMUbc0OK1dSIulXxZaea+jXcZMYWUA4ZDNdo1SrMg3Vvj/CrLWgm7b0</span><br><span class="line"></span><br><span class="line">T1Wb8tXsr2NUNoacMzDgN41Kz7Ht57LQURaFf9rzjqACHVYfj/Ad8/PmgA6V3Dc3</span><br><span class="line"></span><br><span class="line">gvMvqOoyp2iic1xQ2GcIItHvqD4YwBSdtyxJc1N5llNBF7A6+JWVc0kJpOQCDKVb</span><br><span class="line"></span><br><span class="line">U+0Py6ugnbb/pQ89/4zXXWyuTQO0BGULoHCo0++eF+pLcW6LstQNSUYxYRr4tmLr</span><br><span class="line"></span><br><span class="line">sbUJFPoFcHXdQ9F8I2rBXdKCePHDBPQ2HexhANUWnRQdjtnYG9UQRQaDVKiCXUMj</span><br><span class="line"></span><br><span class="line">9f6ixjN9DAz+SqndPksE0Ux0cgfkTEfi9N+5c7rCxzZYgH8UlFiDAgMBAAGjUzBR</span><br><span class="line"></span><br><span class="line">MB0GA1UdDgQWBBRaOW9HUg7eACHGDuPMcc/k7nPmbjAfBgNVHSMEGDAWgBRaOW9H</span><br><span class="line"></span><br><span class="line">Ug7eACHGDuPMcc/k7nPmbjAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBDQUA</span><br><span class="line"></span><br><span class="line">A4ICAQCu1kx2rnRp9oiPw3Y2WuJ2hnzkMTUGPv4rpX0hgVSLNAEiDEvujz/pnHaJ</span><br><span class="line"></span><br><span class="line">83+JZuMHebAQnWHXVaUdmzn7Yw9WsZoXu15st0WMOAC8cUZ4uD0t1osPJTSuc3hA</span><br><span class="line"></span><br><span class="line">F0ZG3tHzuJBpX4T6pVrZ3jJvuY5vGJGCMwRdS4V7e6wQmLjzqf3oq05y9JlvKBYX</span><br><span class="line"></span><br><span class="line">JdU69BynZ1vEtUuC91WJTTvlqLtbAS6LTSmnSYWscNpP4KOTXNfdf8HlKFRKGR2e</span><br><span class="line"></span><br><span class="line">cVyAXu9bA89HeEeG8ztceyD2GO+S7xBNuZRV11Oi2xO59rJJAzzrIO1W8oda5lac</span><br><span class="line"></span><br><span class="line">JVRI+n8w+hLG+bbq+24s9tVB0MBZj3/honpYRLOYMAT507YlOvDPjreudYHWJSLG</span><br><span class="line"></span><br><span class="line">cTjRH0dtIgqbi8uTH3iJ2yWTq92OfGSSERofVdSOPrlzH5GpkpeIoRcYlP1KLnIy</span><br><span class="line"></span><br><span class="line">wxlI4E7W50PX5rMKMIp4/p6ALgA7psuC7ZTzk3f7R/tmHBSNb5JiSbp7MjI+iVRE</span><br><span class="line"></span><br><span class="line">zZX73VW1nLf4YaSS+MYNudAQl0ZoUvK3f0QEj4NwzRjDkdsUKI+X7Q2p03foBMCU</span><br><span class="line"></span><br><span class="line">4ijSDMvjyn3JEvT878Fxh7KB4IbZKh3kj9RetGaGEljjgv/Pg3h2gu+GNPgk30xJ</span><br><span class="line"></span><br><span class="line">TfK5QkRaYenm9aWKpHHf4hpUQlMKawxdS1k+3gVGwWu8YM/a0A==</span><br><span class="line"></span><br><span class="line">-----END CERTIFICATE-----</span><br></pre></td></tr></table></figure>
+
+<p>对这个证书进行解析的方法是用一个在线的工具 <a target="_blank" rel="noopener" href="http://lapo.it/asn1js/">http://lapo.it/asn1js/</a>。</p>
+<p>可以把上面base64编码的证书复制到网站解码之后，可以看到类似如下的结果。</p>
+<p><img src="/images/2020-11-09.jpg" alt="cert-parse"></p>
+<p>ASN.1的编码基本上遵循的是<code>type+length+value</code>的方式。</p>
+<p>ASN.1的数据tag大概有以下几种，</p>
+<table>
+<thead>
+<tr>
+<th>type</th>
+<th>tagNumber</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Boolean</td>
+<td>0x01</td>
+</tr>
+<tr>
+<td>Integer</td>
+<td>0x02</td>
+</tr>
+<tr>
+<td>BitString</td>
+<td>0x03</td>
+</tr>
+<tr>
+<td>OctetString</td>
+<td>0x04</td>
+</tr>
+<tr>
+<td>Null</td>
+<td>0x05</td>
+</tr>
+<tr>
+<td>ObjectIdentifier</td>
+<td>0x06</td>
+</tr>
+<tr>
+<td>Enumerated</td>
+<td>0x0a</td>
+</tr>
+<tr>
+<td>UTF8String</td>
+<td>0x0c</td>
+</tr>
+<tr>
+<td>Sequence</td>
+<td>0x10</td>
+</tr>
+<tr>
+<td>Set</td>
+<td>0x11</td>
+</tr>
+<tr>
+<td>PrintableString</td>
+<td>0x13</td>
+</tr>
+<tr>
+<td>IA5String</td>
+<td>0x16</td>
+</tr>
+<tr>
+<td>UTCTime</td>
+<td>0x17</td>
+</tr>
+<tr>
+<td>UnicodeString</td>
+<td>0x1e</td>
+</tr>
+</tbody></table>
+<p>那么具体看一下以上ca证书的前四个字节是什么含义。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">30 82 05 C1</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><p>首先看是什么type。第一个字节<code>0x30</code>描述了type信息。tagClass &#x3D; 0x30 &gt;&gt; 6 &#x3D; 0 ，表示<code>universal isConstructed = 0x30 &amp; 0x20 = True</code>，对于<code>sequence</code>基本都是true,
+<code>tagNumber = 0x30 &amp; 0x1F = 0x10</code> ，因此对应的<code>Sequence</code></p>
+</li>
+<li><p>接下来计算长度。
+第二个字节为<code>0x82</code>,
+分两种情况，判断表达式，<code>byte &amp; 0x7F == byte</code> 如果为true就是小于127。否则就是大于127。</p>
+</li>
+</ol>
+<ul>
+<li>长度是小于127(short form)
+那么该该字节就是length，之后就是value的内容。</li>
+<li>长度大于127(long form)，
+byte &amp; 0x7F 表示length的编码长度。</li>
+</ul>
+<p>对于以上的例子，<code>0x82</code>是long form
+因为 </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">( 0x82 == (0x82 &amp; 0x7F) = False</span><br></pre></td></tr></table></figure>
+<p>那么表示长度的字节数量是 </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0x82 &amp; 0x7F = 0x2</span><br></pre></td></tr></table></figure>
+<p>因此’0x82’之后的两个字节’0x05’和’0xC1’组成长度。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0x05C1 = 1473 </span><br></pre></td></tr></table></figure>
+<p>两个字节表示value的长度1473。</p>
+<p>因此，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">30 82 05 C1</span><br></pre></td></tr></table></figure>
+<p>这个头四个字节的含义是，这个是<code>Sequence</code>类型，
+长度是1473，这四节之后的1473个字节就是<code>Sequence</code>类型的值。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/X-509/" rel="tag"># X.509</a>
+              <a href="/tags/ASN-1/" rel="tag"># ASN.1</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/10/09/x509-ca/" rel="prev" title="自建根证书，中间证书和Server端X.509证书并搭建nginx验证Server端证书有效性">
+      <i class="fa fa-chevron-left"></i> 自建根证书，中间证书和Server端X.509证书并搭建nginx验证Server端证书有效性
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/07/15/2021-7-15-clion-makefile-debug/" rel="next" title="CLion2021调试Makefile项目">
+      CLion2021调试Makefile项目 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#ASN-1%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">ASN.1介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A5%E4%B8%80%E4%B8%AA%E8%AF%81%E4%B9%A6%E5%88%86%E6%9E%90ASN-1%E8%AF%AD%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">以一个证书分析ASN.1语法</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">alenym@qq.com</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alenym@qq.com</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

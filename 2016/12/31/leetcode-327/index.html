@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"threelambda.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="题目概述原题链接 Given an integer array nums, return the number of range sums that lie in [lower, upper] inclusive. Range sum S(i, j) is defined as the sum of the elements in nums between indices i and j (i">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[leetcode 327]Count of Range Sum 原创解法">
+<meta property="og:url" content="http://threelambda.com/2016/12/31/leetcode-327/index.html">
+<meta property="og:site_name" content="3.λ.形而下技术博客">
+<meta property="og:description" content="题目概述原题链接 Given an integer array nums, return the number of range sums that lie in [lower, upper] inclusive. Range sum S(i, j) is defined as the sum of the elements in nums between indices i and j (i">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://threelambda.com/images/327-1.png">
+<meta property="og:image" content="http://threelambda.com/images/327-2.jpg">
+<meta property="og:image" content="http://threelambda.com/images/327-3.png">
+<meta property="og:image" content="http://threelambda.com/images/327-4.png">
+<meta property="article:published_time" content="2016-12-30T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-02-06T08:15:16.654Z">
+<meta property="article:author" content="alenym@qq.com">
+<meta property="article:tag" content="leetcode">
+<meta property="article:tag" content="算法">
+<meta property="article:tag" content="python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://threelambda.com/images/327-1.png">
+
+<link rel="canonical" href="http://threelambda.com/2016/12/31/leetcode-327/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>[leetcode 327]Count of Range Sum 原创解法 | 3.λ.形而下技术博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">3.λ.形而下技术博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">这里只关注技术实现，用代码说话。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://threelambda.com/2016/12/31/leetcode-327/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="alenym@qq.com">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="3.λ.形而下技术博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [leetcode 327]Count of Range Sum 原创解法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-12-31 00:00:00" itemprop="dateCreated datePublished" datetime="2016-12-31T00:00:00+08:00">2016-12-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-02-06 16:15:16" itemprop="dateModified" datetime="2022-02-06T16:15:16+08:00">2022-02-06</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="题目概述"><a href="#题目概述" class="headerlink" title=" 题目概述"></a><a name="hh0"></a> 题目概述</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/count-of-range-sum/">原题链接</a></p>
+<pre><code>Given an integer array nums, return the number of range sums that lie in [lower, upper] inclusive.
+Range sum S(i, j) is defined as the sum of the elements in nums between indices i and j (i ≤ j), inclusive.
+
+Example:
+Given nums = [-2, 5, -1], lower = -2, upper = 2,
+Return 3.
+The three ranges are : [0, 0], [2, 2], [0, 2] and their respective sums are: -2, -1, 2.
+</code></pre>
+<span id="more"></span>
+
+<h2 id="O-N-2-解法"><a href="#O-N-2-解法" class="headerlink" title="O(N^2)解法"></a><a name="hh1"></a>O(N^2)解法</h2><p>最直接的想法当然就是遍历求和了。但是这样是无法通过测试的。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution3</span>(<span class="title class_ inherited__">object</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">countRangeSum</span>(<span class="params">self, nums, lower, upper</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        :type nums: List[int]</span></span><br><span class="line"><span class="string">        :type lower: int</span></span><br><span class="line"><span class="string">        :type upper: int</span></span><br><span class="line"><span class="string">        :rtype: int</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">        sums = []</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(nums)):</span><br><span class="line">            s = <span class="number">0</span></span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(i, <span class="built_in">len</span>(nums)):</span><br><span class="line">                s += nums[j]</span><br><span class="line">                <span class="keyword">if</span> lower &lt;= s &lt;= upper:</span><br><span class="line">                    sums.append(s)</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">len</span>(sums)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="死亡凝视"><a href="#死亡凝视" class="headerlink" title="死亡凝视"></a><a name="hh2"></a>死亡凝视</h2><p>必须要想出复杂度是<code>Nlog(N)</code>的算法才行。但是问题也很明显，
+要想找出所有的<code>s(i,j) for 0 &lt;= i &lt;= j &lt; n　and lower &lt;= s(i,j) &lt;= upper</code>
+那必须要进行遍历啊，因此时间复杂度必须是<code>N^2</code>。
+啊啊，实在想不出来了。</p>
+<p>第二天，既然要求时间复杂度为<code>NlogN</code>那么就必然不能遍历求出<code>s(i,j)</code>，但是
+题目要求的是求出<code>Num(s(i,j)) for 0 &lt;= i &lt;= j &lt; n　and lower &lt;= s(i,j) &lt;= upper</code>
+，也就是说给出个数就行，因此确实不一定要给出所有的<code>s(i,j)</code>。嗯，有点进展了。</p>
+<p>第三天，排序算法的复杂度是<code>NlogN</code>，怎么才能依靠排序算法求出呢。难道对所有的
+<code>s(i,j)</code>进行排序么？这样肯定不行。
+能否使用老办法画图呢？这样好观察一下。但是仔细想了想，这是一个三维图。
+纸上画不出来。
+只好画一个二维图吧。下图是对数组<code>[5,7,8,-2,1]</code>画的二维表格。格子
+中的数字就是<code>s(i,j)</code>。</p>
+<p><img src="/images/327-1.png" alt="327-1"></p>
+<p>我仔细的盯着看。我给这种解决问题的方式，起了
+个名字——<code>死亡凝视</code>。看过<code>The Big Bang</code>的朋友可能记得<code>Sheldon</code>和<code>Raj</code>一起
+工作的样子，就是一动不动的看着黑板上的公式，看上一整天。</p>
+<p><img src="/images/327-2.jpg" alt="327-2"></p>
+<p>嘿嘿，你们不要笑啊，我的方式差不多。只不过是盯着表格。这样的表格
+其实我画了很多。但是只有这个我看出了规律。</p>
+<p><img src="/images/327-3.png" alt="327-3"></p>
+<p>看出来了么，三列带颜色的数字。是不是发现它们有相同的趋势呢？
+是的它们有相同的趋势。</p>
+<p>如果没有看出来。我再画一个图。看看这三列数字和蓝色数字的关系。</p>
+<p><img src="/images/327-4.png" alt="327-4"></p>
+<p>是的。<code>20 - 5 = 15</code>，<code>18 - 5 = 13</code>，<code>19 - 5 = 14</code>。
+假如上下区间为<code>[12,18]</code>，那么对于排序后的第一列<code>[5,12,18,19,20]</code>，
+可以使用二分查找法找出上限的位置是2，下限的位置为1，个数为2。
+那么第二列<code>[7,15,13,14]</code>在<code>[12,18]</code>的数字的个数为3。
+怎么根据第一列排序后的数字求出呢。嗯，很简单。
+我们把上下限加上5，变成<code>17, 23</code>，这样就可以发现<code>[5,12,18,19,20]</code>找出
+个数为3。嗯，哈哈。真是不错。这样子，就不需要求出所有的<code>s(i,j)</code>了。</p>
+<p>但是，别着急，还是有问题，我们需要在计算第二列的个数的之前，把第一列的数字中的<code>5</code>排除掉。
+否则的话，如果区间是<code>[-100,100]</code>，那么我们就多计算了。</p>
+<h2 id="通过的代码"><a href="#通过的代码" class="headerlink" title="通过的代码"></a><a name="hh3"></a>通过的代码</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># python3.5</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution4</span>(<span class="title class_ inherited__">object</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">countRangeSum</span>(<span class="params">self, nums, lower, upper</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        思路：对 list0 = [s(0,j) for j in (0,n)]先进行排序。</span></span><br><span class="line"><span class="string">         list1 = [s(1,j) for j in (1,n)]，可以由 list0生成。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        :type nums: List[int]</span></span><br><span class="line"><span class="string">        :type lower: int</span></span><br><span class="line"><span class="string">        :type upper: int</span></span><br><span class="line"><span class="string">        :rtype: int</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> nums:</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            result = <span class="number">0</span></span><br><span class="line">            n = <span class="built_in">len</span>(nums)</span><br><span class="line">            l = []</span><br><span class="line">            l2 = []</span><br><span class="line">            <span class="built_in">sum</span> = <span class="number">0</span></span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, n):</span><br><span class="line">                <span class="built_in">sum</span> += nums[i]</span><br><span class="line">                l.append((<span class="built_in">sum</span>, i))</span><br><span class="line">                l2.append((<span class="built_in">sum</span>, i))</span><br><span class="line">            l.sort()</span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, n):</span><br><span class="line">                <span class="keyword">if</span> i &gt; <span class="number">0</span>:</span><br><span class="line">                    lower += nums[i - <span class="number">1</span>]</span><br><span class="line">                    upper += nums[i - <span class="number">1</span>]</span><br><span class="line">                lower_pos = self.find_lower(l, lower)</span><br><span class="line">                upper_pos = self.find_uppper(l, upper)</span><br><span class="line">                <span class="keyword">if</span> lower_pos <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span> <span class="keyword">and</span> upper_pos <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">                    result += upper_pos - lower_pos + <span class="number">1</span></span><br><span class="line">                pos = self.find_lower(l, l2[i][<span class="number">0</span>])</span><br><span class="line">                l.pop(pos) <span class="comment"># &lt;-- 这里是个接近O(N)的操作</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">find</span>(<span class="params">self, nums, target</span>):</span><br><span class="line">        n = <span class="built_in">len</span>(nums)</span><br><span class="line"></span><br><span class="line">        start = <span class="number">0</span></span><br><span class="line">        end = n</span><br><span class="line">        mid = n // <span class="number">2</span></span><br><span class="line">        new_mid = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> <span class="number">0</span> &lt;= mid &lt; n:</span><br><span class="line">            <span class="keyword">if</span> nums[mid][<span class="number">0</span>] == target:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">elif</span> nums[mid][<span class="number">0</span>] &lt; target <span class="keyword">and</span> mid + <span class="number">1</span> &lt; n <span class="keyword">and</span> nums[mid + <span class="number">1</span>][<span class="number">0</span>] &gt; target:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">elif</span> nums[mid][<span class="number">0</span>] &lt; target:</span><br><span class="line">                start = mid</span><br><span class="line">                new_mid = (start + end) // <span class="number">2</span></span><br><span class="line">            <span class="keyword">elif</span> nums[mid][<span class="number">0</span>] &gt; target:</span><br><span class="line">                end = mid</span><br><span class="line">                new_mid = (start + end) // <span class="number">2</span></span><br><span class="line">            <span class="keyword">if</span> new_mid == mid:</span><br><span class="line">                mid += <span class="number">1</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                mid = new_mid</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> mid <span class="keyword">if</span> nums[mid][<span class="number">0</span>] == target <span class="keyword">else</span> mid + <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">find_lower</span>(<span class="params">self, nums, lower</span>):</span><br><span class="line">        n = <span class="built_in">len</span>(nums)</span><br><span class="line">        <span class="keyword">if</span> lower &gt; nums[n - <span class="number">1</span>][<span class="number">0</span>]:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line">        <span class="keyword">elif</span> lower &lt; nums[<span class="number">0</span>][<span class="number">0</span>]:</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            mid = self.find(nums, lower)</span><br><span class="line">            <span class="keyword">while</span> mid - <span class="number">1</span> &gt;= <span class="number">0</span> <span class="keyword">and</span> nums[mid - <span class="number">1</span>][<span class="number">0</span>] == lower:</span><br><span class="line">                mid -= <span class="number">1</span></span><br><span class="line">            <span class="keyword">return</span> mid</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">find_uppper</span>(<span class="params">self, nums, upper</span>):</span><br><span class="line">        n = <span class="built_in">len</span>(nums)</span><br><span class="line">        <span class="keyword">if</span> upper &gt; nums[n - <span class="number">1</span>][<span class="number">0</span>]:</span><br><span class="line">            <span class="keyword">return</span> n - <span class="number">1</span></span><br><span class="line">        <span class="keyword">elif</span> upper &lt; nums[<span class="number">0</span>][<span class="number">0</span>]:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            mid = self.find(nums, upper)</span><br><span class="line">            <span class="keyword">while</span> mid &lt; n - <span class="number">1</span> <span class="keyword">and</span> nums[mid + <span class="number">1</span>][<span class="number">0</span>] == upper:</span><br><span class="line">                mid += <span class="number">1</span></span><br><span class="line">            <span class="keyword">return</span> mid <span class="keyword">if</span> nums[mid][<span class="number">0</span>] == upper <span class="keyword">else</span> mid - <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title=" 总结"></a><a name="hh4"></a> 总结</h2><p>排序操作的时间复杂度是<code>O(NlogN)</code>，而找出每列一列的个数的时间复杂度是<code>O(logN)</code>
+因为一共有N列，所以时间复杂度为<code>O(NlogN)</code>，另外
+我们在代码中使用了对<code>List</code>数据的非尾部的<code>pop</code>操作，这个操作的时间
+复杂度接近<code>O(N)</code>，严格来说，我们的代码的时间复杂度还是<code>O(N^2)</code>。如果能够不使用这个操作。
+我们的代码速度会更快。</p>
+<pre><code>l.pop(pos) # &lt;-- 这里是个接近O(N)的操作
+</code></pre>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/leetcode/" rel="tag"># leetcode</a>
+              <a href="/tags/%E7%AE%97%E6%B3%95/" rel="tag"># 算法</a>
+              <a href="/tags/python/" rel="tag"># python</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/12/26/leetcode-315/" rel="prev" title="[leetcode 315]Count of Smaller Numbers After Self 原创解法">
+      <i class="fa fa-chevron-left"></i> [leetcode 315]Count of Smaller Numbers After Self 原创解法
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/01/12/2017-1-12-cython-on-win10/" rel="next" title="在WIN10下使用Cython">
+      在WIN10下使用Cython <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text"> 题目概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#O-N-2-%E8%A7%A3%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">O(N^2)解法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%BB%E4%BA%A1%E5%87%9D%E8%A7%86"><span class="nav-number">3.</span> <span class="nav-text">死亡凝视</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E7%9A%84%E4%BB%A3%E7%A0%81"><span class="nav-number">4.</span> <span class="nav-text">通过的代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text"> 总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">alenym@qq.com</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alenym@qq.com</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

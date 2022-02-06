@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"threelambda.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="CythonCython不是CPython的简称，而是一种提升Python代码执行效率的解决方案。 据说一般达到30x。一会我们来看看是不是真的。这个技术对老鸟来说已经是好多 年前的了。但是很多情况下python用户真的用不上，所以不知道也无妨。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在WIN10下使用Cython">
+<meta property="og:url" content="http://threelambda.com/2017/01/12/2017-1-12-cython-on-win10/index.html">
+<meta property="og:site_name" content="3.λ.形而下技术博客">
+<meta property="og:description" content="CythonCython不是CPython的简称，而是一种提升Python代码执行效率的解决方案。 据说一般达到30x。一会我们来看看是不是真的。这个技术对老鸟来说已经是好多 年前的了。但是很多情况下python用户真的用不上，所以不知道也无妨。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-01-11T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-02-06T08:15:16.680Z">
+<meta property="article:author" content="alenym@qq.com">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="Cython">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://threelambda.com/2017/01/12/2017-1-12-cython-on-win10/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>在WIN10下使用Cython | 3.λ.形而下技术博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">3.λ.形而下技术博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">这里只关注技术实现，用代码说话。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://threelambda.com/2017/01/12/2017-1-12-cython-on-win10/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="alenym@qq.com">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="3.λ.形而下技术博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          在WIN10下使用Cython
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-01-12 00:00:00" itemprop="dateCreated datePublished" datetime="2017-01-12T00:00:00+08:00">2017-01-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-02-06 16:15:16" itemprop="dateModified" datetime="2022-02-06T16:15:16+08:00">2022-02-06</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Cython"><a href="#Cython" class="headerlink" title=" Cython"></a><a name="hh0"></a> Cython</h2><p><code>Cython</code>不是<code>CPython</code>的简称，而是一种提升<code>Python</code>代码执行效率的解决方案。
+据说一般达到30x。一会我们来看看是不是真的。这个技术对老鸟来说已经是好多
+年前的了。但是很多情况下python用户真的用不上，所以不知道也无妨。</p>
+<span id="more"></span>
+
+<h2 id="软件安装"><a href="#软件安装" class="headerlink" title=" 软件安装"></a><a name="hh1"></a> 软件安装</h2><p>我已经迁移到<code>python3</code>了，使用的是<code>Anaconda</code>。感谢<code>Anaconda</code>让我们的生活变
+的更加美好。以下软件安装的顺序不要错。</p>
+<ol>
+<li>安装Visual C++ Build Tools 2015</li>
+<li>安装Anaconda3</li>
+</ol>
+<h2 id="跟着Cython的tutorial走"><a href="#跟着Cython的tutorial走" class="headerlink" title=" 跟着Cython的tutorial走"></a><a name="hh2"></a> 跟着Cython的tutorial走</h2><p>先创建一个helloworld.pyx文件。内容如下。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># helloworld.pyx</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;hello cython!&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">fib</span>(<span class="params">n</span>):</span><br><span class="line">    <span class="keyword">if</span> n == <span class="number">0</span> <span class="keyword">or</span> n == <span class="number">1</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> fib(n - <span class="number">2</span>) + fib(n - <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>再创建一个setup.py文件。内容如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#setup.py</span></span><br><span class="line"><span class="keyword">from</span> distutils.core <span class="keyword">import</span> setup</span><br><span class="line"><span class="keyword">from</span> Cython.Build <span class="keyword">import</span> cythonize</span><br><span class="line"></span><br><span class="line">setup(</span><br><span class="line">    ext_modules = cythonize(<span class="string">&quot;helloworld.pyx&quot;</span>)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>然后在命令行输入</p>
+<pre><code>D:\tmp\oo&gt;python setup.py build_ext --inplace
+running build_ext
+building &#39;helloworld&#39; extension
+C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\BIN\x86_amd64\cl.exe /c /nologo /Ox /W3 /GL /DNDEBUG /MD -IC:\Anaconda3\include -IC:\Anaconda3\include &quot;-IC:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\INCLUDE&quot; &quot;-IC:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt&quot; &quot;-IC:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\shared&quot; &quot;-IC:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\um&quot; &quot;-IC:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\winrt&quot; /Tchelloworld.c /Fobuild\temp.win-amd64-3.5\Release\helloworld.obj
+helloworld.c
+C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\BIN\x86_amd64\link.exe /nologo /INCREMENTAL:NO /LTCG /DLL /MANIFEST:EMBED,ID=2 /MANIFESTUAC:NO /LIBPATH:C:\Anaconda3\libs /LIBPATH:C:\Anaconda3\PCbuild\amd64 &quot;/LIBPATH:C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\LIB\amd64&quot; &quot;/LIBPATH:C:\Program Files (x86)\Windows Kits\10\lib\10.0.10240.0\ucrt\x64&quot; &quot;/LIBPATH:C:\Program Files (x86)\Windows Kits\10\lib\10.0.10240.0\um\x64&quot; /EXPORT:PyInit_helloworld build\temp.win-amd64-3.5\Release\helloworld.obj /OUT:D:\tmp\oo\helloworld.cp35-win_amd64.pyd /IMPLIB:build\temp.win-amd64-3.5\Release\helloworld.cp35-win_amd64.lib
+helloworld.obj : warning LNK4197: export &#39;PyInit_helloworld&#39; specified multiple times; using first specification
+   Creating library build\temp.win-amd64-3.5\Release\helloworld.cp35-win_amd64.lib and object build\temp.win-amd64-3.5\Release\helloworld.cp35-win_amd64.exp
+Generating code
+Finished generating code
+</code></pre>
+<p>(WIN10下的命令窗口终于可以使用ctrl-c和ctrl-v了。泪奔。)
+可以发现多了一个<code>.pyd</code>文件。然后测试一下。</p>
+<pre><code>D:\tmp\oo&gt;python
+Python 3.5.2 |Anaconda custom (64-bit)| (default, Jul  5 2016, 11:41:13) [MSC v.1900 64 bit (AMD64)] on win32
+Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
+&gt;&gt;&gt; import helloworld as h
+hello cython!
+&gt;&gt;&gt;h.fib(3)
+3
+</code></pre>
+<p>真是不错啊。可是如果你换一个目录比如不在当前包含<code>.pyd</code>的目录下，
+再想导入helloworld则是不行的。怎么回事，我们不是已经setup了么。
+原因在于<code>--inplace</code>这个参数，它表示只生成动态链接库。</p>
+<h2 id="与python代码进行测试比较"><a href="#与python代码进行测试比较" class="headerlink" title=" 与python代码进行测试比较"></a><a name="hh3"></a> 与python代码进行测试比较</h2><p>我们还在那个目录下创建一个<code>test.py</code>文件。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#test.py</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">fib</span>(<span class="params">n</span>):</span><br><span class="line">    <span class="keyword">if</span> n == <span class="number">0</span> <span class="keyword">or</span> n == <span class="number">1</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> fib(n - <span class="number">2</span>) + fib(n - <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">test_fib</span>():</span><br><span class="line">    <span class="keyword">import</span> timeit</span><br><span class="line">    n = <span class="number">1000</span></span><br><span class="line">    t = timeit.timeit(<span class="string">&quot;fib(25)&quot;</span>, number=n, setup=<span class="string">&quot;from __main__ import fib&quot;</span>)</span><br><span class="line">    time = t / n</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;python fib : &#123;:.8f&#125;s&quot;</span>.<span class="built_in">format</span>(time))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">test_fib_cython</span>():</span><br><span class="line">    <span class="keyword">import</span> timeit</span><br><span class="line">    n = <span class="number">1000</span></span><br><span class="line">    t = timeit.timeit(<span class="string">&quot;h.fib(25)&quot;</span>, number=n, setup=<span class="string">&quot;import helloworld as h&quot;</span>)</span><br><span class="line">    time = t / n</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;cython fib : &#123;:.8f&#125;s&quot;</span>.<span class="built_in">format</span>(time))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    test_fib()</span><br><span class="line">    test_fib_cython()</span><br></pre></td></tr></table></figure>
+
+
+<p>然后运行</p>
+<pre><code>D:\tmp\oo&gt;python test.py
+python fib : 0.05887972s
+hello cython!
+cython fib : 0.01739922s
+</code></pre>
+<p>怎么回事，说好的30x呢，还轻轻松松？别着急，我们把之前的<code>helloworld.pyx</code>
+修改一下。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#helloworld.pyx</span></span><br><span class="line">cpdef <span class="built_in">int</span> fib(<span class="built_in">int</span> n) :</span><br><span class="line">    <span class="keyword">if</span> n == <span class="number">0</span> <span class="keyword">or</span> n == <span class="number">1</span> :</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">    <span class="keyword">else</span> :</span><br><span class="line">        <span class="keyword">return</span> fib(n - <span class="number">2</span>) + fib(n - <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+
+<p>再运行一下瞅瞅。</p>
+<pre><code>D:\tmp\oo&gt;python test.py
+python fib : 0.05774631s
+hello cython!
+cython fib : 0.00059495s
+</code></pre>
+<p>真是不错哦，诚不我欺，100x。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+              <a href="/tags/Cython/" rel="tag"># Cython</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/12/31/leetcode-327/" rel="prev" title="[leetcode 327]Count of Range Sum 原创解法">
+      <i class="fa fa-chevron-left"></i> [leetcode 327]Count of Range Sum 原创解法
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/01/18/2017-1-18-venv-no-pip/" rel="next" title="解决python3使用system-site-packages创建虚拟环境时没有pip的问题">
+      解决python3使用system-site-packages创建虚拟环境时没有pip的问题 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Cython"><span class="nav-number">1.</span> <span class="nav-text"> Cython</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text"> 软件安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B7%9F%E7%9D%80Cython%E7%9A%84tutorial%E8%B5%B0"><span class="nav-number">3.</span> <span class="nav-text"> 跟着Cython的tutorial走</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8Epython%E4%BB%A3%E7%A0%81%E8%BF%9B%E8%A1%8C%E6%B5%8B%E8%AF%95%E6%AF%94%E8%BE%83"><span class="nav-number">4.</span> <span class="nav-text"> 与python代码进行测试比较</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">alenym@qq.com</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alenym@qq.com</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
