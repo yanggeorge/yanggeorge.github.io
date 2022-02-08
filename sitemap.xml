@@ -419,14 +419,14 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/tags/%E6%8A%80%E5%B7%A7/</loc>
+    <loc>http://threelambda.com/tags/R/</loc>
     <lastmod>2022-02-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://threelambda.com/tags/R/</loc>
+    <loc>http://threelambda.com/tags/%E6%8A%80%E5%B7%A7/</loc>
     <lastmod>2022-02-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -482,6 +482,13 @@
   </url>
   
   <url>
+    <loc>http://threelambda.com/tags/grails/</loc>
+    <lastmod>2022-02-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>http://threelambda.com/tags/gradle/</loc>
     <lastmod>2022-02-08</lastmod>
     <changefreq>weekly</changefreq>
@@ -490,13 +497,6 @@
   
   <url>
     <loc>http://threelambda.com/tags/build/</loc>
-    <lastmod>2022-02-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/tags/grails/</loc>
     <lastmod>2022-02-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -748,14 +748,14 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/tags/javacc/</loc>
+    <loc>http://threelambda.com/tags/go/</loc>
     <lastmod>2022-02-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://threelambda.com/tags/go/</loc>
+    <loc>http://threelambda.com/tags/javacc/</loc>
     <lastmod>2022-02-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
