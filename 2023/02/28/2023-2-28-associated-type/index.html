@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"threelambda.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="关联类型(Associated type)关联类型是Rust为了解决类型参数(type parameter)之间的依赖关系而引入的。清楚的解释引入动机的文章就是 RFC095 。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Iced的过程理解Rust的关联类型">
+<meta property="og:url" content="http://threelambda.com/2023/02/28/2023-2-28-associated-type/index.html">
+<meta property="og:site_name" content="3.λ.形而下技术博客">
+<meta property="og:description" content="关联类型(Associated type)关联类型是Rust为了解决类型参数(type parameter)之间的依赖关系而引入的。清楚的解释引入动机的文章就是 RFC095 。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://threelambda.com/images/20230228-theme.png">
+<meta property="og:image" content="http://threelambda.com/images/20230228-button_style_for_theme.png">
+<meta property="og:image" content="http://threelambda.com/images/20230228-calculator.png">
+<meta property="article:published_time" content="2023-02-27T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-03-01T04:19:54.247Z">
+<meta property="article:author" content="alenym@qq.com">
+<meta property="article:tag" content="rust">
+<meta property="article:tag" content="iced">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://threelambda.com/images/20230228-theme.png">
+
+<link rel="canonical" href="http://threelambda.com/2023/02/28/2023-2-28-associated-type/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>使用Iced的过程理解Rust的关联类型 | 3.λ.形而下技术博客</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X6VGKB3GW8"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-X6VGKB3GW8');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">3.λ.形而下技术博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">这里只关注技术实现，用代码说话。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://threelambda.com/2023/02/28/2023-2-28-associated-type/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="alenym@qq.com">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="3.λ.形而下技术博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用Iced的过程理解Rust的关联类型
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-02-28 00:00:00" itemprop="dateCreated datePublished" datetime="2023-02-28T00:00:00+08:00">2023-02-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-01 12:19:54" itemprop="dateModified" datetime="2023-03-01T12:19:54+08:00">2023-03-01</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="关联类型-Associated-type"><a href="#关联类型-Associated-type" class="headerlink" title="关联类型(Associated type)"></a>关联类型(Associated type)</h2><p>关联类型是Rust为了解决类型参数(type parameter)之间的依赖关系而引入的。清楚的解释引入动机的文章就是
+<a target="_blank" rel="noopener" href="https://github.com/rust-lang/rfcs/blob/master/text/0195-associated-items.md#motivation">RFC095</a>
+。</p>
+<span id="more"></span>
+
+<p>同时，这篇文章详细说明了如何<a target="_blank" rel="noopener" href="https://github.com/rust-lang/rfcs/blob/master/text/0195-associated-items.md#motivation">引用关联类型</a>。</p>
+<h2 id="一个实际的例子"><a href="#一个实际的例子" class="headerlink" title="一个实际的例子"></a>一个实际的例子</h2><p>我们在使用<a target="_blank" rel="noopener" href="https://github.com/iced-rs/iced">Iced</a>（一个跨平台的GUI库）开发一个自定义样式的button的时候，
+遇到了关联类型。</p>
+<p>以下代码创建一个button对象，宽度80，高50，样式怎么输入呢？</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_ invoke__">button</span>(</span><br><span class="line">    <span class="title function_ invoke__">text</span>(input).<span class="title function_ invoke__">size</span>(<span class="number">24</span>)</span><br><span class="line">        .<span class="title function_ invoke__">vertical_alignment</span>(Vertical::Center)</span><br><span class="line">        .<span class="title function_ invoke__">horizontal_alignment</span>(Horizontal::Center)</span><br><span class="line">)</span><br><span class="line">    .<span class="title function_ invoke__">padding</span>(<span class="number">10</span>)</span><br><span class="line">    .<span class="title function_ invoke__">width</span>(<span class="number">80</span>)</span><br><span class="line">    .<span class="title function_ invoke__">height</span>(<span class="number">50</span>)</span><br><span class="line">    .<span class="title function_ invoke__">style</span>( ?? )    <span class="comment">/// &lt;-- 这里该写什么呢？</span></span><br><span class="line">    .<span class="title function_ invoke__">on_press</span>(msg)</span><br></pre></td></tr></table></figure>
+<p>看看这个style方法的签名。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">iced_native::widget::button </span><br><span class="line">impl&lt;&#x27;a, Message, Renderer&gt; Button&lt;&#x27;a, Message, Renderer&gt; </span><br><span class="line">where     </span><br><span class="line">    Renderer: crate::Renderer,     </span><br><span class="line">    Renderer::Theme: StyleSheet,</span><br><span class="line">pub fn style(mut self, style: &lt;Renderer::Theme as StyleSheet&gt;::Style) -&gt; Self</span><br><span class="line">-------------------------------------------------------------</span><br><span class="line">Sets the style variant of this Button.</span><br></pre></td></tr></table></figure>
+<p>style方法是Button结构体的一个关联方法。</p>
+<p>Button结构体是一个组件，它有两个类型参数，Message和Renderer。
+其中<code>Renderer</code>类型参数的Bound在where中明确</p>
+<ul>
+<li>Renderer: crate::Renderer   需要实现<code>crate::Renderer</code> trait.</li>
+<li>Renderer::Theme: StyleSheet 并且该<code>crate::Renderer</code> trait的<code>Theme</code>关联类型需要实现 <code>StyleSheet</code> trait.</li>
+</ul>
+<p><code>crate::Renderer</code> trait如下，有一个<code>Theme</code>关联类型</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// A component that can be used by widgets to draw themselves on a screen.</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">trait</span> <span class="title class_">Renderer</span>: <span class="built_in">Sized</span> &#123;</span><br><span class="line">    <span class="comment">/// The supported theme of the [`Renderer`].</span></span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">Theme</span>;</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+
+<p>还是回到这个style方法<code>pub fn style(mut self, style: &lt;Renderer::Theme as StyleSheet&gt;::Style) -&gt; Self</code>。</p>
+<p>这个方法的入参style的类型是<code>&lt;Renderer::Theme as StyleSheet&gt;::Style</code>，这个PATH的前缀是
+<code>&lt;Renderer::Theme as StyleSheet&gt;</code> 表示实现了Renderer trait的类型的<code>Theme</code>关联类型 
+需要实现<code>StyleSheet</code> trait。</p>
+<p>因此<code>&lt;Renderer::Theme as StyleSheet&gt;::Style</code>完整的含义就是 </p>
+<ol>
+<li>某个渲染类型 SomeRenderer 实现了<code>crate::Renderer</code> trait. </li>
+<li>某个样式板类型 SomeType 实现了<code>button::StyleSheet</code>。</li>
+<li>且 SomeRenderer::Theme &#x3D; SomeType</li>
+<li><code>&lt;Renderer::Theme as StyleSheet&gt;::Style</code>就是 SomeType::Style &#x3D; &lt; ?? &gt;.</li>
+</ol>
+<p>因此style方法的入参的实际类型就是SomeStyleSheet::Style的实际类型。</p>
+<ol>
+<li>先看<code>crate::Renderer</code> trait的实现类型有那些，可以看到
+<img src="/./images/20230228-theme.png" alt="theme">
+查到iced_style::theme::Theme是一个enum.</li>
+<li>接着看Theme类型如何实现<code>button::StyleSheet</code> trait
+<img src="/./images/20230228-button_style_for_theme.png" alt="button_stylesheet_for_theme">
+从这里可以看到style方法的入参是iced_style::theme::Button, 是一个枚举类型。</li>
+</ol>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// The style of a button.</span></span><br><span class="line"><span class="meta">#[derive(Default)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">enum</span> <span class="title class_">Button</span> &#123;</span><br><span class="line">    <span class="comment">/// The primary style.</span></span><br><span class="line">    <span class="meta">#[default]</span></span><br><span class="line">    Primary,</span><br><span class="line">    <span class="comment">/// The secondary style.</span></span><br><span class="line">    Secondary,</span><br><span class="line">    <span class="comment">/// The positive style.</span></span><br><span class="line">    Positive,</span><br><span class="line">    <span class="comment">/// The destructive style.</span></span><br><span class="line">    Destructive,</span><br><span class="line">    <span class="comment">/// The text style.</span></span><br><span class="line">    <span class="comment">///</span></span><br><span class="line">    <span class="comment">/// Useful for links!</span></span><br><span class="line">    Text,</span><br><span class="line">    <span class="comment">/// A custom style.</span></span><br><span class="line">    <span class="title function_ invoke__">Custom</span>(<span class="type">Box</span>&lt;<span class="keyword">dyn</span> button::StyleSheet&lt;Style = Theme&gt;&gt;),</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+<p>从定义可以看出，如果我们要实现自定义的样式就需要使用Button::Custom(Box::new(??)).</p>
+<p>而<code>button::StyleSheet&lt;Style = Theme&gt;</code>类型意思是某类型实现了<code>button::StyleSheet</code> trait,
+并且关联类型Style &#x3D; iced_style::theme::Theme. </p>
+<p>所以我们可以写一个自定义的button样式了。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">ButtonStyle</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">StyleSheet</span> <span class="keyword">for</span> <span class="title class_">ButtonStyle</span> &#123;</span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">Style</span> = Theme;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">active</span>(&amp;<span class="keyword">self</span>, style: &amp;<span class="keyword">Self</span>::Style) <span class="punctuation">-&gt;</span> Appearance &#123;</span><br><span class="line">        Appearance &#123;</span><br><span class="line">            shadow_offset: <span class="built_in">Default</span>::<span class="title function_ invoke__">default</span>(),</span><br><span class="line">            background: <span class="title function_ invoke__">Some</span>(Background::<span class="title function_ invoke__">Color</span>(Color::<span class="title function_ invoke__">from_rgb8</span>(<span class="number">204</span>, <span class="number">204</span>, <span class="number">204</span>))),</span><br><span class="line">            border_radius: <span class="number">5.0</span>,</span><br><span class="line">            border_width: <span class="number">0.0</span>,</span><br><span class="line">            border_color: <span class="built_in">Default</span>::<span class="title function_ invoke__">default</span>(),</span><br><span class="line">            text_color: Color::<span class="title function_ invoke__">from_rgb8</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>),</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>style方法的入参就是<code>Button::Custom(Box::new(ButtonStyle&#123;&#125;))</code>。</p>
+<p>最后style方法的使用如下</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_ invoke__">button</span>(</span><br><span class="line">    <span class="title function_ invoke__">text</span>(input).<span class="title function_ invoke__">size</span>(<span class="number">24</span>)</span><br><span class="line">        .<span class="title function_ invoke__">vertical_alignment</span>(Vertical::Center)</span><br><span class="line">        .<span class="title function_ invoke__">horizontal_alignment</span>(Horizontal::Center)</span><br><span class="line">)</span><br><span class="line">    .<span class="title function_ invoke__">padding</span>(<span class="number">10</span>)</span><br><span class="line">    .<span class="title function_ invoke__">width</span>(<span class="number">80</span>)</span><br><span class="line">    .<span class="title function_ invoke__">height</span>(<span class="number">50</span>)</span><br><span class="line">    .<span class="title function_ invoke__">style</span>( Button::<span class="title function_ invoke__">Custom</span>(Box::<span class="title function_ invoke__">new</span>(ButtonStyle&#123;&#125;)) ) <span class="comment">/// 这里该写什么呢？</span></span><br><span class="line">    .<span class="title function_ invoke__">on_press</span>(msg)</span><br></pre></td></tr></table></figure>
+
+<h2 id="关于Iced"><a href="#关于Iced" class="headerlink" title="关于Iced"></a>关于Iced</h2><p><code>Iced</code>使用的Elm模型非常容易使用。我用它实现一个简单的计算器。
+<img src="/./images/20230228-calculator.png" alt="calculator"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>关联类型是Rust非常重要的特性。如果不深入理解的话，编译的错误信息都看不明白。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/rust/" rel="tag"># rust</a>
+              <a href="/tags/iced/" rel="tag"># iced</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/01/12/2023-1-12-8-queens-chatgpt/" rel="prev" title="通过ChatGPT实现Rust语言的八皇后算法">
+      <i class="fa fa-chevron-left"></i> 通过ChatGPT实现Rust语言的八皇后算法
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E8%81%94%E7%B1%BB%E5%9E%8B-Associated-type"><span class="nav-number">1.</span> <span class="nav-text">关联类型(Associated type)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E5%AE%9E%E9%99%85%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="nav-number">2.</span> <span class="nav-text">一个实际的例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8EIced"><span class="nav-number">3.</span> <span class="nav-text">关于Iced</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">alenym@qq.com</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alenym@qq.com</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
