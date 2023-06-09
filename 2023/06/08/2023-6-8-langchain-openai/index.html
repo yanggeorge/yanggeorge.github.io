@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"threelambda.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="什么是LangChain自从ChatGPT出现以来，就一直在使用，那么ChatGPT毕竟是有局限性的，因为ChatGPT训练的语料是有限的。很多问题回答不了， 也经常会胡言乱语闹笑话。 但是ChatGPT背后的大语言模型LLM是可以扩展的，也就是说，可以把特定的领域知识让LLM（大语言模型）学习。这样就在一定 程度上解决了局限性。 而LangChain项目就是这样的杀手锏，这里是官方文档。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="玩一下LangChain">
+<meta property="og:url" content="http://threelambda.com/2023/06/08/2023-6-8-langchain-openai/index.html">
+<meta property="og:site_name" content="3.λ.形而下技术博客">
+<meta property="og:description" content="什么是LangChain自从ChatGPT出现以来，就一直在使用，那么ChatGPT毕竟是有局限性的，因为ChatGPT训练的语料是有限的。很多问题回答不了， 也经常会胡言乱语闹笑话。 但是ChatGPT背后的大语言模型LLM是可以扩展的，也就是说，可以把特定的领域知识让LLM（大语言模型）学习。这样就在一定 程度上解决了局限性。 而LangChain项目就是这样的杀手锏，这里是官方文档。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://threelambda.com/images/chatgpt-duanyu-brothers.png">
+<meta property="og:image" content="http://threelambda.com/images/langchain-duanyu1.png">
+<meta property="og:image" content="http://threelambda.com/images/langchain-duanyu2.png">
+<meta property="article:published_time" content="2023-06-07T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-06-09T06:36:14.675Z">
+<meta property="article:author" content="alenym@qq.com">
+<meta property="article:tag" content="langchain">
+<meta property="article:tag" content="openai">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://threelambda.com/images/chatgpt-duanyu-brothers.png">
+
+<link rel="canonical" href="http://threelambda.com/2023/06/08/2023-6-8-langchain-openai/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>玩一下LangChain | 3.λ.形而下技术博客</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X6VGKB3GW8"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-X6VGKB3GW8');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">3.λ.形而下技术博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">这里只关注技术实现，用代码说话。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://threelambda.com/2023/06/08/2023-6-8-langchain-openai/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="alenym@qq.com">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="3.λ.形而下技术博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          玩一下LangChain
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-06-08 00:00:00" itemprop="dateCreated datePublished" datetime="2023-06-08T00:00:00+08:00">2023-06-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-06-09 14:36:14" itemprop="dateModified" datetime="2023-06-09T14:36:14+08:00">2023-06-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="什么是LangChain"><a href="#什么是LangChain" class="headerlink" title="什么是LangChain"></a>什么是LangChain</h2><p>自从ChatGPT出现以来，就一直在使用，那么ChatGPT毕竟是有局限性的，因为ChatGPT训练的语料是有限的。很多问题回答不了，
+也经常会胡言乱语闹笑话。</p>
+<p>但是ChatGPT背后的大语言模型LLM是可以扩展的，也就是说，可以把特定的领域知识让LLM（大语言模型）学习。这样就在一定
+程度上解决了局限性。</p>
+<p>而<a target="_blank" rel="noopener" href="https://github.com/hwchase17/langchain">LangChain项目</a>就是这样的杀手锏，这里是<a target="_blank" rel="noopener" href="https://python.langchain.com/en/latest/">官方文档</a>。</p>
+<span id="more"></span>
+
+<p>本文代码和例子参考了<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42608414/article/details/129493302">使用langchain打造自己的大型语言模型(LLMs)</a>，对中文资料进行处理。</p>
+<h2 id="OpenAI的key"><a href="#OpenAI的key" class="headerlink" title="OpenAI的key"></a>OpenAI的key</h2><p>LangChain是一个框架，如果要使用，则需要调用大语言模型的API。正好有一朋友申请了<code>OPENAI_API_KEY</code>，这样就可以开始
+跑跑代码了。</p>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><p>以下是代码。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">import os</span><br><span class="line">from langchain.embeddings.openai import OpenAIEmbeddings</span><br><span class="line">from langchain.vectorstores import Chroma</span><br><span class="line">from langchain.text_splitter import TokenTextSplitter</span><br><span class="line">from langchain.llms import OpenAI</span><br><span class="line">from langchain.document_loaders import DirectoryLoader</span><br><span class="line">from langchain.chains import RetrievalQAWithSourcesChain, ChatVectorDBChain</span><br><span class="line">import jieba as jb</span><br><span class="line"></span><br><span class="line">os.environ[&quot;OPENAI_API_KEY&quot;] = &quot;sk-xxxxxxx&quot;  # &lt;-- 这里替换为申请的key</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def preprocess_txt():</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">由于中文的语法的特殊性，对于中文的文档必须要做一些预处理工作：词语的拆分，</span><br><span class="line">也就是要把中文的语句拆分成一个个基本的词语单位，这里我们会用的一个分词工具：jieba，</span><br><span class="line">它会帮助我们对资料库中的所有文本文件进行分词处理。不过我们首先将这3个时事新闻的文本文件放置到Data文件夹下面，</span><br><span class="line">然后在data文件夹下面再建一个子文件夹:cut, 用来存放被分词过的文档：</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    files = [&#x27;天龙八部.txt&#x27;]</span><br><span class="line"></span><br><span class="line">    for file in files:</span><br><span class="line">        # 读取data文件夹中的中文文档</span><br><span class="line">        my_file = f&quot;./data/&#123;file&#125;&quot;</span><br><span class="line">        with open(my_file, &quot;r&quot;, encoding=&#x27;utf-8&#x27;) as f:</span><br><span class="line">            data = f.read()</span><br><span class="line"></span><br><span class="line">        # 对中文文档进行分词处理</span><br><span class="line">        cut_data = &quot; &quot;.join([w for w in list(jb.cut(data))])</span><br><span class="line">        # 分词处理后的文档保存到data文件夹中的cut子文件夹中</span><br><span class="line">        cut_file = f&quot;./data/cut/cut_&#123;file&#125;&quot;</span><br><span class="line">        with open(cut_file, &#x27;w&#x27;) as f:</span><br><span class="line">            f.write(cut_data)</span><br><span class="line">            f.close()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def embeddings():</span><br><span class="line">    # 加载文档</span><br><span class="line">    loader = DirectoryLoader(&#x27;./data/cut&#x27;, glob=&#x27;**/*.txt&#x27;)</span><br><span class="line">    docs = loader.load()</span><br><span class="line">    # 文档切块</span><br><span class="line">    text_splitter = TokenTextSplitter(chunk_size=1000, chunk_overlap=0)</span><br><span class="line">    doc_texts = text_splitter.split_documents(docs)</span><br><span class="line">    # 调用openai Embeddings</span><br><span class="line">    embeddings = OpenAIEmbeddings()</span><br><span class="line">    # 向量化</span><br><span class="line">    vectordb = Chroma.from_documents(doc_texts, embeddings, persist_directory=&quot;./data/cut&quot;)</span><br><span class="line">    vectordb.persist()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def ask():</span><br><span class="line">    embeddings = OpenAIEmbeddings()</span><br><span class="line"></span><br><span class="line">    docsearch = Chroma(persist_directory=&quot;./data/cut&quot;, embedding_function=embeddings)</span><br><span class="line"></span><br><span class="line">    chain = ChatVectorDBChain.from_llm(OpenAI(temperature=0, model_name=&quot;gpt-3.5-turbo&quot;), docsearch,</span><br><span class="line">                                       return_source_documents=True)</span><br><span class="line"></span><br><span class="line">    while True:</span><br><span class="line">        try:</span><br><span class="line">            # code to be executed repeatedly</span><br><span class="line">            user_input = input(&quot;What&#x27;s your question: &quot;)</span><br><span class="line"></span><br><span class="line">            chat_history = []</span><br><span class="line">            result = chain(&#123;&quot;question&quot;: user_input, &quot;chat_history&quot;: chat_history&#125;)</span><br><span class="line"></span><br><span class="line">            print(&quot;Answer: &quot; + result[&quot;answer&quot;].replace(&#x27;\n&#x27;, &#x27; &#x27;))</span><br><span class="line">        except KeyboardInterrupt:</span><br><span class="line">            # code to be executed when Ctrl+C is pressed</span><br><span class="line">            break</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &#x27;__main__&#x27;:</span><br><span class="line">    preprocess_txt()</span><br><span class="line">    embeddings()</span><br><span class="line">    ask()</span><br></pre></td></tr></table></figure>
+
+<h2 id="代码依赖模块"><a href="#代码依赖模块" class="headerlink" title="代码依赖模块"></a>代码依赖模块</h2><p>Python3.11安装依赖</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
+
+<p>requirements.txt内容如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br></pre></td><td class="code"><pre><span class="line">aiohttp==3.8.4</span><br><span class="line">aiosignal==1.3.1</span><br><span class="line">anyio==3.7.0</span><br><span class="line">argilla==1.8.0</span><br><span class="line">async-timeout==4.0.2</span><br><span class="line">attrs==23.1.0</span><br><span class="line">backoff==2.2.1</span><br><span class="line">certifi==2023.5.7</span><br><span class="line">cffi==1.15.1</span><br><span class="line">chardet==5.1.0</span><br><span class="line">charset-normalizer==3.1.0</span><br><span class="line">chromadb==0.3.26</span><br><span class="line">click==8.1.3</span><br><span class="line">clickhouse-connect==0.6.0</span><br><span class="line">coloredlogs==15.0.1</span><br><span class="line">commonmark==0.9.1</span><br><span class="line">contourpy==1.0.7</span><br><span class="line">cryptography==41.0.1</span><br><span class="line">cycler==0.11.0</span><br><span class="line">dataclasses-json==0.5.7</span><br><span class="line">Deprecated==1.2.14</span><br><span class="line">duckdb==0.8.0</span><br><span class="line">et-xmlfile==1.1.0</span><br><span class="line">fastapi==0.96.0</span><br><span class="line">flatbuffers==23.5.26</span><br><span class="line">fonttools==4.39.4</span><br><span class="line">frozenlist==1.3.3</span><br><span class="line">greenlet==2.0.2</span><br><span class="line">h11==0.14.0</span><br><span class="line">hnswlib==0.7.0</span><br><span class="line">httpcore==0.16.3</span><br><span class="line">httptools==0.5.0</span><br><span class="line">httpx==0.23.3</span><br><span class="line">humanfriendly==10.0</span><br><span class="line">idna==3.4</span><br><span class="line">jieba==0.42.1</span><br><span class="line">joblib==1.2.0</span><br><span class="line">kiwisolver==1.4.4</span><br><span class="line">langchain==0.0.191</span><br><span class="line">lxml==4.9.2</span><br><span class="line">lz4==4.3.2</span><br><span class="line">Markdown==3.4.3</span><br><span class="line">marshmallow==3.19.0</span><br><span class="line">marshmallow-enum==1.5.1</span><br><span class="line">matplotlib==3.7.1</span><br><span class="line">monotonic==1.6</span><br><span class="line">mpmath==1.3.0</span><br><span class="line">msg-parser==1.2.0</span><br><span class="line">multidict==6.0.4</span><br><span class="line">mypy-extensions==1.0.0</span><br><span class="line">nltk==3.8.1</span><br><span class="line">numexpr==2.8.4</span><br><span class="line">numpy==1.23.5</span><br><span class="line">olefile==0.46</span><br><span class="line">onnxruntime==1.15.0</span><br><span class="line">openai==0.27.7</span><br><span class="line">openapi-schema-pydantic==1.2.4</span><br><span class="line">openpyxl==3.1.2</span><br><span class="line">overrides==7.3.1</span><br><span class="line">packaging==23.1</span><br><span class="line">pandas==1.5.3</span><br><span class="line">pdf2image==1.16.3</span><br><span class="line">pdfminer.six==20221105</span><br><span class="line">Pillow==9.5.0</span><br><span class="line">posthog==3.0.1</span><br><span class="line">protobuf==4.23.2</span><br><span class="line">pulsar-client==3.2.0</span><br><span class="line">pycparser==2.21</span><br><span class="line">pydantic==1.10.8</span><br><span class="line">Pygments==2.15.1</span><br><span class="line">pypandoc==1.11</span><br><span class="line">pyparsing==3.0.9</span><br><span class="line">python-dateutil==2.8.2</span><br><span class="line">python-docx==0.8.11</span><br><span class="line">python-dotenv==1.0.0</span><br><span class="line">python-magic==0.4.27</span><br><span class="line">python-pptx==0.6.21</span><br><span class="line">pytz==2023.3</span><br><span class="line">PyYAML==6.0</span><br><span class="line">regex==2023.6.3</span><br><span class="line">requests==2.31.0</span><br><span class="line">rfc3986==1.5.0</span><br><span class="line">rich==13.0.1</span><br><span class="line">six==1.16.0</span><br><span class="line">sniffio==1.3.0</span><br><span class="line">SQLAlchemy==2.0.15</span><br><span class="line">starlette==0.27.0</span><br><span class="line">sympy==1.12</span><br><span class="line">tabulate==0.9.0</span><br><span class="line">tenacity==8.2.2</span><br><span class="line">tiktoken==0.4.0</span><br><span class="line">tokenizers==0.13.3</span><br><span class="line">tqdm==4.65.0</span><br><span class="line">typer==0.9.0</span><br><span class="line">typing-inspect==0.9.0</span><br><span class="line">typing_extensions==4.6.3</span><br><span class="line">tzdata==2023.3</span><br><span class="line">unstructured==0.7.1</span><br><span class="line">urllib3==2.0.2</span><br><span class="line">uvicorn==0.22.0</span><br><span class="line">uvloop==0.17.0</span><br><span class="line">watchfiles==0.19.0</span><br><span class="line">websockets==11.0.3</span><br><span class="line">wrapt==1.14.1</span><br><span class="line">xlrd==2.0.1</span><br><span class="line">XlsxWriter==3.1.2</span><br><span class="line">yarl==1.9.2</span><br><span class="line">zstandard==0.21.0</span><br></pre></td></tr></table></figure>
+
+<h2 id="文本"><a href="#文本" class="headerlink" title="文本"></a>文本</h2><p>而文本则放在 “.&#x2F;data&#x2F;“ 目录下，</p>
+<p><code>天龙八部.txt</code> 内容如下，就是一些明确的信息。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">段誉和乔峰，虚竹是兄弟。</span><br><span class="line"></span><br><span class="line">阿朱喜欢乔峰。</span><br><span class="line"></span><br><span class="line">段誉喜欢王语嫣。</span><br></pre></td></tr></table></figure>
+
+<p>如果直接问ChatGPT，”段誉的兄弟是谁”, “段誉有几个兄弟”则ChatGPT回答有些混乱。</p>
+<p><img src="/./images/chatgpt-duanyu-brothers.png" alt="chatgpt-duanyu-brothers"></p>
+<h2 id="运行测试"><a href="#运行测试" class="headerlink" title="运行测试"></a>运行测试</h2><p>直接运行后，测试提问，如下。</p>
+<p><img src="/./images/langchain-duanyu1.png" alt="langchain1"></p>
+<p><img src="/./images/langchain-duanyu2.png" alt="langchain1"></p>
+<p>很有意思。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
+<li>中文需要进行分词，与英文的处理不同。</li>
+<li>需要避免4096 TOKEN的限制，则只能使用文章中提到模型建立Chain。<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ChatVectorDBChain.from_llm(OpenAI(temperature=0, model_name=&quot;gpt-3.5-turbo&quot;), docsearch,</span><br><span class="line">                                       return_source_documents=True)</span><br></pre></td></tr></table></figure></li>
+<li>还是需要VPN才能使用，另外OPEN_API_KEY是需要花钱的。</li>
+</ol>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42608414/article/details/129493302">使用langchain打造自己的大型语言模型(LLMs)</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/langchain/" rel="tag"># langchain</a>
+              <a href="/tags/openai/" rel="tag"># openai</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/06/07/2023-6-7-qt5-macos-bundle-app/" rel="prev" title="Mac下基于CMake自动打包部署Qt5项目">
+      <i class="fa fa-chevron-left"></i> Mac下基于CMake自动打包部署Qt5项目
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/06/09/2023-6-9-qt5-macos-lldb-debug/" rel="next" title="LLDB调试Qt5">
+      LLDB调试Qt5 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFLangChain"><span class="nav-number">1.</span> <span class="nav-text">什么是LangChain</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OpenAI%E7%9A%84key"><span class="nav-number">2.</span> <span class="nav-text">OpenAI的key</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81"><span class="nav-number">3.</span> <span class="nav-text">代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E4%BE%9D%E8%B5%96%E6%A8%A1%E5%9D%97"><span class="nav-number">4.</span> <span class="nav-text">代码依赖模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E6%9C%AC"><span class="nav-number">5.</span> <span class="nav-text">文本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E6%B5%8B%E8%AF%95"><span class="nav-number">6.</span> <span class="nav-text">运行测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">alenym@qq.com</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">61</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alenym@qq.com</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
