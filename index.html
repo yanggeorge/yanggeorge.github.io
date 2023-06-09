@@ -194,7 +194,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2023-06-09 00:00:00 / 修改时间：11:19:36" itemprop="dateCreated datePublished" datetime="2023-06-09T00:00:00+08:00">2023-06-09</time>
+              <time title="创建时间：2023-06-09 00:00:00 / 修改时间：11:26:24" itemprop="dateCreated datePublished" datetime="2023-06-09T00:00:00+08:00">2023-06-09</time>
             </span>
 
           
@@ -209,7 +209,7 @@
 
       
           <h2 id="lldb调试qt5的问题"><a href="#lldb调试qt5的问题" class="headerlink" title="lldb调试qt5的问题"></a>lldb调试qt5的问题</h2><p>Mac下，lldb调试qt5应用通常会遇到无法打印QString变量的问题。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">* thread #1, queue = &#x27;com.apple.main-thread&#x27;, stop reason = breakpoint 1.1</span><br><span class="line">    frame #0: 0x0000000100003a81 a.out`main(argc=1, argv=0x00007ff7bfefeb40) at test.cpp:10:11</span><br><span class="line">   7   	   QCoreApplication a(argc, argv);</span><br><span class="line">   8   	</span><br><span class="line">   9   	   QString s = &quot;Hello World&quot;;</span><br><span class="line">-&gt; 10  	   return a.exec();</span><br><span class="line">   11  	&#125;</span><br><span class="line">Target 0: (a.out) stopped.</span><br><span class="line">(lldb) print s</span><br><span class="line">(QString) $0 = &#123;</span><br><span class="line">  d = 0x0000600000c04b70</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><figcaption><span>--no-lineno</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">* thread #1, queue = &#x27;com.apple.main-thread&#x27;, stop reason = breakpoint 1.1</span><br><span class="line">    frame #0: 0x0000000100003a81 a.out`main(argc=1, argv=0x00007ff7bfefeb40) at test.cpp:10:11</span><br><span class="line">   7   	   QCoreApplication a(argc, argv);</span><br><span class="line">   8   	</span><br><span class="line">   9   	   QString s = &quot;Hello World&quot;;</span><br><span class="line">-&gt; 10  	   return a.exec();</span><br><span class="line">   11  	&#125;</span><br><span class="line">Target 0: (a.out) stopped.</span><br><span class="line">(lldb) print s</span><br><span class="line">(QString) $0 = &#123;</span><br><span class="line">  d = 0x0000600000c04b70</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>这里无法获取变量<code>s</code>的值<code>Hello World</code>。</p>
           <!--noindex-->
