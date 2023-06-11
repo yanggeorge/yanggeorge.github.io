@@ -101,6 +101,15 @@
   </url>
   
   <url>
+    <loc>http://threelambda.com/2019/01/09/2019-1-9-bt-1/</loc>
+    
+    <lastmod>2022-02-06</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://threelambda.com/2020/03/09/connect-kafka/</loc>
     
     <lastmod>2022-02-06</lastmod>
@@ -110,7 +119,7 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/2019/01/09/2019-1-9-bt-1/</loc>
+    <loc>http://threelambda.com/2019/01/21/2019-1-23-bt-4/</loc>
     
     <lastmod>2022-02-06</lastmod>
     
@@ -137,16 +146,7 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/2019/01/21/2019-1-23-bt-4/</loc>
-    
-    <lastmod>2022-02-06</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/2019/04/28/2019-4-28-byte-to-string-and-back/</loc>
+    <loc>http://threelambda.com/2019/11/19/debug-k3s/</loc>
     
     <lastmod>2022-02-06</lastmod>
     
@@ -164,7 +164,7 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/2019/11/19/debug-k3s/</loc>
+    <loc>http://threelambda.com/2019/04/28/2019-4-28-byte-to-string-and-back/</loc>
     
     <lastmod>2022-02-06</lastmod>
     
@@ -513,20 +513,6 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/tags/clojure/</loc>
-    <lastmod>2023-06-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/tags/jvm/</loc>
-    <lastmod>2023-06-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>http://threelambda.com/tags/grails/</loc>
     <lastmod>2023-06-11</lastmod>
     <changefreq>weekly</changefreq>
@@ -541,6 +527,20 @@
   </url>
   
   <url>
+    <loc>http://threelambda.com/tags/clojure/</loc>
+    <lastmod>2023-06-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/tags/jvm/</loc>
+    <lastmod>2023-06-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>http://threelambda.com/tags/javacc/</loc>
     <lastmod>2023-06-11</lastmod>
     <changefreq>weekly</changefreq>
@@ -549,13 +549,6 @@
   
   <url>
     <loc>http://threelambda.com/tags/lisp/</loc>
-    <lastmod>2023-06-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/tags/build/</loc>
     <lastmod>2023-06-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -577,6 +570,13 @@
   
   <url>
     <loc>http://threelambda.com/tags/virutalbox/</loc>
+    <lastmod>2023-06-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/tags/build/</loc>
     <lastmod>2023-06-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -611,6 +611,20 @@
   </url>
   
   <url>
+    <loc>http://threelambda.com/tags/k3s/</loc>
+    <lastmod>2023-06-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/tags/delve/</loc>
+    <lastmod>2023-06-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>http://threelambda.com/tags/golang/</loc>
     <lastmod>2023-06-11</lastmod>
     <changefreq>weekly</changefreq>
@@ -639,14 +653,49 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/tags/k3s/</loc>
+    <loc>http://threelambda.com/tags/k8s/</loc>
     <lastmod>2023-06-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://threelambda.com/tags/delve/</loc>
+    <loc>http://threelambda.com/tags/ingress/</loc>
+    <lastmod>2023-06-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/tags/mac/</loc>
+    <lastmod>2023-06-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/tags/debug/</loc>
+    <lastmod>2023-06-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/tags/CLion/</loc>
+    <lastmod>2023-06-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/tags/gdb/</loc>
+    <lastmod>2023-06-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/tags/remote/</loc>
     <lastmod>2023-06-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -675,27 +724,6 @@
   
   <url>
     <loc>http://threelambda.com/tags/file/</loc>
-    <lastmod>2023-06-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/tags/k8s/</loc>
-    <lastmod>2023-06-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/tags/ingress/</loc>
-    <lastmod>2023-06-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/tags/mac/</loc>
     <lastmod>2023-06-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -737,28 +765,14 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/tags/debug/</loc>
+    <loc>http://threelambda.com/tags/pod/</loc>
     <lastmod>2023-06-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://threelambda.com/tags/CLion/</loc>
-    <lastmod>2023-06-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/tags/gdb/</loc>
-    <lastmod>2023-06-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/tags/remote/</loc>
+    <loc>http://threelambda.com/tags/coredns/</loc>
     <lastmod>2023-06-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -786,14 +800,14 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/tags/pod/</loc>
+    <loc>http://threelambda.com/tags/ChatGPT/</loc>
     <lastmod>2023-06-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://threelambda.com/tags/coredns/</loc>
+    <loc>http://threelambda.com/tags/rust/</loc>
     <lastmod>2023-06-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -821,28 +835,7 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/tags/rust/</loc>
-    <lastmod>2023-06-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/tags/iced/</loc>
-    <lastmod>2023-06-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>http://threelambda.com/tags/qt5/</loc>
-    <lastmod>2023-06-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://threelambda.com/tags/lldb/</loc>
     <lastmod>2023-06-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -863,7 +856,14 @@
   </url>
   
   <url>
-    <loc>http://threelambda.com/tags/ChatGPT/</loc>
+    <loc>http://threelambda.com/tags/iced/</loc>
+    <lastmod>2023-06-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://threelambda.com/tags/lldb/</loc>
     <lastmod>2023-06-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
