@@ -27,7 +27,7 @@
 <meta property="og:description" content="bt种子文件bt通过种子文件分享已经是一个过去时了，2009年btChina就已经关闭了。现在一般都是 使用磁力链接来分享文件。那么为什么种子文件分享不再流行了呢？为什么要用磁力链接呢？ 磁力链接怎么实现的呢？ 嗯这是这个系列要研究的问题。但是要研究磁力链接的实现原理，最好先从种子文件开始。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2019-01-08T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-02-06T09:04:19.410Z">
+<meta property="article:modified_time" content="2023-07-15T08:55:05.263Z">
 <meta property="article:author" content="alenym@qq.com">
 <meta property="article:tag" content="bitTorrent">
 <meta property="article:tag" content="protocol">
@@ -231,7 +231,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2022-02-06 17:04:19" itemprop="dateModified" datetime="2022-02-06T17:04:19+08:00">2022-02-06</time>
+      <time title="修改时间：2023-07-15 16:55:05" itemprop="dateModified" datetime="2023-07-15T16:55:05+08:00">2023-07-15</time>
     </span>
 
   
@@ -269,8 +269,8 @@
 <p>Lists are encoded as an ‘l’ followed by their elements (also bencoded) followed by an ‘e’. For example l4:spam4:eggse corresponds to [‘spam’, ‘eggs’].</p>
 <p>Dictionaries are encoded as a ‘d’ followed by a list of alternating keys and their corresponding values followed by an ‘e’. For example, d3:cow3:moo4:spam4:eggse corresponds to {‘cow’: ‘moo’, ‘spam’: ‘eggs’} and d4:spaml1:a1:bee corresponds to {‘spam’: [‘a’, ‘b’]}. Keys must be strings and appear in sorted order (sorted as raw strings, not alphanumerics).</p>
 </blockquote>
-<p>翻译为BNF语法呢，就是如下</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">string : num &#x27;:&#x27; &#123;CHAR&#125;*</span><br><span class="line"></span><br><span class="line">num : 0 </span><br><span class="line">    | [1-9][0-9]+ </span><br><span class="line">    | &#x27;-&#x27; [1-9][0-9]+</span><br><span class="line"></span><br><span class="line">integer : &#x27;i&#x27; num &#x27;e&#x27;</span><br><span class="line"></span><br><span class="line">list : &#x27;l&#x27; &#123;element&#125;* &#x27;e&#x27;</span><br><span class="line"></span><br><span class="line">dic : &#x27;d&#x27; &#123;pair&#125;* &#x27;e&#x27;</span><br><span class="line"></span><br><span class="line">pair : string element</span><br><span class="line"></span><br><span class="line">element : string</span><br><span class="line">        | integer</span><br><span class="line">        | list</span><br><span class="line">        | dic</span><br></pre></td></tr></table></figure>
+<p>翻译为eBNF语法呢，就是如下</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">string</span> : num &#x27;:&#x27; &#123;CHAR&#125;*</span><br><span class="line"></span><br><span class="line"><span class="attribute">num</span> : 0 </span><br><span class="line">    | [1-9][0-9]+ </span><br><span class="line">    | &#x27;-&#x27; [1-9][0-9]+</span><br><span class="line"></span><br><span class="line"><span class="attribute">integer</span> : &#x27;i&#x27; num &#x27;e&#x27;</span><br><span class="line"></span><br><span class="line"><span class="attribute">list</span> : &#x27;l&#x27; &#123;element&#125;* &#x27;e&#x27;</span><br><span class="line"></span><br><span class="line"><span class="attribute">dic</span> : &#x27;d&#x27; &#123;pair&#125;* &#x27;e&#x27;</span><br><span class="line"></span><br><span class="line"><span class="attribute">pair</span> : string element</span><br><span class="line"></span><br><span class="line"><span class="attribute">element</span> : string</span><br><span class="line">        | integer</span><br><span class="line">        | list</span><br><span class="line">        | dic</span><br></pre></td></tr></table></figure>
 
 <h2 id="解码"><a href="#解码" class="headerlink" title="解码"></a>解码</h2><p>根据BNF实现的解码代码如下， 把<code>get_content()</code>方法中path替换为种子文件的路径，运行就可以看到。
 返回的解析结果中会有<code>info_hash</code>，该值是根据info的bencoding的二进制串计算的sha1值。这个值很重要
