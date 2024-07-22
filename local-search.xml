@@ -369,11 +369,11 @@
     
     <tags>
       
+      <tag>golang</tag>
+      
       <tag>k3s</tag>
       
       <tag>delve</tag>
-      
-      <tag>golang</tag>
       
     </tags>
     
@@ -551,9 +551,9 @@
     
     <tags>
       
-      <tag>lisp</tag>
-      
       <tag>clojure</tag>
+      
+      <tag>lisp</tag>
       
       <tag>macro</tag>
       
@@ -574,9 +574,9 @@
     
     <tags>
       
-      <tag>lisp</tag>
-      
       <tag>clojure</tag>
+      
+      <tag>lisp</tag>
       
       <tag>macro</tag>
       
