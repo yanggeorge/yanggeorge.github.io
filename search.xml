@@ -233,40 +233,6 @@ the (unevaluated) expression expr, substituting any variables bound in env.</p>
       </tags>
   </entry>
   <entry>
-    <title>[leetcode 200]Number of Islands 原创解法</title>
-    <url>/2016/09/27/2016-9-27-leetcode-200/</url>
-    <content><![CDATA[<h2 id="题目概述"><a href="#题目概述" class="headerlink" title=" 题目概述"></a><a name="hh0"></a> 题目概述</h2><p><a href="https://leetcode.com/problems/number-of-islands/">原题链接</a></p>
-<pre><code class="hljs">Given a 2d grid map of &#39;1&#39;s (land) and &#39;0&#39;s (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
-
-Example 1:
-
-11110
-11010
-11000
-00000
-Answer: 1
-
-Example 2:
-
-11000
-11000
-00100
-00011
-Answer: 3
-</code></pre>
-<span id="more"></span>
-
-<h2 id="最终解法"><a href="#最终解法" class="headerlink" title=" 最终解法"></a><a name="hh1"></a> 最终解法</h2><p>解法的代码先贴出来了，解题思路后补啊。总体来说，就是一行一行的扫描。
-是个不错的<code>在线算法</code>，也就是说如果数据量非常大也没关系，呵呵。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">numIslands</span>(<span class="hljs-params">self, grid</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        基本思路，一行一行的扫描。</span><br><span class="hljs-string">        :type grid: List[List[str]]</span><br><span class="hljs-string">        :rtype: int</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;====&quot;</span>)<br>        n = <span class="hljs-built_in">len</span>(grid)<br>        <span class="hljs-keyword">if</span> n == <span class="hljs-number">0</span>: <span class="hljs-keyword">return</span> <span class="hljs-number">0</span><br><br>        length = <span class="hljs-built_in">len</span>(grid[<span class="hljs-number">0</span>])<br>        h_pre = &#123;&#125;   <span class="hljs-comment"># key : 是 “i,j” 字符串。value =》 [accumulator] ，一个list包含了岛的索引。</span><br>        h_curr = &#123;&#125;  <span class="hljs-comment"># 当前行</span><br>        a = []  <span class="hljs-comment"># 保存的是一个个的list，list的长度是1，值对应岛的索引。</span><br>        debug = []<br>        accumulator = <span class="hljs-number">1</span> <span class="hljs-comment"># 表示岛的自增索引，每当发现一个新的岛，自增。</span><br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, length):<br>            <span class="hljs-keyword">if</span> i == <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> grid[<span class="hljs-number">0</span>][i] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                h_curr[<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i)] = [accumulator]<br>                a.append(h_curr[<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i)])<br>                debug.append(<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i))<br>            <span class="hljs-keyword">elif</span> i &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> grid[<span class="hljs-number">0</span>][i] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                <span class="hljs-keyword">if</span> grid[<span class="hljs-number">0</span>][i - <span class="hljs-number">1</span>] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                    h_curr[<span class="hljs-built_in">str</span>(<span class="hljs-number">0</span>) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(i)] = h_curr[<span class="hljs-built_in">str</span>(<span class="hljs-number">0</span>) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(i - <span class="hljs-number">1</span>)]<br>                <span class="hljs-keyword">else</span>:<br>                    accumulator += <span class="hljs-number">1</span><br>                    h_curr[<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i)] = [accumulator]<br>                    a.append(h_curr[<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i)])<br>                    debug.append(<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i))<br><br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n):<br>            h_pre = h_curr<br>            h_curr = &#123;&#125;<br>            <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, length):<br>                <span class="hljs-keyword">if</span> j == <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> grid[i][j] == <span class="hljs-string">&#x27;1&#x27;</span>:<br><br>                    <span class="hljs-keyword">if</span> grid[i - <span class="hljs-number">1</span>][j] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                        h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = h_pre[<span class="hljs-built_in">str</span>(i - <span class="hljs-number">1</span>) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)]<br>                    <span class="hljs-keyword">else</span>:<br>                        accumulator += <span class="hljs-number">1</span><br>                        h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = [accumulator]<br>                        a.append(h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)])<br>                        debug.append(<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j))<br><br>                <span class="hljs-keyword">elif</span> j &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> grid[i][j] == <span class="hljs-string">&#x27;1&#x27;</span>:<br><br>                    <span class="hljs-keyword">if</span> grid[i - <span class="hljs-number">1</span>][j] == <span class="hljs-string">&#x27;1&#x27;</span> <span class="hljs-keyword">and</span> grid[i][j - <span class="hljs-number">1</span>] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                        pre = h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j - <span class="hljs-number">1</span>)]<br>                        above = h_pre[<span class="hljs-built_in">str</span>(i - <span class="hljs-number">1</span>) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)]<br><br>                        <span class="hljs-keyword">if</span> pre[<span class="hljs-number">0</span>] == above[<span class="hljs-number">0</span>]:<br>                            <span class="hljs-comment"># 对pre的值进行更新</span><br>                            h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = pre<br>                        <span class="hljs-keyword">else</span> :<br>                            h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = above<br>                            v1 = pre[<span class="hljs-number">0</span>]<br>                            v2 = above[<span class="hljs-number">0</span>]  <span class="hljs-comment"># z这里一定要换成静态的值，否则的话当a[k]的值进行更新时，会影响到pre的值。</span><br>                            <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(a)):<br>                                <span class="hljs-keyword">if</span> a[k][<span class="hljs-number">0</span>] == v1:<br>                                    a[k][<span class="hljs-number">0</span>] = v2<br><br><br>                    <span class="hljs-keyword">elif</span> grid[i][j - <span class="hljs-number">1</span>] == <span class="hljs-string">&#x27;1&#x27;</span> <span class="hljs-keyword">and</span> grid[i - <span class="hljs-number">1</span>][j] != <span class="hljs-string">&#x27;1&#x27;</span>:<br>                        pre = h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j - <span class="hljs-number">1</span>)]<br>                        h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = pre<br>                    <span class="hljs-keyword">elif</span> grid[i][j - <span class="hljs-number">1</span>] != <span class="hljs-string">&#x27;1&#x27;</span> <span class="hljs-keyword">and</span> grid[i - <span class="hljs-number">1</span>][j] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                        above = h_pre[<span class="hljs-built_in">str</span>(i - <span class="hljs-number">1</span>) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)]<br>                        h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = above<br>                    <span class="hljs-keyword">else</span>:<br>                        accumulator += <span class="hljs-number">1</span><br>                        h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = [accumulator]<br>                        a.append(h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)])<br>                        debug.append(<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j))<br>        s = <span class="hljs-built_in">set</span>()<br>        <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> a:<br>            s.add(item[<span class="hljs-number">0</span>])<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(s)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    grid = [<span class="hljs-string">&quot;11000&quot;</span>,<br>            <span class="hljs-string">&quot;11000&quot;</span>,<br>            <span class="hljs-string">&quot;00100&quot;</span>,<br>            <span class="hljs-string">&quot;00011&quot;</span>]  <span class="hljs-comment"># 3</span><br>    <span class="hljs-built_in">print</span>(Solution().numIslands(grid))<br>    grid = [<span class="hljs-string">&quot;10111&quot;</span>,<br>            <span class="hljs-string">&quot;10101&quot;</span>,<br>            <span class="hljs-string">&quot;11101&quot;</span>]  <span class="hljs-comment"># 1</span><br>    <span class="hljs-built_in">print</span>(Solution().numIslands(grid))<br>    grid = [<span class="hljs-string">&quot;1111111&quot;</span>,<br>            <span class="hljs-string">&quot;0000001&quot;</span>,<br>            <span class="hljs-string">&quot;1111101&quot;</span>,<br>            <span class="hljs-string">&quot;1000101&quot;</span>,<br>            <span class="hljs-string">&quot;1010101&quot;</span>,<br>            <span class="hljs-string">&quot;1011101&quot;</span>,<br>            <span class="hljs-string">&quot;1111111&quot;</span>]  <span class="hljs-comment"># 1</span><br>    <span class="hljs-built_in">print</span>(Solution().numIslands(grid))<br><br><br>    grid = [<span class="hljs-string">&quot;10011101100000000000&quot;</span>,<br>            <span class="hljs-string">&quot;10011001000101010010&quot;</span>,<br>            <span class="hljs-string">&quot;00011110101100001010&quot;</span>,<br>            <span class="hljs-string">&quot;00011001000111001001&quot;</span>,<br>            <span class="hljs-string">&quot;00000001110000000000&quot;</span>,<br>            <span class="hljs-string">&quot;10000101011000000101&quot;</span>,<br>            <span class="hljs-string">&quot;00010001010101010101&quot;</span>,<br>            <span class="hljs-string">&quot;00010100110101101110&quot;</span>,<br>            <span class="hljs-string">&quot;00001001100001000101&quot;</span>,<br>            <span class="hljs-string">&quot;00100100000100100010&quot;</span>,<br>            <span class="hljs-string">&quot;10010000000100101010&quot;</span>,<br>            <span class="hljs-string">&quot;01000101011011101100&quot;</span>,<br>            <span class="hljs-string">&quot;11010000100000010001&quot;</span>,<br>            <span class="hljs-string">&quot;01001110001111101000&quot;</span>,<br>            <span class="hljs-string">&quot;00111000110001010000&quot;</span>,<br>            <span class="hljs-string">&quot;10010100001000101011&quot;</span>,<br>            <span class="hljs-string">&quot;10100000010001010000&quot;</span>,<br>            <span class="hljs-string">&quot;01100011101010111100&quot;</span>,<br>            <span class="hljs-string">&quot;01000011001010010011&quot;</span>,<br>            <span class="hljs-string">&quot;00000011110100011000&quot;</span>]  <span class="hljs-comment"># 58</span><br>    <span class="hljs-built_in">print</span>(Solution().numIslands(grid))<br></code></pre></td></tr></table></figure>
-]]></content>
-      <tags>
-        <tag>leetcode</tag>
-        <tag>算法</tag>
-        <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[leetcode 315]Count of Smaller Numbers After Self 原创解法</title>
     <url>/2016/12/26/leetcode-315/</url>
     <content><![CDATA[<h2 id="题目概述"><a href="#题目概述" class="headerlink" title=" 题目概述"></a><a name="hh0"></a> 题目概述</h2><p><a href="https://leetcode.com/problems/count-of-smaller-numbers-after-self/">原题链接</a></p>
@@ -419,6 +385,40 @@ The three ranges are : [0, 0], [2, 2], [0, 2] and their respective sums are: -2,
 我们的代码速度会更快。</p>
 <pre><code class="hljs">l.pop(pos) # &lt;-- 这里是个接近O(N)的操作
 </code></pre>
+]]></content>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>算法</tag>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[leetcode 200]Number of Islands 原创解法</title>
+    <url>/2016/09/27/2016-9-27-leetcode-200/</url>
+    <content><![CDATA[<h2 id="题目概述"><a href="#题目概述" class="headerlink" title=" 题目概述"></a><a name="hh0"></a> 题目概述</h2><p><a href="https://leetcode.com/problems/number-of-islands/">原题链接</a></p>
+<pre><code class="hljs">Given a 2d grid map of &#39;1&#39;s (land) and &#39;0&#39;s (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+
+Example 1:
+
+11110
+11010
+11000
+00000
+Answer: 1
+
+Example 2:
+
+11000
+11000
+00100
+00011
+Answer: 3
+</code></pre>
+<span id="more"></span>
+
+<h2 id="最终解法"><a href="#最终解法" class="headerlink" title=" 最终解法"></a><a name="hh1"></a> 最终解法</h2><p>解法的代码先贴出来了，解题思路后补啊。总体来说，就是一行一行的扫描。
+是个不错的<code>在线算法</code>，也就是说如果数据量非常大也没关系，呵呵。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">numIslands</span>(<span class="hljs-params">self, grid</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        基本思路，一行一行的扫描。</span><br><span class="hljs-string">        :type grid: List[List[str]]</span><br><span class="hljs-string">        :rtype: int</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;====&quot;</span>)<br>        n = <span class="hljs-built_in">len</span>(grid)<br>        <span class="hljs-keyword">if</span> n == <span class="hljs-number">0</span>: <span class="hljs-keyword">return</span> <span class="hljs-number">0</span><br><br>        length = <span class="hljs-built_in">len</span>(grid[<span class="hljs-number">0</span>])<br>        h_pre = &#123;&#125;   <span class="hljs-comment"># key : 是 “i,j” 字符串。value =》 [accumulator] ，一个list包含了岛的索引。</span><br>        h_curr = &#123;&#125;  <span class="hljs-comment"># 当前行</span><br>        a = []  <span class="hljs-comment"># 保存的是一个个的list，list的长度是1，值对应岛的索引。</span><br>        debug = []<br>        accumulator = <span class="hljs-number">1</span> <span class="hljs-comment"># 表示岛的自增索引，每当发现一个新的岛，自增。</span><br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, length):<br>            <span class="hljs-keyword">if</span> i == <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> grid[<span class="hljs-number">0</span>][i] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                h_curr[<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i)] = [accumulator]<br>                a.append(h_curr[<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i)])<br>                debug.append(<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i))<br>            <span class="hljs-keyword">elif</span> i &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> grid[<span class="hljs-number">0</span>][i] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                <span class="hljs-keyword">if</span> grid[<span class="hljs-number">0</span>][i - <span class="hljs-number">1</span>] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                    h_curr[<span class="hljs-built_in">str</span>(<span class="hljs-number">0</span>) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(i)] = h_curr[<span class="hljs-built_in">str</span>(<span class="hljs-number">0</span>) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(i - <span class="hljs-number">1</span>)]<br>                <span class="hljs-keyword">else</span>:<br>                    accumulator += <span class="hljs-number">1</span><br>                    h_curr[<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i)] = [accumulator]<br>                    a.append(h_curr[<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i)])<br>                    debug.append(<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i))<br><br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n):<br>            h_pre = h_curr<br>            h_curr = &#123;&#125;<br>            <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, length):<br>                <span class="hljs-keyword">if</span> j == <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> grid[i][j] == <span class="hljs-string">&#x27;1&#x27;</span>:<br><br>                    <span class="hljs-keyword">if</span> grid[i - <span class="hljs-number">1</span>][j] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                        h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = h_pre[<span class="hljs-built_in">str</span>(i - <span class="hljs-number">1</span>) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)]<br>                    <span class="hljs-keyword">else</span>:<br>                        accumulator += <span class="hljs-number">1</span><br>                        h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = [accumulator]<br>                        a.append(h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)])<br>                        debug.append(<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j))<br><br>                <span class="hljs-keyword">elif</span> j &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> grid[i][j] == <span class="hljs-string">&#x27;1&#x27;</span>:<br><br>                    <span class="hljs-keyword">if</span> grid[i - <span class="hljs-number">1</span>][j] == <span class="hljs-string">&#x27;1&#x27;</span> <span class="hljs-keyword">and</span> grid[i][j - <span class="hljs-number">1</span>] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                        pre = h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j - <span class="hljs-number">1</span>)]<br>                        above = h_pre[<span class="hljs-built_in">str</span>(i - <span class="hljs-number">1</span>) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)]<br><br>                        <span class="hljs-keyword">if</span> pre[<span class="hljs-number">0</span>] == above[<span class="hljs-number">0</span>]:<br>                            <span class="hljs-comment"># 对pre的值进行更新</span><br>                            h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = pre<br>                        <span class="hljs-keyword">else</span> :<br>                            h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = above<br>                            v1 = pre[<span class="hljs-number">0</span>]<br>                            v2 = above[<span class="hljs-number">0</span>]  <span class="hljs-comment"># z这里一定要换成静态的值，否则的话当a[k]的值进行更新时，会影响到pre的值。</span><br>                            <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(a)):<br>                                <span class="hljs-keyword">if</span> a[k][<span class="hljs-number">0</span>] == v1:<br>                                    a[k][<span class="hljs-number">0</span>] = v2<br><br><br>                    <span class="hljs-keyword">elif</span> grid[i][j - <span class="hljs-number">1</span>] == <span class="hljs-string">&#x27;1&#x27;</span> <span class="hljs-keyword">and</span> grid[i - <span class="hljs-number">1</span>][j] != <span class="hljs-string">&#x27;1&#x27;</span>:<br>                        pre = h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j - <span class="hljs-number">1</span>)]<br>                        h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = pre<br>                    <span class="hljs-keyword">elif</span> grid[i][j - <span class="hljs-number">1</span>] != <span class="hljs-string">&#x27;1&#x27;</span> <span class="hljs-keyword">and</span> grid[i - <span class="hljs-number">1</span>][j] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                        above = h_pre[<span class="hljs-built_in">str</span>(i - <span class="hljs-number">1</span>) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)]<br>                        h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = above<br>                    <span class="hljs-keyword">else</span>:<br>                        accumulator += <span class="hljs-number">1</span><br>                        h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = [accumulator]<br>                        a.append(h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)])<br>                        debug.append(<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j))<br>        s = <span class="hljs-built_in">set</span>()<br>        <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> a:<br>            s.add(item[<span class="hljs-number">0</span>])<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(s)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    grid = [<span class="hljs-string">&quot;11000&quot;</span>,<br>            <span class="hljs-string">&quot;11000&quot;</span>,<br>            <span class="hljs-string">&quot;00100&quot;</span>,<br>            <span class="hljs-string">&quot;00011&quot;</span>]  <span class="hljs-comment"># 3</span><br>    <span class="hljs-built_in">print</span>(Solution().numIslands(grid))<br>    grid = [<span class="hljs-string">&quot;10111&quot;</span>,<br>            <span class="hljs-string">&quot;10101&quot;</span>,<br>            <span class="hljs-string">&quot;11101&quot;</span>]  <span class="hljs-comment"># 1</span><br>    <span class="hljs-built_in">print</span>(Solution().numIslands(grid))<br>    grid = [<span class="hljs-string">&quot;1111111&quot;</span>,<br>            <span class="hljs-string">&quot;0000001&quot;</span>,<br>            <span class="hljs-string">&quot;1111101&quot;</span>,<br>            <span class="hljs-string">&quot;1000101&quot;</span>,<br>            <span class="hljs-string">&quot;1010101&quot;</span>,<br>            <span class="hljs-string">&quot;1011101&quot;</span>,<br>            <span class="hljs-string">&quot;1111111&quot;</span>]  <span class="hljs-comment"># 1</span><br>    <span class="hljs-built_in">print</span>(Solution().numIslands(grid))<br><br><br>    grid = [<span class="hljs-string">&quot;10011101100000000000&quot;</span>,<br>            <span class="hljs-string">&quot;10011001000101010010&quot;</span>,<br>            <span class="hljs-string">&quot;00011110101100001010&quot;</span>,<br>            <span class="hljs-string">&quot;00011001000111001001&quot;</span>,<br>            <span class="hljs-string">&quot;00000001110000000000&quot;</span>,<br>            <span class="hljs-string">&quot;10000101011000000101&quot;</span>,<br>            <span class="hljs-string">&quot;00010001010101010101&quot;</span>,<br>            <span class="hljs-string">&quot;00010100110101101110&quot;</span>,<br>            <span class="hljs-string">&quot;00001001100001000101&quot;</span>,<br>            <span class="hljs-string">&quot;00100100000100100010&quot;</span>,<br>            <span class="hljs-string">&quot;10010000000100101010&quot;</span>,<br>            <span class="hljs-string">&quot;01000101011011101100&quot;</span>,<br>            <span class="hljs-string">&quot;11010000100000010001&quot;</span>,<br>            <span class="hljs-string">&quot;01001110001111101000&quot;</span>,<br>            <span class="hljs-string">&quot;00111000110001010000&quot;</span>,<br>            <span class="hljs-string">&quot;10010100001000101011&quot;</span>,<br>            <span class="hljs-string">&quot;10100000010001010000&quot;</span>,<br>            <span class="hljs-string">&quot;01100011101010111100&quot;</span>,<br>            <span class="hljs-string">&quot;01000011001010010011&quot;</span>,<br>            <span class="hljs-string">&quot;00000011110100011000&quot;</span>]  <span class="hljs-comment"># 58</span><br>    <span class="hljs-built_in">print</span>(Solution().numIslands(grid))<br></code></pre></td></tr></table></figure>
 ]]></content>
       <tags>
         <tag>leetcode</tag>
@@ -693,6 +693,53 @@ coins =  3*1*5      +  3*5*8    +  1*3*8      + 1*8*1   = 167
       </tags>
   </entry>
   <entry>
+    <title>从大文件中找到出现次数最多的10个数</title>
+    <url>/2017/11/27/find-top-n/</url>
+    <content><![CDATA[<h2 id="问题"><a href="#问题" class="headerlink" title=" 问题"></a><a name="hh0"></a> 问题</h2><p>这是一个经典题，面试的时候经常会遇到。
+例如：文件的内容如下</p>
+<pre><code class="hljs">26329
+46184
+94842
+9036
+96555
+40954
+38187
+15548
+51452
+861
+51010
+8721
+13666
+69837 
+</code></pre>
+<p>每行一个数字，找到出现次数最多的数。通常的解法是遍历文件一遍，用hashmap维护一个(number &#x3D;&gt; freq)，
+然后用最小堆找到最大的10个数。</p>
+<span id="more"></span>
+
+<h2 id="用Trie代替Hashmap"><a href="#用Trie代替Hashmap" class="headerlink" title=" 用Trie代替Hashmap"></a><a name="hh1"></a> 用Trie代替Hashmap</h2><p>如果内存很小，hashmap放不下怎么办呢？可以使用Trie来代替HashMap。
+但是我们这里的Trie在<code>insert</code>一个串的时候会在叶子节点用一个count来计数。
+这里的叶子节点特指<code>isEnd</code>为<code>true</code>的TrieNode。
+通常Trie用于匹配字符串，会有<code>startsWith</code>方法。但是我们这里不需要这个方法，而需要一个遍历
+所有叶子节点的方法<code>traverseLeaf</code>。下面就是我们的<code>Trie</code>class。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> ym.parallel;<br><br><span class="hljs-keyword">import</span> org.slf4j.Logger;<br><span class="hljs-keyword">import</span> org.slf4j.LoggerFactory;<br><br><span class="hljs-keyword">import</span> java.util.ArrayDeque;<br><span class="hljs-keyword">import</span> java.util.Deque;<br><span class="hljs-keyword">import</span> java.util.HashMap;<br><span class="hljs-keyword">import</span> java.util.Map;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Created by ym on 11/26/2017.</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Trie</span> &#123;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Logger</span> <span class="hljs-variable">logger</span> <span class="hljs-operator">=</span> LoggerFactory.getLogger(Trie.class);<br>    <span class="hljs-keyword">private</span> TrieNode root;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">Trie</span><span class="hljs-params">()</span> &#123;<br>        root = <span class="hljs-keyword">new</span> <span class="hljs-title class_">TrieNode</span>(<span class="hljs-literal">null</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">insert</span><span class="hljs-params">(String s)</span> &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">n</span> <span class="hljs-operator">=</span> s.length();<br>        <span class="hljs-type">TrieNode</span> <span class="hljs-variable">parent</span> <span class="hljs-operator">=</span> root;<br>        <span class="hljs-type">TrieNode</span> <span class="hljs-variable">child</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; n; i++) &#123;<br>            <span class="hljs-type">Character</span> <span class="hljs-variable">c</span> <span class="hljs-operator">=</span> s.charAt(i);<br><br>            <span class="hljs-keyword">if</span> (parent.contains(c)) &#123;<br>                child = parent.get(c);<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                child = <span class="hljs-keyword">new</span> <span class="hljs-title class_">TrieNode</span>(c);<br>                parent.put(c, child);<br>                child.parent = parent;<br>            &#125;<br><br>            <span class="hljs-keyword">if</span> (i == n - <span class="hljs-number">1</span>) &#123;<br>                child.isEnd = <span class="hljs-literal">true</span>;<br>                child.count += <span class="hljs-number">1</span>;<br>            &#125;<br>            parent = child;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">traverseLeaf</span><span class="hljs-params">(TrieClient client)</span> &#123;<br>        Deque&lt;TrieNode&gt; deque = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayDeque</span>&lt;&gt;();<br>        deque.push(root);<br><br>        <span class="hljs-keyword">while</span> (!deque.isEmpty()) &#123;<br>            <span class="hljs-type">TrieNode</span> <span class="hljs-variable">tmp</span> <span class="hljs-operator">=</span> deque.pop();<br>            <span class="hljs-keyword">if</span> (tmp.isEnd) &#123;<br>                client.visit(tmp);<br>            &#125;<br><br>            <span class="hljs-keyword">for</span> (Map.Entry&lt;Character, TrieNode&gt; entry : tmp.children.entrySet()) &#123;<br>                deque.push(entry.getValue());<br>            &#125;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TrieNode</span> &#123;<br>        <span class="hljs-keyword">private</span> HashMap&lt;Character, TrieNode&gt; children = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;();<br>        <span class="hljs-keyword">private</span> <span class="hljs-type">boolean</span> <span class="hljs-variable">isEnd</span> <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>;<br>        <span class="hljs-keyword">private</span> Character c;<br>        <span class="hljs-keyword">private</span> <span class="hljs-type">Integer</span> <span class="hljs-variable">count</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">private</span> <span class="hljs-type">TrieNode</span> <span class="hljs-variable">parent</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br><br>        TrieNode(Character c) &#123;<br>            <span class="hljs-built_in">this</span>.c = c;<br>        &#125;<br><br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">put</span><span class="hljs-params">(Character c, TrieNode node)</span> &#123;<br>            children.putIfAbsent(c, node);<br>        &#125;<br><br>        <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">contains</span><span class="hljs-params">(Character c)</span> &#123;<br>            <span class="hljs-keyword">return</span> children.containsKey(c);<br>        &#125;<br><br>        <span class="hljs-keyword">public</span> TrieNode <span class="hljs-title function_">get</span><span class="hljs-params">(Character c)</span> &#123;<br>            <span class="hljs-keyword">return</span> children.get(c);<br>        &#125;<br><br>        <span class="hljs-keyword">public</span> Integer <span class="hljs-title function_">getCount</span><span class="hljs-params">()</span> &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>.count;<br>        &#125;<br><br>        <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getString</span><span class="hljs-params">()</span> &#123;<br>            <span class="hljs-type">StringBuilder</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StringBuilder</span>();<br>            <span class="hljs-type">TrieNode</span> <span class="hljs-variable">node</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>;<br>            <span class="hljs-keyword">while</span> (node.c != <span class="hljs-literal">null</span>) &#123;<br>                s.insert(<span class="hljs-number">0</span>, node.c.toString());<br>                node = node.parent;<br>            &#125;<br>            <span class="hljs-keyword">return</span> s.toString();<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">TrieClient</span> &#123;<br><br>        <span class="hljs-keyword">default</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">visit</span><span class="hljs-params">(TrieNode node)</span> &#123;<br>            logger.info(node.getString() + <span class="hljs-string">&quot;:&quot;</span> + node.count);<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">Trie</span> <span class="hljs-variable">trie</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Trie</span>();<br>        trie.insert(<span class="hljs-string">&quot;abc&quot;</span>);<br>        trie.insert(<span class="hljs-string">&quot;ab&quot;</span>);<br>        trie.insert(<span class="hljs-string">&quot;ab&quot;</span>);<br>        trie.insert(<span class="hljs-string">&quot;cde&quot;</span>);<br>        trie.insert(<span class="hljs-string">&quot;cde&quot;</span>);<br>        trie.traverseLeaf(<span class="hljs-keyword">new</span> <span class="hljs-title class_">TrieClient</span>() &#123;&#125;);<br><br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>运行main的结果如下：</p>
+<pre><code class="hljs">2017-11-27 10:40:52 INFO  Trie:103    cde:2
+2017-11-27 10:40:52 INFO  Trie:103    ab:2
+2017-11-27 10:40:52 INFO  Trie:103    abc:1
+</code></pre>
+<h2 id="用Trie实现的Java代码"><a href="#用Trie实现的Java代码" class="headerlink" title=" 用Trie实现的Java代码"></a><a name="hh2"></a> 用Trie实现的Java代码</h2><p>这个<code>Trie</code>怎么用呢？以下是完整的代码。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> ym.parallel;<br><br><span class="hljs-keyword">import</span> com.google.common.base.MoreObjects;<br><span class="hljs-keyword">import</span> org.junit.Before;<br><span class="hljs-keyword">import</span> org.junit.Test;<br><span class="hljs-keyword">import</span> org.slf4j.Logger;<br><span class="hljs-keyword">import</span> org.slf4j.LoggerFactory;<br><br><span class="hljs-keyword">import</span> java.io.BufferedReader;<br><span class="hljs-keyword">import</span> java.io.File;<br><span class="hljs-keyword">import</span> java.io.FileReader;<br><span class="hljs-keyword">import</span> java.io.IOException;<br><span class="hljs-keyword">import</span> java.util.HashMap;<br><span class="hljs-keyword">import</span> java.util.Map;<br><span class="hljs-keyword">import</span> java.util.PriorityQueue;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Created by ym on 11/26/2017.</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SolutionTrie</span> &#123;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Logger</span> <span class="hljs-variable">logger</span> <span class="hljs-operator">=</span> LoggerFactory.getLogger(SolutionTrie.class);<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> String path;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-type">Trie</span> <span class="hljs-variable">trie</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Trie</span>();<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> PriorityQueue&lt;IPCounter&gt; heap = <span class="hljs-keyword">new</span> <span class="hljs-title class_">PriorityQueue</span>&lt;&gt;(<span class="hljs-number">10</span>);<br><br>    <span class="hljs-meta">@Before</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setUp</span><span class="hljs-params">()</span> &#123;<br>        path = <span class="hljs-string">&quot;d:/tmp/log_ip.txt&quot;</span>;<br>    &#125;<br><br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">findTopTen</span><span class="hljs-params">()</span> &#123;<br><br>        logger.info(<span class="hljs-string">&quot;compute begin&quot;</span>);<br>        <span class="hljs-keyword">try</span> (<span class="hljs-type">BufferedReader</span> <span class="hljs-variable">br</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BufferedReader</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">FileReader</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">File</span>(path)));) &#123;<br>            <span class="hljs-type">String</span> <span class="hljs-variable">line</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>            <span class="hljs-keyword">while</span> ((line = br.readLine()) != <span class="hljs-literal">null</span>) &#123;<br>                trie.insert(line);<br>            &#125;<br><br>        &#125; <span class="hljs-keyword">catch</span> (IOException e) &#123;<br>            e.printStackTrace();<br>        &#125;<br>        logger.info(<span class="hljs-string">&quot;read complete.&quot;</span>);<br><br>        trie.traverseLeaf(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Trie</span>.TrieClient() &#123;<br>            <span class="hljs-meta">@Override</span><br>            <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">visit</span><span class="hljs-params">(Trie.TrieNode node)</span> &#123;<br>                <span class="hljs-type">IPCounter</span> <span class="hljs-variable">ipCounter</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IPCounter</span>(node.getString(), node.getCount());<br>                <span class="hljs-keyword">if</span> (heap.size() &lt; <span class="hljs-number">10</span>) &#123;<br>                    heap.add(ipCounter);<br>                &#125; <span class="hljs-keyword">else</span> &#123;<br>                    <span class="hljs-keyword">if</span> (heap.peek().count &lt; ipCounter.count) &#123;<br>                        heap.poll();<br>                        heap.add(ipCounter);<br>                    &#125;<br>                &#125;<br>            &#125;<br>        &#125;);<br><br>        <span class="hljs-keyword">while</span> (!heap.isEmpty()) &#123;<br>            logger.info(heap.poll().toString());<br>        &#125;<br>        logger.info(<span class="hljs-string">&quot;compute end&quot;</span>);<br>    &#125;<br><br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">IPCounter</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Comparable</span> &#123;<br>        <span class="hljs-keyword">private</span> String ip;<br>        <span class="hljs-keyword">private</span> Integer count;<br><br>        <span class="hljs-keyword">public</span> <span class="hljs-title function_">IPCounter</span><span class="hljs-params">(String ip, Integer count)</span> &#123;<br>            <span class="hljs-built_in">this</span>.ip = ip;<br>            <span class="hljs-built_in">this</span>.count = count;<br>        &#125;<br><br><br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">compareTo</span><span class="hljs-params">(Object o)</span> &#123;<br>            <span class="hljs-type">IPCounter</span> <span class="hljs-variable">ipCounter</span> <span class="hljs-operator">=</span> (IPCounter) o;<br>            <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>.count.compareTo(ipCounter.count);<br>        &#125;<br><br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">public</span> String <span class="hljs-title function_">toString</span><span class="hljs-params">()</span> &#123;<br>            <span class="hljs-keyword">return</span> MoreObjects.toStringHelper(<span class="hljs-built_in">this</span>).add(<span class="hljs-string">&quot;Ip&quot;</span>, ip).add(<span class="hljs-string">&quot;count&quot;</span>, count).toString();<br>        &#125;<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+
+]]></content>
+      <tags>
+        <tag>algorithm</tag>
+        <tag>java</tag>
+        <tag>trie</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[leetcode 329]Longest Increasing Path in a Matrix 原创解法</title>
     <url>/2017/03/12/2017-3-12-leetcode-329/</url>
     <content><![CDATA[<h2 id="题目概述"><a href="#题目概述" class="headerlink" title=" 题目概述"></a><a name="hh0"></a> 题目概述</h2><p><a href="https://leetcode.com/problems/longest-increasing-path-in-a-matrix/">原题链接</a></p>
@@ -811,53 +858,6 @@ hello world
         <tag>java</tag>
         <tag>clojure</tag>
         <tag>jvm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>从大文件中找到出现次数最多的10个数</title>
-    <url>/2017/11/27/find-top-n/</url>
-    <content><![CDATA[<h2 id="问题"><a href="#问题" class="headerlink" title=" 问题"></a><a name="hh0"></a> 问题</h2><p>这是一个经典题，面试的时候经常会遇到。
-例如：文件的内容如下</p>
-<pre><code class="hljs">26329
-46184
-94842
-9036
-96555
-40954
-38187
-15548
-51452
-861
-51010
-8721
-13666
-69837 
-</code></pre>
-<p>每行一个数字，找到出现次数最多的数。通常的解法是遍历文件一遍，用hashmap维护一个(number &#x3D;&gt; freq)，
-然后用最小堆找到最大的10个数。</p>
-<span id="more"></span>
-
-<h2 id="用Trie代替Hashmap"><a href="#用Trie代替Hashmap" class="headerlink" title=" 用Trie代替Hashmap"></a><a name="hh1"></a> 用Trie代替Hashmap</h2><p>如果内存很小，hashmap放不下怎么办呢？可以使用Trie来代替HashMap。
-但是我们这里的Trie在<code>insert</code>一个串的时候会在叶子节点用一个count来计数。
-这里的叶子节点特指<code>isEnd</code>为<code>true</code>的TrieNode。
-通常Trie用于匹配字符串，会有<code>startsWith</code>方法。但是我们这里不需要这个方法，而需要一个遍历
-所有叶子节点的方法<code>traverseLeaf</code>。下面就是我们的<code>Trie</code>class。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> ym.parallel;<br><br><span class="hljs-keyword">import</span> org.slf4j.Logger;<br><span class="hljs-keyword">import</span> org.slf4j.LoggerFactory;<br><br><span class="hljs-keyword">import</span> java.util.ArrayDeque;<br><span class="hljs-keyword">import</span> java.util.Deque;<br><span class="hljs-keyword">import</span> java.util.HashMap;<br><span class="hljs-keyword">import</span> java.util.Map;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Created by ym on 11/26/2017.</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Trie</span> &#123;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Logger</span> <span class="hljs-variable">logger</span> <span class="hljs-operator">=</span> LoggerFactory.getLogger(Trie.class);<br>    <span class="hljs-keyword">private</span> TrieNode root;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">Trie</span><span class="hljs-params">()</span> &#123;<br>        root = <span class="hljs-keyword">new</span> <span class="hljs-title class_">TrieNode</span>(<span class="hljs-literal">null</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">insert</span><span class="hljs-params">(String s)</span> &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">n</span> <span class="hljs-operator">=</span> s.length();<br>        <span class="hljs-type">TrieNode</span> <span class="hljs-variable">parent</span> <span class="hljs-operator">=</span> root;<br>        <span class="hljs-type">TrieNode</span> <span class="hljs-variable">child</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; n; i++) &#123;<br>            <span class="hljs-type">Character</span> <span class="hljs-variable">c</span> <span class="hljs-operator">=</span> s.charAt(i);<br><br>            <span class="hljs-keyword">if</span> (parent.contains(c)) &#123;<br>                child = parent.get(c);<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                child = <span class="hljs-keyword">new</span> <span class="hljs-title class_">TrieNode</span>(c);<br>                parent.put(c, child);<br>                child.parent = parent;<br>            &#125;<br><br>            <span class="hljs-keyword">if</span> (i == n - <span class="hljs-number">1</span>) &#123;<br>                child.isEnd = <span class="hljs-literal">true</span>;<br>                child.count += <span class="hljs-number">1</span>;<br>            &#125;<br>            parent = child;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">traverseLeaf</span><span class="hljs-params">(TrieClient client)</span> &#123;<br>        Deque&lt;TrieNode&gt; deque = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayDeque</span>&lt;&gt;();<br>        deque.push(root);<br><br>        <span class="hljs-keyword">while</span> (!deque.isEmpty()) &#123;<br>            <span class="hljs-type">TrieNode</span> <span class="hljs-variable">tmp</span> <span class="hljs-operator">=</span> deque.pop();<br>            <span class="hljs-keyword">if</span> (tmp.isEnd) &#123;<br>                client.visit(tmp);<br>            &#125;<br><br>            <span class="hljs-keyword">for</span> (Map.Entry&lt;Character, TrieNode&gt; entry : tmp.children.entrySet()) &#123;<br>                deque.push(entry.getValue());<br>            &#125;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TrieNode</span> &#123;<br>        <span class="hljs-keyword">private</span> HashMap&lt;Character, TrieNode&gt; children = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;();<br>        <span class="hljs-keyword">private</span> <span class="hljs-type">boolean</span> <span class="hljs-variable">isEnd</span> <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>;<br>        <span class="hljs-keyword">private</span> Character c;<br>        <span class="hljs-keyword">private</span> <span class="hljs-type">Integer</span> <span class="hljs-variable">count</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">private</span> <span class="hljs-type">TrieNode</span> <span class="hljs-variable">parent</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br><br>        TrieNode(Character c) &#123;<br>            <span class="hljs-built_in">this</span>.c = c;<br>        &#125;<br><br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">put</span><span class="hljs-params">(Character c, TrieNode node)</span> &#123;<br>            children.putIfAbsent(c, node);<br>        &#125;<br><br>        <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">contains</span><span class="hljs-params">(Character c)</span> &#123;<br>            <span class="hljs-keyword">return</span> children.containsKey(c);<br>        &#125;<br><br>        <span class="hljs-keyword">public</span> TrieNode <span class="hljs-title function_">get</span><span class="hljs-params">(Character c)</span> &#123;<br>            <span class="hljs-keyword">return</span> children.get(c);<br>        &#125;<br><br>        <span class="hljs-keyword">public</span> Integer <span class="hljs-title function_">getCount</span><span class="hljs-params">()</span> &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>.count;<br>        &#125;<br><br>        <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getString</span><span class="hljs-params">()</span> &#123;<br>            <span class="hljs-type">StringBuilder</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StringBuilder</span>();<br>            <span class="hljs-type">TrieNode</span> <span class="hljs-variable">node</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>;<br>            <span class="hljs-keyword">while</span> (node.c != <span class="hljs-literal">null</span>) &#123;<br>                s.insert(<span class="hljs-number">0</span>, node.c.toString());<br>                node = node.parent;<br>            &#125;<br>            <span class="hljs-keyword">return</span> s.toString();<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">TrieClient</span> &#123;<br><br>        <span class="hljs-keyword">default</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">visit</span><span class="hljs-params">(TrieNode node)</span> &#123;<br>            logger.info(node.getString() + <span class="hljs-string">&quot;:&quot;</span> + node.count);<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">Trie</span> <span class="hljs-variable">trie</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Trie</span>();<br>        trie.insert(<span class="hljs-string">&quot;abc&quot;</span>);<br>        trie.insert(<span class="hljs-string">&quot;ab&quot;</span>);<br>        trie.insert(<span class="hljs-string">&quot;ab&quot;</span>);<br>        trie.insert(<span class="hljs-string">&quot;cde&quot;</span>);<br>        trie.insert(<span class="hljs-string">&quot;cde&quot;</span>);<br>        trie.traverseLeaf(<span class="hljs-keyword">new</span> <span class="hljs-title class_">TrieClient</span>() &#123;&#125;);<br><br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>运行main的结果如下：</p>
-<pre><code class="hljs">2017-11-27 10:40:52 INFO  Trie:103    cde:2
-2017-11-27 10:40:52 INFO  Trie:103    ab:2
-2017-11-27 10:40:52 INFO  Trie:103    abc:1
-</code></pre>
-<h2 id="用Trie实现的Java代码"><a href="#用Trie实现的Java代码" class="headerlink" title=" 用Trie实现的Java代码"></a><a name="hh2"></a> 用Trie实现的Java代码</h2><p>这个<code>Trie</code>怎么用呢？以下是完整的代码。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> ym.parallel;<br><br><span class="hljs-keyword">import</span> com.google.common.base.MoreObjects;<br><span class="hljs-keyword">import</span> org.junit.Before;<br><span class="hljs-keyword">import</span> org.junit.Test;<br><span class="hljs-keyword">import</span> org.slf4j.Logger;<br><span class="hljs-keyword">import</span> org.slf4j.LoggerFactory;<br><br><span class="hljs-keyword">import</span> java.io.BufferedReader;<br><span class="hljs-keyword">import</span> java.io.File;<br><span class="hljs-keyword">import</span> java.io.FileReader;<br><span class="hljs-keyword">import</span> java.io.IOException;<br><span class="hljs-keyword">import</span> java.util.HashMap;<br><span class="hljs-keyword">import</span> java.util.Map;<br><span class="hljs-keyword">import</span> java.util.PriorityQueue;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Created by ym on 11/26/2017.</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SolutionTrie</span> &#123;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Logger</span> <span class="hljs-variable">logger</span> <span class="hljs-operator">=</span> LoggerFactory.getLogger(SolutionTrie.class);<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> String path;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-type">Trie</span> <span class="hljs-variable">trie</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Trie</span>();<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> PriorityQueue&lt;IPCounter&gt; heap = <span class="hljs-keyword">new</span> <span class="hljs-title class_">PriorityQueue</span>&lt;&gt;(<span class="hljs-number">10</span>);<br><br>    <span class="hljs-meta">@Before</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setUp</span><span class="hljs-params">()</span> &#123;<br>        path = <span class="hljs-string">&quot;d:/tmp/log_ip.txt&quot;</span>;<br>    &#125;<br><br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">findTopTen</span><span class="hljs-params">()</span> &#123;<br><br>        logger.info(<span class="hljs-string">&quot;compute begin&quot;</span>);<br>        <span class="hljs-keyword">try</span> (<span class="hljs-type">BufferedReader</span> <span class="hljs-variable">br</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BufferedReader</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">FileReader</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">File</span>(path)));) &#123;<br>            <span class="hljs-type">String</span> <span class="hljs-variable">line</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>            <span class="hljs-keyword">while</span> ((line = br.readLine()) != <span class="hljs-literal">null</span>) &#123;<br>                trie.insert(line);<br>            &#125;<br><br>        &#125; <span class="hljs-keyword">catch</span> (IOException e) &#123;<br>            e.printStackTrace();<br>        &#125;<br>        logger.info(<span class="hljs-string">&quot;read complete.&quot;</span>);<br><br>        trie.traverseLeaf(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Trie</span>.TrieClient() &#123;<br>            <span class="hljs-meta">@Override</span><br>            <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">visit</span><span class="hljs-params">(Trie.TrieNode node)</span> &#123;<br>                <span class="hljs-type">IPCounter</span> <span class="hljs-variable">ipCounter</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IPCounter</span>(node.getString(), node.getCount());<br>                <span class="hljs-keyword">if</span> (heap.size() &lt; <span class="hljs-number">10</span>) &#123;<br>                    heap.add(ipCounter);<br>                &#125; <span class="hljs-keyword">else</span> &#123;<br>                    <span class="hljs-keyword">if</span> (heap.peek().count &lt; ipCounter.count) &#123;<br>                        heap.poll();<br>                        heap.add(ipCounter);<br>                    &#125;<br>                &#125;<br>            &#125;<br>        &#125;);<br><br>        <span class="hljs-keyword">while</span> (!heap.isEmpty()) &#123;<br>            logger.info(heap.poll().toString());<br>        &#125;<br>        logger.info(<span class="hljs-string">&quot;compute end&quot;</span>);<br>    &#125;<br><br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">IPCounter</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Comparable</span> &#123;<br>        <span class="hljs-keyword">private</span> String ip;<br>        <span class="hljs-keyword">private</span> Integer count;<br><br>        <span class="hljs-keyword">public</span> <span class="hljs-title function_">IPCounter</span><span class="hljs-params">(String ip, Integer count)</span> &#123;<br>            <span class="hljs-built_in">this</span>.ip = ip;<br>            <span class="hljs-built_in">this</span>.count = count;<br>        &#125;<br><br><br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">compareTo</span><span class="hljs-params">(Object o)</span> &#123;<br>            <span class="hljs-type">IPCounter</span> <span class="hljs-variable">ipCounter</span> <span class="hljs-operator">=</span> (IPCounter) o;<br>            <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>.count.compareTo(ipCounter.count);<br>        &#125;<br><br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">public</span> String <span class="hljs-title function_">toString</span><span class="hljs-params">()</span> &#123;<br>            <span class="hljs-keyword">return</span> MoreObjects.toStringHelper(<span class="hljs-built_in">this</span>).add(<span class="hljs-string">&quot;Ip&quot;</span>, ip).add(<span class="hljs-string">&quot;count&quot;</span>, count).toString();<br>        &#125;<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
-
-
-]]></content>
-      <tags>
-        <tag>java</tag>
-        <tag>algorithm</tag>
-        <tag>trie</tag>
       </tags>
   </entry>
   <entry>
@@ -1415,6 +1415,82 @@ socket.timeout: timed out
 Process finished with exit code 0
 </code></pre>
 <p>可以看到，确实是110个1。</p>
+]]></content>
+      <tags>
+        <tag>bitTorrent</tag>
+        <tag>protocol</tag>
+        <tag>p2p</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用delve调试K3s</title>
+    <url>/2019/11/19/debug-k3s/</url>
+    <content><![CDATA[<h2 id="k3s是什么"><a href="#k3s是什么" class="headerlink" title="k3s是什么"></a>k3s是什么</h2><p><a href="http://k3s.io/">K3s</a>是什么？k8s的精简版。编译之后执行程序大小不到50M。
+可以用在物联网的边缘计算侧。如果想深入了解k8s，那么k3s是个很好的起点。
+那么如果能够断点调试k3s，就更好了。下面我们来看看怎么做。</p>
+<span id="more"></span>
+
+<h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><ul>
+<li>建议使用linux 64位操作系统。这样可以native构建。</li>
+<li>建议性能好一些的机器，虚拟机编译会很慢</li>
+<li>建议安装好docker</li>
+<li>配置好go的环境，设置<code>GOPATH</code>，同时把<code>$GOPATH/bin</code>加入到<code>PATH</code></li>
+<li>安装Goland这个集成开发环境</li>
+<li>从github克隆k3s的代码，加上depth参数则不下载历史，速度会快很多<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ git <span class="hljs-built_in">clone</span> --depth 1 https://github.com/rancher/k3s.git <span class="hljs-variable">$GOPATH</span>/src/github.com/rancher/k3s<br></code></pre></td></tr></table></figure></li>
+<li>安装delve的debug工具。完成之后会生成可执行文件<code>$GOPATH/bin/dlv</code><figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ git <span class="hljs-built_in">clone</span> --depth 1 https://github.com/go-delve/delve.git <span class="hljs-variable">$GOPATH</span>/src/github.com/go-delve/delve<br>$ <span class="hljs-built_in">cd</span> <span class="hljs-variable">$GOPATH</span>/src/github.com/go-delve/delve<br>$ make install<br></code></pre></td></tr></table></figure></li>
+<li>构建含有调试信息的可执行文件<code>k3s</code>,所在路径是<code>$GOPATH/src/github.com/rancher/k3s/</code><figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ <span class="hljs-built_in">cd</span> <span class="hljs-variable">$GOPATH</span>/src/github.com/rancher/k3s<br>$ go build -gcflags <span class="hljs-string">&quot;all=-N -l&quot;</span> -o k3s<br></code></pre></td></tr></table></figure></li>
+<li>用delve执行。这时候线程会监听2345的远程调试接入。<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ <span class="hljs-built_in">cd</span> <span class="hljs-variable">$GOPATH</span>/src/github.com/rancher/k3s<br>$ dlv --listen=:2345 --headless=<span class="hljs-literal">true</span> --api-version=2 <span class="hljs-built_in">exec</span> -- ./k3s server --docker --disable-agent<br></code></pre></td></tr></table></figure></li>
+<li>Goland中添加k3s项目。项目根路径为<code>$GOPATH</code>，然后配置增加一个remote调试。在运行之前，在main.go上打一个断点。</li>
+</ul>
+<p>运行远程调试之后，成功。
+<img src="/images/20191119-k3s-remote-debug.jpg" alt="remote-debug"></p>
+]]></content>
+      <tags>
+        <tag>k3s</tag>
+        <tag>delve</tag>
+        <tag>golang</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>BitTorrent协议（一）之解析种子文件</title>
+    <url>/2019/01/09/2019-1-9-bt-1/</url>
+    <content><![CDATA[<h2 id="bt种子文件"><a href="#bt种子文件" class="headerlink" title="bt种子文件"></a>bt种子文件</h2><p>bt通过种子文件分享已经是一个过去时了，2009年<code>btChina</code>就已经关闭了。现在一般都是
+使用磁力链接来分享文件。那么为什么种子文件分享不再流行了呢？为什么要用磁力链接呢？
+磁力链接怎么实现的呢？</p>
+<p>嗯这是这个系列要研究的问题。但是要研究磁力链接的实现原理，最好先从种子文件开始。</p>
+<span id="more"></span>
+
+<h2 id="种子文件-metainfo-files-的定义"><a href="#种子文件-metainfo-files-的定义" class="headerlink" title="种子文件(metainfo files)的定义"></a>种子文件(metainfo files)的定义</h2><p>官网文档 <a href="http://www.bittorrent.org/beps/bep_0003.html">BEP3</a> 中的metainfo files章节
+讲的很清楚。</p>
+<p>简单的说就是把tracker列表和分享的文件信息编码为一个二进制的文件。</p>
+<ul>
+<li>tracker列表是类似如下的列表</li>
+</ul>
+<figure class="highlight dts"><table><tr><td class="code"><pre><code class="hljs dts"><span class="hljs-symbol">http:</span><span class="hljs-comment">//tracker.trackerfix.com:80/announce</span><br><span class="hljs-symbol"></span><br><span class="hljs-symbol">udp:</span><span class="hljs-comment">//9.rarbg.me:2710/announce</span><br><span class="hljs-symbol"></span><br><span class="hljs-symbol">udp:</span><span class="hljs-comment">//9.rarbg.to:2710/announce</span><br></code></pre></td></tr></table></figure>
+
+<p>如果想要找到下载源，就要通过tracker找到peer节点。</p>
+<ul>
+<li>分享的文件信息（info）</li>
+</ul>
+<p>包含了文件的大小，分块个数，分块的sha1散列值。</p>
+<h2 id="编码方式-bencoding"><a href="#编码方式-bencoding" class="headerlink" title="编码方式(bencoding)"></a>编码方式(bencoding)</h2><p>bt文件的编码逻辑取名为bencoding。</p>
+<blockquote>
+<p>Strings are length-prefixed base ten followed by a colon and the string. For example 4:spam corresponds to ‘spam’.</p>
+<p>Integers are represented by an ‘i’ followed by the number in base 10 followed by an ‘e’. For example i3e corresponds to 3 and i-3e corresponds to -3. Integers have no size limitation. i-0e is invalid. All encodings with a leading zero, such as i03e, are invalid, other than i0e, which of course corresponds to 0.</p>
+<p>Lists are encoded as an ‘l’ followed by their elements (also bencoded) followed by an ‘e’. For example l4:spam4:eggse corresponds to [‘spam’, ‘eggs’].</p>
+<p>Dictionaries are encoded as a ‘d’ followed by a list of alternating keys and their corresponding values followed by an ‘e’. For example, d3:cow3:moo4:spam4:eggse corresponds to {‘cow’: ‘moo’, ‘spam’: ‘eggs’} and d4:spaml1:a1:bee corresponds to {‘spam’: [‘a’, ‘b’]}. Keys must be strings and appear in sorted order (sorted as raw strings, not alphanumerics).</p>
+</blockquote>
+<p>翻译为eBNF语法呢，就是如下</p>
+<figure class="highlight ebnf"><table><tr><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">string</span> : num &#x27;:&#x27; &#123;CHAR&#125;*<br><br><span class="hljs-attribute">num</span> : 0 <br>    | [1-9][0-9]+ <br>    | &#x27;-&#x27; [1-9][0-9]+<br><br><span class="hljs-attribute">integer</span> : &#x27;i&#x27; num &#x27;e&#x27;<br><br><span class="hljs-attribute">list</span> : &#x27;l&#x27; &#123;element&#125;* &#x27;e&#x27;<br><br><span class="hljs-attribute">dic</span> : &#x27;d&#x27; &#123;pair&#125;* &#x27;e&#x27;<br><br><span class="hljs-attribute">pair</span> : string element<br><br><span class="hljs-attribute">element</span> : string<br>        | integer<br>        | list<br>        | dic<br></code></pre></td></tr></table></figure>
+
+<h2 id="解码"><a href="#解码" class="headerlink" title="解码"></a>解码</h2><p>根据eBNF实现的解码代码如下， 把<code>get_content()</code>方法中path替换为种子文件的路径，运行就可以看到。
+返回的解析结果中会有<code>info_hash</code>，该值是根据info的bencoding的二进制串计算的sha1值。这个值很重要
+因为之后很多协议都会用到。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><br>__author__ = <span class="hljs-string">&#x27;ym&#x27;</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    Date        : &#x27;2019/1/7&#x27;</span><br><span class="hljs-string">    Description :  解析torrent文件</span><br><span class="hljs-string">    </span><br><span class="hljs-string">&quot;&quot;&quot;</span><br><br><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">BDecode</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, arr</span>):<br>        <span class="hljs-variable language_">self</span>.arr = arr<br>        <span class="hljs-variable language_">self</span>.n = <span class="hljs-built_in">len</span>(arr)<br>        <span class="hljs-variable language_">self</span>.i = <span class="hljs-number">0</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">parse</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.dic()<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">peek</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-built_in">next</span> = <span class="hljs-literal">None</span><br>        <span class="hljs-keyword">if</span> <span class="hljs-variable language_">self</span>.i &lt; <span class="hljs-variable language_">self</span>.n:<br>            <span class="hljs-built_in">next</span> = <span class="hljs-variable language_">self</span>.arr[<span class="hljs-variable language_">self</span>.i]<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">chr</span>(<span class="hljs-built_in">next</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">next</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-built_in">next</span> = <span class="hljs-literal">None</span><br>        <span class="hljs-keyword">if</span> <span class="hljs-variable language_">self</span>.i &lt; <span class="hljs-variable language_">self</span>.n:<br>            <span class="hljs-built_in">next</span> = <span class="hljs-variable language_">self</span>.arr[<span class="hljs-variable language_">self</span>.i]<br>            <span class="hljs-variable language_">self</span>.i += <span class="hljs-number">1</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">chr</span>(<span class="hljs-built_in">next</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">num</span>(<span class="hljs-params">self</span>):<br>        num_str = <span class="hljs-string">&quot;&quot;</span><br>        peek = <span class="hljs-variable language_">self</span>.peek()<br><br>        <span class="hljs-keyword">if</span> peek <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>            <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;malformed num.&quot;</span>)<br><br>        <span class="hljs-keyword">if</span> peek == <span class="hljs-string">&#x27;-&#x27;</span> <span class="hljs-keyword">and</span> <span class="hljs-variable language_">self</span>.peek(<span class="hljs-number">1</span>) <span class="hljs-keyword">in</span> <span class="hljs-string">&#x27;123456789&#x27;</span>:<br>            <span class="hljs-variable language_">self</span>.<span class="hljs-built_in">next</span>()  <span class="hljs-comment"># ignore &#x27;-&#x27;</span><br>            <span class="hljs-keyword">while</span> <span class="hljs-variable language_">self</span>.peek() <span class="hljs-keyword">in</span> <span class="hljs-string">&quot;0123456789&quot;</span>:<br>                num_str += <span class="hljs-variable language_">self</span>.<span class="hljs-built_in">next</span>()<br>            <span class="hljs-keyword">if</span> num_str[<span class="hljs-number">0</span>] <span class="hljs-keyword">in</span> <span class="hljs-string">&#x27;0&#x27;</span> <span class="hljs-keyword">and</span> <span class="hljs-built_in">len</span>(num_str) &gt; <span class="hljs-number">1</span>:<br>                <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;error : 0 starts with num&quot;</span>)<br>            <span class="hljs-keyword">return</span> -<span class="hljs-built_in">int</span>(num_str)<br>        <span class="hljs-keyword">elif</span> peek <span class="hljs-keyword">in</span> <span class="hljs-string">&#x27;0123456789&#x27;</span>:<br>            <span class="hljs-keyword">while</span> <span class="hljs-variable language_">self</span>.peek() <span class="hljs-keyword">in</span> <span class="hljs-string">&quot;0123456789&quot;</span>:<br>                num_str += <span class="hljs-variable language_">self</span>.<span class="hljs-built_in">next</span>()<br>            <span class="hljs-keyword">if</span> num_str[<span class="hljs-number">0</span>] <span class="hljs-keyword">in</span> <span class="hljs-string">&#x27;0&#x27;</span> <span class="hljs-keyword">and</span> <span class="hljs-built_in">len</span>(num_str) &gt; <span class="hljs-number">1</span>:<br>                <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;error : 0 starts with num&quot;</span>)<br>            <span class="hljs-keyword">return</span> <span class="hljs-built_in">int</span>(num_str)<br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;malformed num.&quot;</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">string</span>(<span class="hljs-params">self, pieces=<span class="hljs-literal">False</span></span>):<br>        length = <span class="hljs-variable language_">self</span>.num()<br>        <span class="hljs-keyword">if</span> <span class="hljs-variable language_">self</span>.<span class="hljs-built_in">next</span>() != <span class="hljs-string">&#x27;:&#x27;</span>:<br>            <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;String must contain colon&quot;</span>)<br>        s = <span class="hljs-variable language_">self</span>.arr[<span class="hljs-variable language_">self</span>.i:(<span class="hljs-variable language_">self</span>.i + length)]<br>        <span class="hljs-variable language_">self</span>.i += length<br><br>        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> pieces:<br>            <span class="hljs-keyword">return</span> s.decode(<span class="hljs-string">&quot;utf8&quot;</span>)<br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-comment"># pieces maps to a string whose length is a multiple of 20.</span><br>            <span class="hljs-comment"># It is to be subdivided into strings of length 20,</span><br>            <span class="hljs-comment"># each of which is the SHA1 hash of the piece at the corresponding index.</span><br>            result = []<br>            <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, length, <span class="hljs-number">20</span>):<br>                <span class="hljs-built_in">hash</span> = s[j:j + <span class="hljs-number">20</span>]<br>                result.append(<span class="hljs-built_in">hash</span>.<span class="hljs-built_in">hex</span>().lower())<br>            <span class="hljs-keyword">return</span> result<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">integer</span>(<span class="hljs-params">self, timestamp=<span class="hljs-literal">False</span></span>):<br>        <span class="hljs-keyword">if</span> <span class="hljs-variable language_">self</span>.<span class="hljs-built_in">next</span>() != <span class="hljs-string">&quot;i&quot;</span>:<br>            <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;Integer must begin with i&quot;</span>)<br>        val = <span class="hljs-variable language_">self</span>.num()<br><br>        <span class="hljs-keyword">if</span> timestamp:<br>            val = datetime.fromtimestamp(val).__str__()<br><br>        <span class="hljs-keyword">if</span> <span class="hljs-variable language_">self</span>.<span class="hljs-built_in">next</span>() != <span class="hljs-string">&quot;e&quot;</span>:<br>            <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;Integer must end with e&quot;</span>)<br>        <span class="hljs-keyword">return</span> val<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">element</span>(<span class="hljs-params">self, pieces=<span class="hljs-literal">False</span>, timestamp=<span class="hljs-literal">False</span></span>):<br>        peek = <span class="hljs-variable language_">self</span>.peek()<br>        <span class="hljs-keyword">if</span> peek == <span class="hljs-string">&#x27;i&#x27;</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.integer(timestamp)<br>        <span class="hljs-keyword">elif</span> peek == <span class="hljs-string">&quot;l&quot;</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.<span class="hljs-built_in">list</span>()<br>        <span class="hljs-keyword">elif</span> peek == <span class="hljs-string">&#x27;d&#x27;</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.dic()<br>        <span class="hljs-keyword">elif</span> peek <span class="hljs-keyword">in</span> <span class="hljs-string">&quot;0123456789&quot;</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.string(pieces)<br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;not recognize.&quot;</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">list</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">if</span> <span class="hljs-variable language_">self</span>.<span class="hljs-built_in">next</span>() != <span class="hljs-string">&quot;l&quot;</span>:<br>            <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;list must begin with l&quot;</span>)<br>        result = []<br>        <span class="hljs-keyword">while</span> <span class="hljs-variable language_">self</span>.peek() != <span class="hljs-string">&#x27;e&#x27;</span>:<br>            result.append(<span class="hljs-variable language_">self</span>.element())<br>        <span class="hljs-variable language_">self</span>.<span class="hljs-built_in">next</span>()<br>        <span class="hljs-keyword">return</span> result<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">dic</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">if</span> <span class="hljs-variable language_">self</span>.<span class="hljs-built_in">next</span>() != <span class="hljs-string">&#x27;d&#x27;</span>:<br>            <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;dic must begin with d&quot;</span>)<br>        result = <span class="hljs-built_in">dict</span>()<br><br>        <span class="hljs-keyword">while</span> <span class="hljs-variable language_">self</span>.peek() != <span class="hljs-string">&quot;e&quot;</span>:<br>            key = <span class="hljs-variable language_">self</span>.string()<br>            val = <span class="hljs-literal">None</span><br>            <span class="hljs-keyword">if</span> key == <span class="hljs-string">&quot;pieces&quot;</span>:<br>                val = <span class="hljs-variable language_">self</span>.element(pieces=<span class="hljs-literal">True</span>)<br>            <span class="hljs-keyword">elif</span> key == <span class="hljs-string">&#x27;creation date&#x27;</span>:<br>                val = <span class="hljs-variable language_">self</span>.element(timestamp=<span class="hljs-literal">True</span>)<br>            <span class="hljs-keyword">else</span>:<br>                info_start = <span class="hljs-literal">None</span><br>                info_end = <span class="hljs-literal">None</span><br>                <span class="hljs-keyword">if</span> key == <span class="hljs-string">&#x27;info&#x27;</span>:<br>                    info_start = <span class="hljs-variable language_">self</span>.i<br>                val = <span class="hljs-variable language_">self</span>.element()<br>                <span class="hljs-keyword">if</span> key == <span class="hljs-string">&#x27;info&#x27;</span>:<br>                    info_end = <span class="hljs-variable language_">self</span>.i<br>                    result[<span class="hljs-string">&#x27;info_hash&#x27;</span>] = <span class="hljs-variable language_">self</span>.sha1(<span class="hljs-variable language_">self</span>.arr[info_start:info_end])<br>            result[key] = val<br><br>        <span class="hljs-variable language_">self</span>.<span class="hljs-built_in">next</span>()<br>        <span class="hljs-keyword">return</span> result<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">sha1</span>(<span class="hljs-params">self, info</span>):<br>        <span class="hljs-keyword">import</span> hashlib<br>        p = hashlib.sha1()<br>        p.update(info)<br>        <span class="hljs-keyword">return</span> p.hexdigest()<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_content</span>():<br>    path = <span class="hljs-string">&quot;/Users/ym/tmp/venom.torrent&quot;</span><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(path, <span class="hljs-string">&quot;rb&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        <span class="hljs-keyword">return</span> f.read()<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    content = get_content()<br>    result = BDecode(content).parse()<br>    <span class="hljs-keyword">import</span> pprint<br>    pprint.pprint(result)<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    main()<br></code></pre></td></tr></table></figure>
+
+<h2 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h2><p>用最近的毒液电影的种子进行解析，打印如下，
+其中announce-list就是tracker列表。</p>
+<figure class="highlight 1c"><table><tr><td class="code"><pre><code class="hljs 1c">/usr/local/bin/python3.<span class="hljs-number">7</span> /Users/ym/charm/pytest/ym/bt/parse_torrent.py<br>&#123;&#x27;announce&#x27;<span class="hljs-punctuation">:</span> &#x27;http://tracker.trackerfix.com:80/announce&#x27;<span class="hljs-punctuation">,</span><br> &#x27;announce-list&#x27;<span class="hljs-punctuation">:</span> [[&#x27;http://tracker.trackerfix.com:80/announce&#x27;]<span class="hljs-punctuation">,</span><br>                   [&#x27;udp://9.rarbg.me:<span class="hljs-number">2710</span>/announce&#x27;]<span class="hljs-punctuation">,</span><br>                   [&#x27;udp://9.rarbg.to:<span class="hljs-number">2710</span>/announce&#x27;]]<span class="hljs-punctuation">,</span><br> &#x27;comment&#x27;<span class="hljs-punctuation">:</span> &#x27;Torrent downloaded from https://rarbg.to&#x27;<span class="hljs-punctuation">,</span><br> &#x27;created by&#x27;<span class="hljs-punctuation">:</span> &#x27;mktorrent 1.0&#x27;<span class="hljs-punctuation">,</span><br> &#x27;creation date&#x27;<span class="hljs-punctuation">:</span> &#x27;<span class="hljs-number">2018-11-28</span> 16:04:22&#x27;<span class="hljs-punctuation">,</span><br> &#x27;info&#x27;<span class="hljs-punctuation">:</span> &#123;&#x27;files&#x27;<span class="hljs-punctuation">:</span> [&#123;&#x27;length&#x27;<span class="hljs-punctuation">:</span> <span class="hljs-number">100074</span><span class="hljs-punctuation">,</span> &#x27;path&#x27;<span class="hljs-punctuation">:</span> [&#x27;English.srt&#x27;]&#125;<span class="hljs-punctuation">,</span><br>                    &#123;&#x27;length&#x27;<span class="hljs-punctuation">:</span> <span class="hljs-number">31</span><span class="hljs-punctuation">,</span> &#x27;path&#x27;<span class="hljs-punctuation">:</span> [&#x27;RARBG.txt&#x27;]&#125;<span class="hljs-punctuation">,</span><br>                    &#123;&#x27;length&#x27;<span class="hljs-punctuation">:</span> <span class="hljs-number">4431023676</span><span class="hljs-punctuation">,</span><br>                     &#x27;path&#x27;<span class="hljs-punctuation">:</span> [&#x27;Venom.<span class="hljs-number">2018.72</span>0p.WEBRip.x264.AAC2.0-SHITBOX.mp4&#x27;]&#125;]<span class="hljs-punctuation">,</span><br>          &#x27;name&#x27;<span class="hljs-punctuation">:</span> &#x27;Venom.<span class="hljs-number">2018.72</span>0p.WEBRip.x264.AAC2.0-SHITBOX&#x27;<span class="hljs-punctuation">,</span><br>          &#x27;piece length&#x27;<span class="hljs-punctuation">:</span> <span class="hljs-number">1048576</span><span class="hljs-punctuation">,</span><br>          &#x27;pieces&#x27;<span class="hljs-punctuation">:</span> [&#x27;a<span class="hljs-number">958677</span>e48a77aff<span class="hljs-number">6357</span>4c885d7fd<span class="hljs-number">7091515903</span>4&#x27;<span class="hljs-punctuation">,</span><br>                     &#x27;0c<span class="hljs-number">713356</span>b<span class="hljs-number">6345</span>4a<span class="hljs-number">914452</span>cdcc76a<span class="hljs-number">8470</span>fb4bc419&#x27;<span class="hljs-punctuation">,</span><br>                     ...<br>                     ...<br>                     ...<br>                     &#x27;b926b<span class="hljs-number">048253</span>bc506cb3f4e52acab9df6b93cf614&#x27;<span class="hljs-punctuation">,</span><br>                     &#x27;610f<span class="hljs-number">8485</span>ab8c56f53f594e<span class="hljs-number">0973</span>0a34e<span class="hljs-number">8529</span>e13b4&#x27;]&#125;<span class="hljs-punctuation">,</span><br> &#x27;info_hash&#x27;<span class="hljs-punctuation">:</span> &#x27;<span class="hljs-number">3329</span>7ac9c46f<span class="hljs-number">07150671</span>1f<span class="hljs-number">1281</span>4a3dd8ed8b73ed&#x27;&#125;<br><br>Process finished with exit code <span class="hljs-number">0</span><br><br></code></pre></td></tr></table></figure>
 ]]></content>
       <tags>
         <tag>bitTorrent</tag>
@@ -2012,79 +2088,75 @@ Process finished with exit code 0
       </tags>
   </entry>
   <entry>
-    <title>BitTorrent协议（一）之解析种子文件</title>
-    <url>/2019/01/09/2019-1-9-bt-1/</url>
-    <content><![CDATA[<h2 id="bt种子文件"><a href="#bt种子文件" class="headerlink" title="bt种子文件"></a>bt种子文件</h2><p>bt通过种子文件分享已经是一个过去时了，2009年<code>btChina</code>就已经关闭了。现在一般都是
-使用磁力链接来分享文件。那么为什么种子文件分享不再流行了呢？为什么要用磁力链接呢？
-磁力链接怎么实现的呢？</p>
-<p>嗯这是这个系列要研究的问题。但是要研究磁力链接的实现原理，最好先从种子文件开始。</p>
+    <title>docker容器内访问mac主机的kafka</title>
+    <url>/2020/03/09/connect-kafka/</url>
+    <content><![CDATA[<h2 id="从容器内访问主机的kafka"><a href="#从容器内访问主机的kafka" class="headerlink" title="从容器内访问主机的kafka"></a>从容器内访问主机的kafka</h2><p>我最近遇到这样一个需求，需要从容器内的ClickHouse访问安装在mac主机的kafka。这个问题似乎很简单，
+因为在windows上，虚拟机可以和host组成一个局域网，因此kafka只要绑定此网段的ip地址即可。
+但是在我的mac主机下，这个方案行不通。</p>
 <span id="more"></span>
 
-<h2 id="种子文件-metainfo-files-的定义"><a href="#种子文件-metainfo-files-的定义" class="headerlink" title="种子文件(metainfo files)的定义"></a>种子文件(metainfo files)的定义</h2><p>官网文档 <a href="http://www.bittorrent.org/beps/bep_0003.html">BEP3</a> 中的metainfo files章节
-讲的很清楚。</p>
-<p>简单的说就是把tracker列表和分享的文件信息编码为一个二进制的文件。</p>
-<ul>
-<li>tracker列表是类似如下的列表</li>
-</ul>
-<figure class="highlight dts"><table><tr><td class="code"><pre><code class="hljs dts"><span class="hljs-symbol">http:</span><span class="hljs-comment">//tracker.trackerfix.com:80/announce</span><br><span class="hljs-symbol"></span><br><span class="hljs-symbol">udp:</span><span class="hljs-comment">//9.rarbg.me:2710/announce</span><br><span class="hljs-symbol"></span><br><span class="hljs-symbol">udp:</span><span class="hljs-comment">//9.rarbg.to:2710/announce</span><br></code></pre></td></tr></table></figure>
+<p>有几个原因，</p>
+<ol>
+<li>ClickHouse无法直接安装在mac上，需要编译（当然8G内存也可以编译，但是ninja需要限制job数量，要花很长时间）。</li>
+<li>我的mac内存只有8G，使用vbox根本不可能，只能使用docker。</li>
+<li>有现成的镜像，直接可以启动。并且host上可以直接连接ClickHouse。</li>
+</ol>
+<p>难点就在于容器和host根本不在一个网段。</p>
+<h2 id="解决步骤"><a href="#解决步骤" class="headerlink" title="解决步骤"></a>解决步骤</h2><ol>
+<li>修改主机上的kafka的相关配置如下</li>
+</ol>
+<figure class="highlight text"><table><tr><td class="code"><pre><code class="hljs text">listeners=PLAINTEXT://0.0.0.0:9092<br><br>advertised.listeners=PLAINTEXT://host.docker.internal:9092<br></code></pre></td></tr></table></figure>
 
-<p>如果想要找到下载源，就要通过tracker找到peer节点。</p>
-<ul>
-<li>分享的文件信息（info）</li>
-</ul>
-<p>包含了文件的大小，分块个数，分块的sha1散列值。</p>
-<h2 id="编码方式-bencoding"><a href="#编码方式-bencoding" class="headerlink" title="编码方式(bencoding)"></a>编码方式(bencoding)</h2><p>bt文件的编码逻辑取名为bencoding。</p>
-<blockquote>
-<p>Strings are length-prefixed base ten followed by a colon and the string. For example 4:spam corresponds to ‘spam’.</p>
-<p>Integers are represented by an ‘i’ followed by the number in base 10 followed by an ‘e’. For example i3e corresponds to 3 and i-3e corresponds to -3. Integers have no size limitation. i-0e is invalid. All encodings with a leading zero, such as i03e, are invalid, other than i0e, which of course corresponds to 0.</p>
-<p>Lists are encoded as an ‘l’ followed by their elements (also bencoded) followed by an ‘e’. For example l4:spam4:eggse corresponds to [‘spam’, ‘eggs’].</p>
-<p>Dictionaries are encoded as a ‘d’ followed by a list of alternating keys and their corresponding values followed by an ‘e’. For example, d3:cow3:moo4:spam4:eggse corresponds to {‘cow’: ‘moo’, ‘spam’: ‘eggs’} and d4:spaml1:a1:bee corresponds to {‘spam’: [‘a’, ‘b’]}. Keys must be strings and appear in sorted order (sorted as raw strings, not alphanumerics).</p>
-</blockquote>
-<p>翻译为eBNF语法呢，就是如下</p>
-<figure class="highlight ebnf"><table><tr><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">string</span> : num &#x27;:&#x27; &#123;CHAR&#125;*<br><br><span class="hljs-attribute">num</span> : 0 <br>    | [1-9][0-9]+ <br>    | &#x27;-&#x27; [1-9][0-9]+<br><br><span class="hljs-attribute">integer</span> : &#x27;i&#x27; num &#x27;e&#x27;<br><br><span class="hljs-attribute">list</span> : &#x27;l&#x27; &#123;element&#125;* &#x27;e&#x27;<br><br><span class="hljs-attribute">dic</span> : &#x27;d&#x27; &#123;pair&#125;* &#x27;e&#x27;<br><br><span class="hljs-attribute">pair</span> : string element<br><br><span class="hljs-attribute">element</span> : string<br>        | integer<br>        | list<br>        | dic<br></code></pre></td></tr></table></figure>
+<ol start="2">
+<li><code>/etc/hosts</code>文件添加</li>
+</ol>
+<figure class="highlight text"><table><tr><td class="code"><pre><code class="hljs text">127.0.0.1       host.docker.internal<br></code></pre></td></tr></table></figure>
 
-<h2 id="解码"><a href="#解码" class="headerlink" title="解码"></a>解码</h2><p>根据eBNF实现的解码代码如下， 把<code>get_content()</code>方法中path替换为种子文件的路径，运行就可以看到。
-返回的解析结果中会有<code>info_hash</code>，该值是根据info的bencoding的二进制串计算的sha1值。这个值很重要
-因为之后很多协议都会用到。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><br>__author__ = <span class="hljs-string">&#x27;ym&#x27;</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    Date        : &#x27;2019/1/7&#x27;</span><br><span class="hljs-string">    Description :  解析torrent文件</span><br><span class="hljs-string">    </span><br><span class="hljs-string">&quot;&quot;&quot;</span><br><br><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">BDecode</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, arr</span>):<br>        <span class="hljs-variable language_">self</span>.arr = arr<br>        <span class="hljs-variable language_">self</span>.n = <span class="hljs-built_in">len</span>(arr)<br>        <span class="hljs-variable language_">self</span>.i = <span class="hljs-number">0</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">parse</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.dic()<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">peek</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-built_in">next</span> = <span class="hljs-literal">None</span><br>        <span class="hljs-keyword">if</span> <span class="hljs-variable language_">self</span>.i &lt; <span class="hljs-variable language_">self</span>.n:<br>            <span class="hljs-built_in">next</span> = <span class="hljs-variable language_">self</span>.arr[<span class="hljs-variable language_">self</span>.i]<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">chr</span>(<span class="hljs-built_in">next</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">next</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-built_in">next</span> = <span class="hljs-literal">None</span><br>        <span class="hljs-keyword">if</span> <span class="hljs-variable language_">self</span>.i &lt; <span class="hljs-variable language_">self</span>.n:<br>            <span class="hljs-built_in">next</span> = <span class="hljs-variable language_">self</span>.arr[<span class="hljs-variable language_">self</span>.i]<br>            <span class="hljs-variable language_">self</span>.i += <span class="hljs-number">1</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">chr</span>(<span class="hljs-built_in">next</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">num</span>(<span class="hljs-params">self</span>):<br>        num_str = <span class="hljs-string">&quot;&quot;</span><br>        peek = <span class="hljs-variable language_">self</span>.peek()<br><br>        <span class="hljs-keyword">if</span> peek <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>            <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;malformed num.&quot;</span>)<br><br>        <span class="hljs-keyword">if</span> peek == <span class="hljs-string">&#x27;-&#x27;</span> <span class="hljs-keyword">and</span> <span class="hljs-variable language_">self</span>.peek(<span class="hljs-number">1</span>) <span class="hljs-keyword">in</span> <span class="hljs-string">&#x27;123456789&#x27;</span>:<br>            <span class="hljs-variable language_">self</span>.<span class="hljs-built_in">next</span>()  <span class="hljs-comment"># ignore &#x27;-&#x27;</span><br>            <span class="hljs-keyword">while</span> <span class="hljs-variable language_">self</span>.peek() <span class="hljs-keyword">in</span> <span class="hljs-string">&quot;0123456789&quot;</span>:<br>                num_str += <span class="hljs-variable language_">self</span>.<span class="hljs-built_in">next</span>()<br>            <span class="hljs-keyword">if</span> num_str[<span class="hljs-number">0</span>] <span class="hljs-keyword">in</span> <span class="hljs-string">&#x27;0&#x27;</span> <span class="hljs-keyword">and</span> <span class="hljs-built_in">len</span>(num_str) &gt; <span class="hljs-number">1</span>:<br>                <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;error : 0 starts with num&quot;</span>)<br>            <span class="hljs-keyword">return</span> -<span class="hljs-built_in">int</span>(num_str)<br>        <span class="hljs-keyword">elif</span> peek <span class="hljs-keyword">in</span> <span class="hljs-string">&#x27;0123456789&#x27;</span>:<br>            <span class="hljs-keyword">while</span> <span class="hljs-variable language_">self</span>.peek() <span class="hljs-keyword">in</span> <span class="hljs-string">&quot;0123456789&quot;</span>:<br>                num_str += <span class="hljs-variable language_">self</span>.<span class="hljs-built_in">next</span>()<br>            <span class="hljs-keyword">if</span> num_str[<span class="hljs-number">0</span>] <span class="hljs-keyword">in</span> <span class="hljs-string">&#x27;0&#x27;</span> <span class="hljs-keyword">and</span> <span class="hljs-built_in">len</span>(num_str) &gt; <span class="hljs-number">1</span>:<br>                <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;error : 0 starts with num&quot;</span>)<br>            <span class="hljs-keyword">return</span> <span class="hljs-built_in">int</span>(num_str)<br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;malformed num.&quot;</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">string</span>(<span class="hljs-params">self, pieces=<span class="hljs-literal">False</span></span>):<br>        length = <span class="hljs-variable language_">self</span>.num()<br>        <span class="hljs-keyword">if</span> <span class="hljs-variable language_">self</span>.<span class="hljs-built_in">next</span>() != <span class="hljs-string">&#x27;:&#x27;</span>:<br>            <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;String must contain colon&quot;</span>)<br>        s = <span class="hljs-variable language_">self</span>.arr[<span class="hljs-variable language_">self</span>.i:(<span class="hljs-variable language_">self</span>.i + length)]<br>        <span class="hljs-variable language_">self</span>.i += length<br><br>        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> pieces:<br>            <span class="hljs-keyword">return</span> s.decode(<span class="hljs-string">&quot;utf8&quot;</span>)<br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-comment"># pieces maps to a string whose length is a multiple of 20.</span><br>            <span class="hljs-comment"># It is to be subdivided into strings of length 20,</span><br>            <span class="hljs-comment"># each of which is the SHA1 hash of the piece at the corresponding index.</span><br>            result = []<br>            <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, length, <span class="hljs-number">20</span>):<br>                <span class="hljs-built_in">hash</span> = s[j:j + <span class="hljs-number">20</span>]<br>                result.append(<span class="hljs-built_in">hash</span>.<span class="hljs-built_in">hex</span>().lower())<br>            <span class="hljs-keyword">return</span> result<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">integer</span>(<span class="hljs-params">self, timestamp=<span class="hljs-literal">False</span></span>):<br>        <span class="hljs-keyword">if</span> <span class="hljs-variable language_">self</span>.<span class="hljs-built_in">next</span>() != <span class="hljs-string">&quot;i&quot;</span>:<br>            <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;Integer must begin with i&quot;</span>)<br>        val = <span class="hljs-variable language_">self</span>.num()<br><br>        <span class="hljs-keyword">if</span> timestamp:<br>            val = datetime.fromtimestamp(val).__str__()<br><br>        <span class="hljs-keyword">if</span> <span class="hljs-variable language_">self</span>.<span class="hljs-built_in">next</span>() != <span class="hljs-string">&quot;e&quot;</span>:<br>            <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;Integer must end with e&quot;</span>)<br>        <span class="hljs-keyword">return</span> val<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">element</span>(<span class="hljs-params">self, pieces=<span class="hljs-literal">False</span>, timestamp=<span class="hljs-literal">False</span></span>):<br>        peek = <span class="hljs-variable language_">self</span>.peek()<br>        <span class="hljs-keyword">if</span> peek == <span class="hljs-string">&#x27;i&#x27;</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.integer(timestamp)<br>        <span class="hljs-keyword">elif</span> peek == <span class="hljs-string">&quot;l&quot;</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.<span class="hljs-built_in">list</span>()<br>        <span class="hljs-keyword">elif</span> peek == <span class="hljs-string">&#x27;d&#x27;</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.dic()<br>        <span class="hljs-keyword">elif</span> peek <span class="hljs-keyword">in</span> <span class="hljs-string">&quot;0123456789&quot;</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.string(pieces)<br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;not recognize.&quot;</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">list</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">if</span> <span class="hljs-variable language_">self</span>.<span class="hljs-built_in">next</span>() != <span class="hljs-string">&quot;l&quot;</span>:<br>            <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;list must begin with l&quot;</span>)<br>        result = []<br>        <span class="hljs-keyword">while</span> <span class="hljs-variable language_">self</span>.peek() != <span class="hljs-string">&#x27;e&#x27;</span>:<br>            result.append(<span class="hljs-variable language_">self</span>.element())<br>        <span class="hljs-variable language_">self</span>.<span class="hljs-built_in">next</span>()<br>        <span class="hljs-keyword">return</span> result<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">dic</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">if</span> <span class="hljs-variable language_">self</span>.<span class="hljs-built_in">next</span>() != <span class="hljs-string">&#x27;d&#x27;</span>:<br>            <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;dic must begin with d&quot;</span>)<br>        result = <span class="hljs-built_in">dict</span>()<br><br>        <span class="hljs-keyword">while</span> <span class="hljs-variable language_">self</span>.peek() != <span class="hljs-string">&quot;e&quot;</span>:<br>            key = <span class="hljs-variable language_">self</span>.string()<br>            val = <span class="hljs-literal">None</span><br>            <span class="hljs-keyword">if</span> key == <span class="hljs-string">&quot;pieces&quot;</span>:<br>                val = <span class="hljs-variable language_">self</span>.element(pieces=<span class="hljs-literal">True</span>)<br>            <span class="hljs-keyword">elif</span> key == <span class="hljs-string">&#x27;creation date&#x27;</span>:<br>                val = <span class="hljs-variable language_">self</span>.element(timestamp=<span class="hljs-literal">True</span>)<br>            <span class="hljs-keyword">else</span>:<br>                info_start = <span class="hljs-literal">None</span><br>                info_end = <span class="hljs-literal">None</span><br>                <span class="hljs-keyword">if</span> key == <span class="hljs-string">&#x27;info&#x27;</span>:<br>                    info_start = <span class="hljs-variable language_">self</span>.i<br>                val = <span class="hljs-variable language_">self</span>.element()<br>                <span class="hljs-keyword">if</span> key == <span class="hljs-string">&#x27;info&#x27;</span>:<br>                    info_end = <span class="hljs-variable language_">self</span>.i<br>                    result[<span class="hljs-string">&#x27;info_hash&#x27;</span>] = <span class="hljs-variable language_">self</span>.sha1(<span class="hljs-variable language_">self</span>.arr[info_start:info_end])<br>            result[key] = val<br><br>        <span class="hljs-variable language_">self</span>.<span class="hljs-built_in">next</span>()<br>        <span class="hljs-keyword">return</span> result<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">sha1</span>(<span class="hljs-params">self, info</span>):<br>        <span class="hljs-keyword">import</span> hashlib<br>        p = hashlib.sha1()<br>        p.update(info)<br>        <span class="hljs-keyword">return</span> p.hexdigest()<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_content</span>():<br>    path = <span class="hljs-string">&quot;/Users/ym/tmp/venom.torrent&quot;</span><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(path, <span class="hljs-string">&quot;rb&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        <span class="hljs-keyword">return</span> f.read()<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    content = get_content()<br>    result = BDecode(content).parse()<br>    <span class="hljs-keyword">import</span> pprint<br>    pprint.pprint(result)<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    main()<br></code></pre></td></tr></table></figure>
+<ol start="3">
+<li>在容器内，访问<code>host.docker.internal:9092</code></li>
+</ol>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>docker desktop for mac会默认提供一个域名<code>host.docker.internal</code>给容器内
+的应用访问主机的服务。所以，如果主机上启动一个rest服务<code>localhost:8080</code>，则容器内可以通过
+<code>host.docker.internal:8080</code>直接访问。</p>
+<p>但是如果kafka只是配置为</p>
+<figure class="highlight ruby"><table><tr><td class="code"><pre><code class="hljs ruby">listeners=<span class="hljs-variable constant_">PLAINTEXT</span><span class="hljs-symbol">://localhost</span><span class="hljs-symbol">:</span><span class="hljs-number">9092</span><br></code></pre></td></tr></table></figure>
+<p>想直接访问kafka的broker则是不行的。我们会发现，在容器内，<code>telnet host.docker.internal 9092</code>是通的。这是为什么呢？</p>
+<p>想要连接kafka的broker会进行基本的两步交互。</p>
+<ol>
+<li>client访问broker的地址”A”，然后broker会发送回去一个<code>advertised</code>地址”B”</li>
+<li>client接收到地址”B”，然后尝试访问”B”</li>
+</ol>
+<p>如果不设置<code>advertised.listeners</code>，那么默认等于<code>listeners</code>的值。</p>
+<p>所以对于这样的设置
+<code>B=A=PLAINTEXT://localhost:9092</code>。容器内尝试访问”host.docker.internal:9092”，则会这样子，</p>
+<ol>
+<li>容器内访问host.docker.internal:9092，接收到地址B&#x3D;PLAINTEXT:&#x2F;&#x2F;localhost:9092</li>
+<li>然后访问地址localhost:9092，失败。</li>
+</ol>
+<p>而如果在主机上访问则显然是成功的。</p>
+<p>而我们的解决方法配置是这样的
+<code>A=PLAINTEXT://localhost:9092, B=PLAINTEXT://host.docker.internal:9092</code></p>
+<p>所以如果容器内访问的过程就是，</p>
+<ol>
+<li>容器内访问host.docker.internal:9092，接收到地址B&#x3D;PLAINTEXT:&#x2F;&#x2F;host.docker.internal:9092</li>
+<li>然后访问host.docker.internal:9092，成功。</li>
+</ol>
+<p>而主机上的过程是，</p>
+<ol>
+<li>主机上访问localhost:9092,接收到地址B&#x3D;PLAINTEXT:&#x2F;&#x2F;host.docker.internal:9092</li>
+<li>然后访问host.docker.internal:9092，根据&#x2F;etc&#x2F;hosts的域名解析为127.0.0.1:9092，成功。</li>
+</ol>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>我这里用<code>kafkacat</code>测试，实际上容器内的应用可以使用其他kafka客户端。</p>
+<p>连接broker,并显示metadata</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">root@bb6b85562200:/# kafkacat -b host.docker.internal:9092 -L<br>Metadata for all topics (from broker 0: host.docker.internal:9092/0):<br> 1 brokers:<br>  broker 0 at host.docker.internal:9092<br> 8 topics:<br>  topic &quot;test-topic&quot; with 1 partitions:<br>    partition 0, leader 0, replicas: 0, isrs: 0<br>  topic &quot;flink-test&quot; with 1 partitions:<br>    partition 0, leader 0, replicas: 0, isrs: 0<br>  topic &quot;__consumer_offsets&quot; with 50 partitions:<br>    partition 0, leader 0, replicas: 0, isrs: 0<br>    partition 10, leader 0, replicas: 0, isrs: 0<br>...<br>...<br></code></pre></td></tr></table></figure>
 
-<h2 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h2><p>用最近的毒液电影的种子进行解析，打印如下，
-其中announce-list就是tracker列表。</p>
-<figure class="highlight 1c"><table><tr><td class="code"><pre><code class="hljs 1c">/usr/local/bin/python3.<span class="hljs-number">7</span> /Users/ym/charm/pytest/ym/bt/parse_torrent.py<br>&#123;&#x27;announce&#x27;<span class="hljs-punctuation">:</span> &#x27;http://tracker.trackerfix.com:80/announce&#x27;<span class="hljs-punctuation">,</span><br> &#x27;announce-list&#x27;<span class="hljs-punctuation">:</span> [[&#x27;http://tracker.trackerfix.com:80/announce&#x27;]<span class="hljs-punctuation">,</span><br>                   [&#x27;udp://9.rarbg.me:<span class="hljs-number">2710</span>/announce&#x27;]<span class="hljs-punctuation">,</span><br>                   [&#x27;udp://9.rarbg.to:<span class="hljs-number">2710</span>/announce&#x27;]]<span class="hljs-punctuation">,</span><br> &#x27;comment&#x27;<span class="hljs-punctuation">:</span> &#x27;Torrent downloaded from https://rarbg.to&#x27;<span class="hljs-punctuation">,</span><br> &#x27;created by&#x27;<span class="hljs-punctuation">:</span> &#x27;mktorrent 1.0&#x27;<span class="hljs-punctuation">,</span><br> &#x27;creation date&#x27;<span class="hljs-punctuation">:</span> &#x27;<span class="hljs-number">2018-11-28</span> 16:04:22&#x27;<span class="hljs-punctuation">,</span><br> &#x27;info&#x27;<span class="hljs-punctuation">:</span> &#123;&#x27;files&#x27;<span class="hljs-punctuation">:</span> [&#123;&#x27;length&#x27;<span class="hljs-punctuation">:</span> <span class="hljs-number">100074</span><span class="hljs-punctuation">,</span> &#x27;path&#x27;<span class="hljs-punctuation">:</span> [&#x27;English.srt&#x27;]&#125;<span class="hljs-punctuation">,</span><br>                    &#123;&#x27;length&#x27;<span class="hljs-punctuation">:</span> <span class="hljs-number">31</span><span class="hljs-punctuation">,</span> &#x27;path&#x27;<span class="hljs-punctuation">:</span> [&#x27;RARBG.txt&#x27;]&#125;<span class="hljs-punctuation">,</span><br>                    &#123;&#x27;length&#x27;<span class="hljs-punctuation">:</span> <span class="hljs-number">4431023676</span><span class="hljs-punctuation">,</span><br>                     &#x27;path&#x27;<span class="hljs-punctuation">:</span> [&#x27;Venom.<span class="hljs-number">2018.72</span>0p.WEBRip.x264.AAC2.0-SHITBOX.mp4&#x27;]&#125;]<span class="hljs-punctuation">,</span><br>          &#x27;name&#x27;<span class="hljs-punctuation">:</span> &#x27;Venom.<span class="hljs-number">2018.72</span>0p.WEBRip.x264.AAC2.0-SHITBOX&#x27;<span class="hljs-punctuation">,</span><br>          &#x27;piece length&#x27;<span class="hljs-punctuation">:</span> <span class="hljs-number">1048576</span><span class="hljs-punctuation">,</span><br>          &#x27;pieces&#x27;<span class="hljs-punctuation">:</span> [&#x27;a<span class="hljs-number">958677</span>e48a77aff<span class="hljs-number">6357</span>4c885d7fd<span class="hljs-number">7091515903</span>4&#x27;<span class="hljs-punctuation">,</span><br>                     &#x27;0c<span class="hljs-number">713356</span>b<span class="hljs-number">6345</span>4a<span class="hljs-number">914452</span>cdcc76a<span class="hljs-number">8470</span>fb4bc419&#x27;<span class="hljs-punctuation">,</span><br>                     ...<br>                     ...<br>                     ...<br>                     &#x27;b926b<span class="hljs-number">048253</span>bc506cb3f4e52acab9df6b93cf614&#x27;<span class="hljs-punctuation">,</span><br>                     &#x27;610f<span class="hljs-number">8485</span>ab8c56f53f594e<span class="hljs-number">0973</span>0a34e<span class="hljs-number">8529</span>e13b4&#x27;]&#125;<span class="hljs-punctuation">,</span><br> &#x27;info_hash&#x27;<span class="hljs-punctuation">:</span> &#x27;<span class="hljs-number">3329</span>7ac9c46f<span class="hljs-number">07150671</span>1f<span class="hljs-number">1281</span>4a3dd8ed8b73ed&#x27;&#125;<br><br>Process finished with exit code <span class="hljs-number">0</span><br><br></code></pre></td></tr></table></figure>
+<p>显示消息</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">^Croot@bb6b85562200:/# kafkacat -b host.docker.internal:9092 -C -t flink-test -o beginning<br>&#123;seqNo: 1, eventTs: 1583739799986, id: even偶数, value: 4.57&#125;<br><span class="hljs-meta prompt_">% </span><span class="language-bash">Reached end of topic flink-test [0] at offset 1</span><br></code></pre></td></tr></table></figure>
 ]]></content>
       <tags>
-        <tag>bitTorrent</tag>
-        <tag>protocol</tag>
-        <tag>p2p</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用delve调试K3s</title>
-    <url>/2019/11/19/debug-k3s/</url>
-    <content><![CDATA[<h2 id="k3s是什么"><a href="#k3s是什么" class="headerlink" title="k3s是什么"></a>k3s是什么</h2><p><a href="http://k3s.io/">K3s</a>是什么？k8s的精简版。编译之后执行程序大小不到50M。
-可以用在物联网的边缘计算侧。如果想深入了解k8s，那么k3s是个很好的起点。
-那么如果能够断点调试k3s，就更好了。下面我们来看看怎么做。</p>
-<span id="more"></span>
-
-<h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><ul>
-<li>建议使用linux 64位操作系统。这样可以native构建。</li>
-<li>建议性能好一些的机器，虚拟机编译会很慢</li>
-<li>建议安装好docker</li>
-<li>配置好go的环境，设置<code>GOPATH</code>，同时把<code>$GOPATH/bin</code>加入到<code>PATH</code></li>
-<li>安装Goland这个集成开发环境</li>
-<li>从github克隆k3s的代码，加上depth参数则不下载历史，速度会快很多<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ git <span class="hljs-built_in">clone</span> --depth 1 https://github.com/rancher/k3s.git <span class="hljs-variable">$GOPATH</span>/src/github.com/rancher/k3s<br></code></pre></td></tr></table></figure></li>
-<li>安装delve的debug工具。完成之后会生成可执行文件<code>$GOPATH/bin/dlv</code><figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ git <span class="hljs-built_in">clone</span> --depth 1 https://github.com/go-delve/delve.git <span class="hljs-variable">$GOPATH</span>/src/github.com/go-delve/delve<br>$ <span class="hljs-built_in">cd</span> <span class="hljs-variable">$GOPATH</span>/src/github.com/go-delve/delve<br>$ make install<br></code></pre></td></tr></table></figure></li>
-<li>构建含有调试信息的可执行文件<code>k3s</code>,所在路径是<code>$GOPATH/src/github.com/rancher/k3s/</code><figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ <span class="hljs-built_in">cd</span> <span class="hljs-variable">$GOPATH</span>/src/github.com/rancher/k3s<br>$ go build -gcflags <span class="hljs-string">&quot;all=-N -l&quot;</span> -o k3s<br></code></pre></td></tr></table></figure></li>
-<li>用delve执行。这时候线程会监听2345的远程调试接入。<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ <span class="hljs-built_in">cd</span> <span class="hljs-variable">$GOPATH</span>/src/github.com/rancher/k3s<br>$ dlv --listen=:2345 --headless=<span class="hljs-literal">true</span> --api-version=2 <span class="hljs-built_in">exec</span> -- ./k3s server --docker --disable-agent<br></code></pre></td></tr></table></figure></li>
-<li>Goland中添加k3s项目。项目根路径为<code>$GOPATH</code>，然后配置增加一个remote调试。在运行之前，在main.go上打一个断点。</li>
-</ul>
-<p>运行远程调试之后，成功。
-<img src="/images/20191119-k3s-remote-debug.jpg" alt="remote-debug"></p>
-]]></content>
-      <tags>
-        <tag>k3s</tag>
-        <tag>delve</tag>
-        <tag>golang</tag>
+        <tag>kafka</tag>
+        <tag>container</tag>
+        <tag>docker</tag>
       </tags>
   </entry>
   <entry>
@@ -2199,180 +2271,6 @@ csn为<code>UTF-8</code>。</p>
       </tags>
   </entry>
   <entry>
-    <title>docker容器内访问mac主机的kafka</title>
-    <url>/2020/03/09/connect-kafka/</url>
-    <content><![CDATA[<h2 id="从容器内访问主机的kafka"><a href="#从容器内访问主机的kafka" class="headerlink" title="从容器内访问主机的kafka"></a>从容器内访问主机的kafka</h2><p>我最近遇到这样一个需求，需要从容器内的ClickHouse访问安装在mac主机的kafka。这个问题似乎很简单，
-因为在windows上，虚拟机可以和host组成一个局域网，因此kafka只要绑定此网段的ip地址即可。
-但是在我的mac主机下，这个方案行不通。</p>
-<span id="more"></span>
-
-<p>有几个原因，</p>
-<ol>
-<li>ClickHouse无法直接安装在mac上，需要编译（当然8G内存也可以编译，但是ninja需要限制job数量，要花很长时间）。</li>
-<li>我的mac内存只有8G，使用vbox根本不可能，只能使用docker。</li>
-<li>有现成的镜像，直接可以启动。并且host上可以直接连接ClickHouse。</li>
-</ol>
-<p>难点就在于容器和host根本不在一个网段。</p>
-<h2 id="解决步骤"><a href="#解决步骤" class="headerlink" title="解决步骤"></a>解决步骤</h2><ol>
-<li>修改主机上的kafka的相关配置如下</li>
-</ol>
-<figure class="highlight text"><table><tr><td class="code"><pre><code class="hljs text">listeners=PLAINTEXT://0.0.0.0:9092<br><br>advertised.listeners=PLAINTEXT://host.docker.internal:9092<br></code></pre></td></tr></table></figure>
-
-<ol start="2">
-<li><code>/etc/hosts</code>文件添加</li>
-</ol>
-<figure class="highlight text"><table><tr><td class="code"><pre><code class="hljs text">127.0.0.1       host.docker.internal<br></code></pre></td></tr></table></figure>
-
-<ol start="3">
-<li>在容器内，访问<code>host.docker.internal:9092</code></li>
-</ol>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>docker desktop for mac会默认提供一个域名<code>host.docker.internal</code>给容器内
-的应用访问主机的服务。所以，如果主机上启动一个rest服务<code>localhost:8080</code>，则容器内可以通过
-<code>host.docker.internal:8080</code>直接访问。</p>
-<p>但是如果kafka只是配置为</p>
-<figure class="highlight ruby"><table><tr><td class="code"><pre><code class="hljs ruby">listeners=<span class="hljs-variable constant_">PLAINTEXT</span><span class="hljs-symbol">://localhost</span><span class="hljs-symbol">:</span><span class="hljs-number">9092</span><br></code></pre></td></tr></table></figure>
-<p>想直接访问kafka的broker则是不行的。我们会发现，在容器内，<code>telnet host.docker.internal 9092</code>是通的。这是为什么呢？</p>
-<p>想要连接kafka的broker会进行基本的两步交互。</p>
-<ol>
-<li>client访问broker的地址”A”，然后broker会发送回去一个<code>advertised</code>地址”B”</li>
-<li>client接收到地址”B”，然后尝试访问”B”</li>
-</ol>
-<p>如果不设置<code>advertised.listeners</code>，那么默认等于<code>listeners</code>的值。</p>
-<p>所以对于这样的设置
-<code>B=A=PLAINTEXT://localhost:9092</code>。容器内尝试访问”host.docker.internal:9092”，则会这样子，</p>
-<ol>
-<li>容器内访问host.docker.internal:9092，接收到地址B&#x3D;PLAINTEXT:&#x2F;&#x2F;localhost:9092</li>
-<li>然后访问地址localhost:9092，失败。</li>
-</ol>
-<p>而如果在主机上访问则显然是成功的。</p>
-<p>而我们的解决方法配置是这样的
-<code>A=PLAINTEXT://localhost:9092, B=PLAINTEXT://host.docker.internal:9092</code></p>
-<p>所以如果容器内访问的过程就是，</p>
-<ol>
-<li>容器内访问host.docker.internal:9092，接收到地址B&#x3D;PLAINTEXT:&#x2F;&#x2F;host.docker.internal:9092</li>
-<li>然后访问host.docker.internal:9092，成功。</li>
-</ol>
-<p>而主机上的过程是，</p>
-<ol>
-<li>主机上访问localhost:9092,接收到地址B&#x3D;PLAINTEXT:&#x2F;&#x2F;host.docker.internal:9092</li>
-<li>然后访问host.docker.internal:9092，根据&#x2F;etc&#x2F;hosts的域名解析为127.0.0.1:9092，成功。</li>
-</ol>
-<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>我这里用<code>kafkacat</code>测试，实际上容器内的应用可以使用其他kafka客户端。</p>
-<p>连接broker,并显示metadata</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">root@bb6b85562200:/# kafkacat -b host.docker.internal:9092 -L<br>Metadata for all topics (from broker 0: host.docker.internal:9092/0):<br> 1 brokers:<br>  broker 0 at host.docker.internal:9092<br> 8 topics:<br>  topic &quot;test-topic&quot; with 1 partitions:<br>    partition 0, leader 0, replicas: 0, isrs: 0<br>  topic &quot;flink-test&quot; with 1 partitions:<br>    partition 0, leader 0, replicas: 0, isrs: 0<br>  topic &quot;__consumer_offsets&quot; with 50 partitions:<br>    partition 0, leader 0, replicas: 0, isrs: 0<br>    partition 10, leader 0, replicas: 0, isrs: 0<br>...<br>...<br></code></pre></td></tr></table></figure>
-
-<p>显示消息</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">^Croot@bb6b85562200:/# kafkacat -b host.docker.internal:9092 -C -t flink-test -o beginning<br>&#123;seqNo: 1, eventTs: 1583739799986, id: even偶数, value: 4.57&#125;<br><span class="hljs-meta prompt_">% </span><span class="language-bash">Reached end of topic flink-test [0] at offset 1</span><br></code></pre></td></tr></table></figure>
-]]></content>
-      <tags>
-        <tag>kafka</tag>
-        <tag>container</tag>
-        <tag>docker</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>基于CLion和gdbserver实现远程调试c程序</title>
-    <url>/2020/09/08/remote-debug-with-clion/</url>
-    <content><![CDATA[<h2 id="远程调试c程序"><a href="#远程调试c程序" class="headerlink" title="远程调试c程序"></a>远程调试c程序</h2><p>最近基于<a href="https://github.com/alibaba/tsar">tsar</a>（阿里开源的一个基于c语言的监控程序）做二次开发，
-因为以前从来没有在工作中写过c，所以这个简单的工作花了两周时间，期间用gdb进行调试，用valgrind检查内存泄漏。
-但是最让我不舒服的就是gdb调试了，虽然gdb很给力，但是毕竟由奢入俭难，之前写Java，Python，Go都是可以用IDE进行
-debug的。有图形化界面还是效率高很多，而对于新手，能够方便的debug源码就可以快速的理解项目。</p>
-<p>那么怎么办呢？</p>
-<span id="more"></span>
-
-
-<h2 id="CLion"><a href="#CLion" class="headerlink" title="CLion"></a>CLion</h2><p>我一直以为CLion可以很好的理解cmake项目，但是对于大量的基于makefile编译的项目，则不能很好的解析，所以也无法利用CLion
-进行代码调试。</p>
-<p>但是并不是这样，虽然CLion无法理解代码中各种符号之间的依赖关系，但是调试只要有debug info和源码就可以进行图形化调试。</p>
-<p>参考CLion远程开发的<a href="https://www.jetbrains.com/help/clion/remote-gdb-server.html">Remote GDB Server</a>，很简单就实现了。</p>
-<h2 id="远程调试tsar"><a href="#远程调试tsar" class="headerlink" title="远程调试tsar"></a>远程调试tsar</h2><ol>
-<li><p>mac下安装了CLion，linux下编译tsar。
-在mac下，tsar项目源码路径——<code>/Users/ym/work/operation</code>
-在linux下为,tsar项目源码路径——<code>/home/keyvalue/ym/operation</code></p>
-</li>
-<li><p>在CLion下创建一个<code>GDB remote debug</code>配置。
-参数配置：</p>
-</li>
-</ol>
-<ul>
-<li><p>target remote args<br>10.4.104.153:1234    # 这是gdbserver的ip:port</p>
-</li>
-<li><p>path mappings 
-remote path为<code>/home/keyvalue/ym/operation</code>，local path为<code>/Users/ym/work/operation</code></p>
-</li>
-</ul>
-<p><img src="/images/gdb-remote-debug.png" alt="gdb remote debug config"></p>
-<ol start="3">
-<li><p>在linux下运行命令</p>
-<figure class="highlight vhdl"><table><tr><td class="code"><pre><code class="hljs vhdl">$ sudo gdbserver :<span class="hljs-number">1234</span> src/tsar <span class="hljs-comment">--cron</span><br><span class="hljs-keyword">Process</span> src/tsar created; pid = <span class="hljs-number">10216</span><br>Listening <span class="hljs-keyword">on</span> <span class="hljs-keyword">port</span> <span class="hljs-number">1234</span><br></code></pre></td></tr></table></figure>
-</li>
-<li><p>CLion下启动之前的<code>GDB remote debug</code>配置，就可以愉快的断点调试了。</p>
-</li>
-</ol>
-<p><img src="/images/tsar-remote-debug.png" alt="tsar remote debug"></p>
-]]></content>
-      <tags>
-        <tag>debug</tag>
-        <tag>CLion</tag>
-        <tag>gdb</tag>
-        <tag>remote</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>自建根证书，中间证书和Server端X.509证书并搭建nginx验证Server端证书有效性</title>
-    <url>/2020/10/09/x509-ca/</url>
-    <content><![CDATA[<h2 id="X-509证书的颁发和使用"><a href="#X-509证书的颁发和使用" class="headerlink" title="X.509证书的颁发和使用"></a>X.509证书的颁发和使用</h2><p><code>X.509</code>证书是用来认证身份的，例如在访问一个HTTPS网站的时候，浏览器会首先下载该网站
-的证书，验证是否有效。如果无效，浏览器会提示<code>您的连接不是私密连接</code>，进一步访问网站有风险。
-如果有效则可以直接访问，不会告警。</p>
-<p>浏览器怎么验证网站证书是否有效呢？简单说就是看网站证书的颁发机构是不是已经被操作系统信任，即看
-颁发机构的身份证书是否已经安装到操作系统里，并被设置为信任。</p>
-<p>那么我们接下来做的事情就是在<strong>mac系统上</strong>验证浏览器的上述行为。</p>
-<span id="more"></span>
-
-<p>验证步骤，</p>
-<ol>
-<li>生成根证书，中间证书和Server端证书(即用户证书)</li>
-<li>本机搭建nginx服务器，并设置Server端证书（！！注意此时未安装根证书到操作系统）</li>
-<li>浏览器访问<a href="https://localhost,出现告警提示/">https://localhost，出现告警提示</a></li>
-<li>把根证书和中间证书安装到操作系统，并设置根证书为永久信任</li>
-<li>重新访问<a href="https://localhost,正常,没有出现告警./">https://localhost，正常，没有出现告警。</a></li>
-</ol>
-<h2 id="第一步，生成根证书，中间证书和Server端证书"><a href="#第一步，生成根证书，中间证书和Server端证书" class="headerlink" title="第一步，生成根证书，中间证书和Server端证书"></a>第一步，生成根证书，中间证书和Server端证书</h2><p>颁发机构通常会有根机构和中间机构，根机构的证书自己签发自己，中间机构的证书由根机构签发，而Server端证书由中间机构签发。本人参考以下三篇文章创建了根证书，中间证书和Server端证书。</p>
-<ul>
-<li><a href="https://www.cnblogs.com/sparkdev/p/10369313.html">使用 OpenSSL 创建私有 CA：1 根证书</a></li>
-<li><a href="https://www.cnblogs.com/sparkdev/p/10387520.html">使用 OpenSSL 创建私有 CA：2 中间证书</a></li>
-<li><a href="https://www.cnblogs.com/sparkdev/p/10388395.html">使用 OpenSSL 创建私有 CA：3 用户证书</a></li>
-</ul>
-<p>不过需要注意的是，<strong>Server端证书有效期不要太长，否则即使安装了根证书也会告警</strong>。</p>
-<h2 id="第二步，本机搭建nginx服务器，并设置Server端证书"><a href="#第二步，本机搭建nginx服务器，并设置Server端证书" class="headerlink" title="第二步，本机搭建nginx服务器，并设置Server端证书"></a>第二步，本机搭建nginx服务器，并设置Server端证书</h2><p>mac下安装nginx很简单</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">brew install nginx<br></code></pre></td></tr></table></figure>
-<p>然后修改<code>/usr/local/etc/nginx/nginx.conf</code>文件，在server里添加三行</p>
-<figure class="highlight gradle"><table><tr><td class="code"><pre><code class="hljs gradle">listen       <span class="hljs-number">443</span>    ssl;<br>ssl_certificate <span class="hljs-regexp">/Users/ym</span><span class="hljs-regexp">/tmp/my</span>ca<span class="hljs-regexp">/localhost/</span>certs/localhost.cert.pem;<br>ssl_certificate_key <span class="hljs-regexp">/Users/ym</span><span class="hljs-regexp">/tmp/my</span>ca<span class="hljs-regexp">/localhost/</span><span class="hljs-keyword">private</span>/localhost.key.pem;<br></code></pre></td></tr></table></figure>
-
-<p>启动nginx</p>
-<figure class="highlight crmsh"><table><tr><td class="code"><pre><code class="hljs crmsh">brew sevices <span class="hljs-literal">start</span> nginx <br></code></pre></td></tr></table></figure>
-
-<h2 id="第三步，浏览器访问https-localhost"><a href="#第三步，浏览器访问https-localhost" class="headerlink" title="第三步，浏览器访问https://localhost"></a>第三步，浏览器访问<a href="https://localhost/">https://localhost</a></h2><p>显示告警信息
-<img src="/images/ca-crt-invalid.png" alt="invalid-certificate"></p>
-<h2 id="第四步，把根证书和中间证书安装到操作系统，并设置根证书为永久信任"><a href="#第四步，把根证书和中间证书安装到操作系统，并设置根证书为永久信任" class="headerlink" title="第四步，把根证书和中间证书安装到操作系统，并设置根证书为永久信任"></a>第四步，把根证书和中间证书安装到操作系统，并设置根证书为永久信任</h2><p>在mac系统下，点击lauchpad，并搜索<code>钥匙串访问</code>。可以看到登录下安装的证书。
-在finder中打开根证书和中间证书，可以添加到登录账号下。
-只需要设置根证书为永久信任即可。以为中间证书是由根证书签发的。
-以下是已经安装的根证书
-<img src="/images/root-ca.png" alt="root-ca-crt"></p>
-<p>以下是已经安装的中间证书
-<img src="/images/mid-ca.png" alt="mid-ca-crt"></p>
-<h2 id="第五步，-重新访问https-localhost"><a href="#第五步，-重新访问https-localhost" class="headerlink" title="第五步， 重新访问https://localhost"></a>第五步， 重新访问<a href="https://localhost/">https://localhost</a></h2><p>重新访问<a href="https://localhost.正常./">https://localhost。正常。</a></p>
-<p><img src="/images/valid-crt.png" alt="valid-crt"></p>
-]]></content>
-      <tags>
-        <tag>certificate</tag>
-        <tag>X.509</tag>
-        <tag>nginx</tag>
-        <tag>openssl</tag>
-        <tag>ssl</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>在mac下跑一个Ingress的例子</title>
     <url>/2020/07/06/run-ingress-example-on-mac/</url>
     <content><![CDATA[<h2 id="Ingress是什么"><a href="#Ingress是什么" class="headerlink" title="Ingress是什么"></a>Ingress是什么</h2><p>在Kubernetes中，Ingress是一个对象，该对象允许从Kubernetes集群外部访问Kubernetes服务。 您可以 
@@ -2453,121 +2351,105 @@ remote path为<code>/home/keyvalue/ym/operation</code>，local path为<code>/Use
       </tags>
   </entry>
   <entry>
-    <title>ASN.1语言规范介绍</title>
-    <url>/2020/11/08/asn-1/</url>
-    <content><![CDATA[<h2 id="ASN-1介绍"><a href="#ASN-1介绍" class="headerlink" title="ASN.1介绍"></a>ASN.1介绍</h2><p><code>X.509</code>证书常用的编码方式有DER格式和PEM格式。证书是一个对象的话，那么需要一个描述这个对象的语言。ASN.1就是这样的一个语言规范。而DER是ASN.1编码的一种方式。如果要解析DER编码文件，就需要了解ASN.1语言规范的编解码。</p>
+    <title>自建根证书，中间证书和Server端X.509证书并搭建nginx验证Server端证书有效性</title>
+    <url>/2020/10/09/x509-ca/</url>
+    <content><![CDATA[<h2 id="X-509证书的颁发和使用"><a href="#X-509证书的颁发和使用" class="headerlink" title="X.509证书的颁发和使用"></a>X.509证书的颁发和使用</h2><p><code>X.509</code>证书是用来认证身份的，例如在访问一个HTTPS网站的时候，浏览器会首先下载该网站
+的证书，验证是否有效。如果无效，浏览器会提示<code>您的连接不是私密连接</code>，进一步访问网站有风险。
+如果有效则可以直接访问，不会告警。</p>
+<p>浏览器怎么验证网站证书是否有效呢？简单说就是看网站证书的颁发机构是不是已经被操作系统信任，即看
+颁发机构的身份证书是否已经安装到操作系统里，并被设置为信任。</p>
+<p>那么我们接下来做的事情就是在<strong>mac系统上</strong>验证浏览器的上述行为。</p>
 <span id="more"></span>
 
-<p>ASN.1（Abstract Syntax Notation One）是OSI（Open Source Interconnection）使用的描述对象的语言规范。OSI是X.200中定义的。而ASN.1是X.208中描述的。</p>
-<p>下面是一个ASN.1的例子</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs asn.1">Foo DEFINITIONS ::= BEGIN<br><br>    Question ::= SEQUENCE &#123;<br>        id        INTEGER,<br>        question  IA5String<br>    &#125;<br><br>    Answer ::= SEQUENCE &#123;<br>        id        INTEGER,<br>        answer    BOOLEAN<br>    &#125;<br><br>END<br></code></pre></td></tr></table></figure>
-
-<h2 id="以一个证书分析ASN-1语法"><a href="#以一个证书分析ASN-1语法" class="headerlink" title="以一个证书分析ASN.1语法"></a>以一个证书分析ASN.1语法</h2><p>以下是一个<code>PEM</code>格式的证书。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">-----BEGIN CERTIFICATE-----<br><br>MIIFwTCCA6mgAwIBAgIUNQk34EiXUjqgxnfhOZtv6zxIiekwDQYJKoZIhvcNAQEN<br><br>BQAwcDELMAkGA1UEBhMCQ04xEDAOBgNVBAgMB0JlaWppbmcxEDAOBgNVBAcMB0Jl<br><br>aWppbmcxEDAOBgNVBAoMB2V4YW1wbGUxETAPBgNVBAsMCFBlcnNvbmFsMRgwFgYD<br><br>VQQDDA9yZXBvLmVubmlvdC5uZXQwHhcNMjAwODExMDMwMzE0WhcNMzAwODA5MDMw<br><br>MzE0WjBwMQswCQYDVQQGEwJDTjEQMA4GA1UECAwHQmVpamluZzEQMA4GA1UEBwwH<br><br>QmVpamluZzEQMA4GA1UECgwHZXhhbXBsZTERMA8GA1UECwwIUGVyc29uYWwxGDAW<br><br>BgNVBAMMD3JlcG8uZW5uaW90Lm5ldDCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCC<br><br>AgoCggIBAN6xDFkixeboRBjaVLi1/IjCfHvGS2xGihWrx2dN9jXIZWQqU2Lw8rLy<br><br>yzrnzSEJDRcUFGaXpRagHTYJPhcr31Sa4OkCsoorwElagcOOPQXAc1A87vBk1+r/<br><br>3eQu+IPGjr+3DU/yqNNuaq0CZgDDww9ttbyTb8JxZweXdAMjK0D7LiNCkpvwM1l6<br><br>ylVl9o5+ACA34qb81IyVAsGFSHP/ukcFIaC79Zf/7p3Tjm4uRkAdtQYJGwA0Oafk<br><br>HbPaPLOHPJdi+3+a/OmmBJamxyWXF9pJ/BRrxFrqtssnAhIyPsNqKsPDCknJOzwS<br><br>6vdTVsuMkLMUbc0OK1dSIulXxZaea+jXcZMYWUA4ZDNdo1SrMg3Vvj/CrLWgm7b0<br><br>T1Wb8tXsr2NUNoacMzDgN41Kz7Ht57LQURaFf9rzjqACHVYfj/Ad8/PmgA6V3Dc3<br><br>gvMvqOoyp2iic1xQ2GcIItHvqD4YwBSdtyxJc1N5llNBF7A6+JWVc0kJpOQCDKVb<br><br>U+0Py6ugnbb/pQ89/4zXXWyuTQO0BGULoHCo0++eF+pLcW6LstQNSUYxYRr4tmLr<br><br>sbUJFPoFcHXdQ9F8I2rBXdKCePHDBPQ2HexhANUWnRQdjtnYG9UQRQaDVKiCXUMj<br><br>9f6ixjN9DAz+SqndPksE0Ux0cgfkTEfi9N+5c7rCxzZYgH8UlFiDAgMBAAGjUzBR<br><br>MB0GA1UdDgQWBBRaOW9HUg7eACHGDuPMcc/k7nPmbjAfBgNVHSMEGDAWgBRaOW9H<br><br>Ug7eACHGDuPMcc/k7nPmbjAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBDQUA<br><br>A4ICAQCu1kx2rnRp9oiPw3Y2WuJ2hnzkMTUGPv4rpX0hgVSLNAEiDEvujz/pnHaJ<br><br>83+JZuMHebAQnWHXVaUdmzn7Yw9WsZoXu15st0WMOAC8cUZ4uD0t1osPJTSuc3hA<br><br>F0ZG3tHzuJBpX4T6pVrZ3jJvuY5vGJGCMwRdS4V7e6wQmLjzqf3oq05y9JlvKBYX<br><br>JdU69BynZ1vEtUuC91WJTTvlqLtbAS6LTSmnSYWscNpP4KOTXNfdf8HlKFRKGR2e<br><br>cVyAXu9bA89HeEeG8ztceyD2GO+S7xBNuZRV11Oi2xO59rJJAzzrIO1W8oda5lac<br><br>JVRI+n8w+hLG+bbq+24s9tVB0MBZj3/honpYRLOYMAT507YlOvDPjreudYHWJSLG<br><br>cTjRH0dtIgqbi8uTH3iJ2yWTq92OfGSSERofVdSOPrlzH5GpkpeIoRcYlP1KLnIy<br><br>wxlI4E7W50PX5rMKMIp4/p6ALgA7psuC7ZTzk3f7R/tmHBSNb5JiSbp7MjI+iVRE<br><br>zZX73VW1nLf4YaSS+MYNudAQl0ZoUvK3f0QEj4NwzRjDkdsUKI+X7Q2p03foBMCU<br><br>4ijSDMvjyn3JEvT878Fxh7KB4IbZKh3kj9RetGaGEljjgv/Pg3h2gu+GNPgk30xJ<br><br>TfK5QkRaYenm9aWKpHHf4hpUQlMKawxdS1k+3gVGwWu8YM/a0A==<br><br>-----END CERTIFICATE-----<br></code></pre></td></tr></table></figure>
-
-<p>对这个证书进行解析的方法是用一个在线的工具 <a href="http://lapo.it/asn1js/">http://lapo.it/asn1js/</a>。</p>
-<p>可以把上面base64编码的证书复制到网站解码之后，可以看到类似如下的结果。</p>
-<p><img src="/images/2020-11-09.jpg" alt="cert-parse"></p>
-<p>ASN.1的编码基本上遵循的是<code>type+length+value</code>的方式。</p>
-<p>ASN.1的数据tag大概有以下几种，</p>
-<table>
-<thead>
-<tr>
-<th>type</th>
-<th>tagNumber</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Boolean</td>
-<td>0x01</td>
-</tr>
-<tr>
-<td>Integer</td>
-<td>0x02</td>
-</tr>
-<tr>
-<td>BitString</td>
-<td>0x03</td>
-</tr>
-<tr>
-<td>OctetString</td>
-<td>0x04</td>
-</tr>
-<tr>
-<td>Null</td>
-<td>0x05</td>
-</tr>
-<tr>
-<td>ObjectIdentifier</td>
-<td>0x06</td>
-</tr>
-<tr>
-<td>Enumerated</td>
-<td>0x0a</td>
-</tr>
-<tr>
-<td>UTF8String</td>
-<td>0x0c</td>
-</tr>
-<tr>
-<td>Sequence</td>
-<td>0x10</td>
-</tr>
-<tr>
-<td>Set</td>
-<td>0x11</td>
-</tr>
-<tr>
-<td>PrintableString</td>
-<td>0x13</td>
-</tr>
-<tr>
-<td>IA5String</td>
-<td>0x16</td>
-</tr>
-<tr>
-<td>UTCTime</td>
-<td>0x17</td>
-</tr>
-<tr>
-<td>UnicodeString</td>
-<td>0x1e</td>
-</tr>
-</tbody></table>
-<p>那么具体看一下以上ca证书的前四个字节是什么含义。</p>
-<figure class="highlight basic"><table><tr><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">30 </span><span class="hljs-number">82</span> <span class="hljs-number">05</span> C1<br></code></pre></td></tr></table></figure>
-
+<p>验证步骤，</p>
 <ol>
-<li><p>首先看是什么type。第一个字节<code>0x30</code>描述了type信息。tagClass &#x3D; 0x30 &gt;&gt; 6 &#x3D; 0 ，表示<code>universal isConstructed = 0x30 &amp; 0x20 = True</code>，对于<code>sequence</code>基本都是true,
-<code>tagNumber = 0x30 &amp; 0x1F = 0x10</code> ，因此对应的<code>Sequence</code></p>
+<li>生成根证书，中间证书和Server端证书(即用户证书)</li>
+<li>本机搭建nginx服务器，并设置Server端证书（！！注意此时未安装根证书到操作系统）</li>
+<li>浏览器访问<a href="https://localhost,出现告警提示/">https://localhost，出现告警提示</a></li>
+<li>把根证书和中间证书安装到操作系统，并设置根证书为永久信任</li>
+<li>重新访问<a href="https://localhost,正常,没有出现告警./">https://localhost，正常，没有出现告警。</a></li>
+</ol>
+<h2 id="第一步，生成根证书，中间证书和Server端证书"><a href="#第一步，生成根证书，中间证书和Server端证书" class="headerlink" title="第一步，生成根证书，中间证书和Server端证书"></a>第一步，生成根证书，中间证书和Server端证书</h2><p>颁发机构通常会有根机构和中间机构，根机构的证书自己签发自己，中间机构的证书由根机构签发，而Server端证书由中间机构签发。本人参考以下三篇文章创建了根证书，中间证书和Server端证书。</p>
+<ul>
+<li><a href="https://www.cnblogs.com/sparkdev/p/10369313.html">使用 OpenSSL 创建私有 CA：1 根证书</a></li>
+<li><a href="https://www.cnblogs.com/sparkdev/p/10387520.html">使用 OpenSSL 创建私有 CA：2 中间证书</a></li>
+<li><a href="https://www.cnblogs.com/sparkdev/p/10388395.html">使用 OpenSSL 创建私有 CA：3 用户证书</a></li>
+</ul>
+<p>不过需要注意的是，<strong>Server端证书有效期不要太长，否则即使安装了根证书也会告警</strong>。</p>
+<h2 id="第二步，本机搭建nginx服务器，并设置Server端证书"><a href="#第二步，本机搭建nginx服务器，并设置Server端证书" class="headerlink" title="第二步，本机搭建nginx服务器，并设置Server端证书"></a>第二步，本机搭建nginx服务器，并设置Server端证书</h2><p>mac下安装nginx很简单</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">brew install nginx<br></code></pre></td></tr></table></figure>
+<p>然后修改<code>/usr/local/etc/nginx/nginx.conf</code>文件，在server里添加三行</p>
+<figure class="highlight gradle"><table><tr><td class="code"><pre><code class="hljs gradle">listen       <span class="hljs-number">443</span>    ssl;<br>ssl_certificate <span class="hljs-regexp">/Users/ym</span><span class="hljs-regexp">/tmp/my</span>ca<span class="hljs-regexp">/localhost/</span>certs/localhost.cert.pem;<br>ssl_certificate_key <span class="hljs-regexp">/Users/ym</span><span class="hljs-regexp">/tmp/my</span>ca<span class="hljs-regexp">/localhost/</span><span class="hljs-keyword">private</span>/localhost.key.pem;<br></code></pre></td></tr></table></figure>
+
+<p>启动nginx</p>
+<figure class="highlight crmsh"><table><tr><td class="code"><pre><code class="hljs crmsh">brew sevices <span class="hljs-literal">start</span> nginx <br></code></pre></td></tr></table></figure>
+
+<h2 id="第三步，浏览器访问https-localhost"><a href="#第三步，浏览器访问https-localhost" class="headerlink" title="第三步，浏览器访问https://localhost"></a>第三步，浏览器访问<a href="https://localhost/">https://localhost</a></h2><p>显示告警信息
+<img src="/images/ca-crt-invalid.png" alt="invalid-certificate"></p>
+<h2 id="第四步，把根证书和中间证书安装到操作系统，并设置根证书为永久信任"><a href="#第四步，把根证书和中间证书安装到操作系统，并设置根证书为永久信任" class="headerlink" title="第四步，把根证书和中间证书安装到操作系统，并设置根证书为永久信任"></a>第四步，把根证书和中间证书安装到操作系统，并设置根证书为永久信任</h2><p>在mac系统下，点击lauchpad，并搜索<code>钥匙串访问</code>。可以看到登录下安装的证书。
+在finder中打开根证书和中间证书，可以添加到登录账号下。
+只需要设置根证书为永久信任即可。以为中间证书是由根证书签发的。
+以下是已经安装的根证书
+<img src="/images/root-ca.png" alt="root-ca-crt"></p>
+<p>以下是已经安装的中间证书
+<img src="/images/mid-ca.png" alt="mid-ca-crt"></p>
+<h2 id="第五步，-重新访问https-localhost"><a href="#第五步，-重新访问https-localhost" class="headerlink" title="第五步， 重新访问https://localhost"></a>第五步， 重新访问<a href="https://localhost/">https://localhost</a></h2><p>重新访问<a href="https://localhost.正常./">https://localhost。正常。</a></p>
+<p><img src="/images/valid-crt.png" alt="valid-crt"></p>
+]]></content>
+      <tags>
+        <tag>certificate</tag>
+        <tag>X.509</tag>
+        <tag>nginx</tag>
+        <tag>openssl</tag>
+        <tag>ssl</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>基于CLion和gdbserver实现远程调试c程序</title>
+    <url>/2020/09/08/remote-debug-with-clion/</url>
+    <content><![CDATA[<h2 id="远程调试c程序"><a href="#远程调试c程序" class="headerlink" title="远程调试c程序"></a>远程调试c程序</h2><p>最近基于<a href="https://github.com/alibaba/tsar">tsar</a>（阿里开源的一个基于c语言的监控程序）做二次开发，
+因为以前从来没有在工作中写过c，所以这个简单的工作花了两周时间，期间用gdb进行调试，用valgrind检查内存泄漏。
+但是最让我不舒服的就是gdb调试了，虽然gdb很给力，但是毕竟由奢入俭难，之前写Java，Python，Go都是可以用IDE进行
+debug的。有图形化界面还是效率高很多，而对于新手，能够方便的debug源码就可以快速的理解项目。</p>
+<p>那么怎么办呢？</p>
+<span id="more"></span>
+
+
+<h2 id="CLion"><a href="#CLion" class="headerlink" title="CLion"></a>CLion</h2><p>我一直以为CLion可以很好的理解cmake项目，但是对于大量的基于makefile编译的项目，则不能很好的解析，所以也无法利用CLion
+进行代码调试。</p>
+<p>但是并不是这样，虽然CLion无法理解代码中各种符号之间的依赖关系，但是调试只要有debug info和源码就可以进行图形化调试。</p>
+<p>参考CLion远程开发的<a href="https://www.jetbrains.com/help/clion/remote-gdb-server.html">Remote GDB Server</a>，很简单就实现了。</p>
+<h2 id="远程调试tsar"><a href="#远程调试tsar" class="headerlink" title="远程调试tsar"></a>远程调试tsar</h2><ol>
+<li><p>mac下安装了CLion，linux下编译tsar。
+在mac下，tsar项目源码路径——<code>/Users/ym/work/operation</code>
+在linux下为,tsar项目源码路径——<code>/home/keyvalue/ym/operation</code></p>
 </li>
-<li><p>接下来计算长度。
-第二个字节为<code>0x82</code>,
-分两种情况，判断表达式，<code>byte &amp; 0x7F == byte</code> 如果为true就是小于127。否则就是大于127。</p>
+<li><p>在CLion下创建一个<code>GDB remote debug</code>配置。
+参数配置：</p>
 </li>
 </ol>
 <ul>
-<li>长度是小于127(short form)
-那么该该字节就是length，之后就是value的内容。</li>
-<li>长度大于127(long form)，
-byte &amp; 0x7F 表示length的编码长度。</li>
+<li><p>target remote args<br>10.4.104.153:1234    # 这是gdbserver的ip:port</p>
+</li>
+<li><p>path mappings 
+remote path为<code>/home/keyvalue/ym/operation</code>，local path为<code>/Users/ym/work/operation</code></p>
+</li>
 </ul>
-<p>对于以上的例子，<code>0x82</code>是long form
-因为 </p>
-<figure class="highlight hy"><table><tr><td class="code"><pre><code class="hljs hy">( <span class="hljs-number">0</span>x82 == (<span class="hljs-number">0</span>x82 &amp; <span class="hljs-number">0</span>x7F) = <span class="hljs-literal">False</span><br></code></pre></td></tr></table></figure>
-<p>那么表示长度的字节数量是 </p>
-<figure class="highlight apache"><table><tr><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">0x82</span> &amp; <span class="hljs-number">0</span>x7F = <span class="hljs-number">0</span>x2<br></code></pre></td></tr></table></figure>
-<p>因此’0x82’之后的两个字节’0x05’和’0xC1’组成长度。</p>
-<figure class="highlight ini"><table><tr><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">0x05C1</span> = <span class="hljs-number">1473</span> <br></code></pre></td></tr></table></figure>
-<p>两个字节表示value的长度1473。</p>
-<p>因此，</p>
-<figure class="highlight basic"><table><tr><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">30 </span><span class="hljs-number">82</span> <span class="hljs-number">05</span> C1<br></code></pre></td></tr></table></figure>
-<p>这个头四个字节的含义是，这个是<code>Sequence</code>类型，
-长度是1473，这四节之后的1473个字节就是<code>Sequence</code>类型的值。</p>
+<p><img src="/images/gdb-remote-debug.png" alt="gdb remote debug config"></p>
+<ol start="3">
+<li><p>在linux下运行命令</p>
+<figure class="highlight vhdl"><table><tr><td class="code"><pre><code class="hljs vhdl">$ sudo gdbserver :<span class="hljs-number">1234</span> src/tsar <span class="hljs-comment">--cron</span><br><span class="hljs-keyword">Process</span> src/tsar created; pid = <span class="hljs-number">10216</span><br>Listening <span class="hljs-keyword">on</span> <span class="hljs-keyword">port</span> <span class="hljs-number">1234</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>CLion下启动之前的<code>GDB remote debug</code>配置，就可以愉快的断点调试了。</p>
+</li>
+</ol>
+<p><img src="/images/tsar-remote-debug.png" alt="tsar remote debug"></p>
 ]]></content>
       <tags>
-        <tag>X.509</tag>
-        <tag>ASN.1</tag>
+        <tag>debug</tag>
+        <tag>CLion</tag>
+        <tag>gdb</tag>
+        <tag>remote</tag>
       </tags>
   </entry>
   <entry>
@@ -2710,66 +2592,6 @@ search addom.xinaogroup.com
       </tags>
   </entry>
   <entry>
-    <title>CLion2021调试Makefile项目</title>
-    <url>/2021/07/15/2021-7-15-clion-makefile-debug/</url>
-    <content><![CDATA[<h2 id="CLion介绍"><a href="#CLion介绍" class="headerlink" title="CLion介绍"></a>CLion介绍</h2><p><code>CLion</code>是一款针对C&#x2F;C++项目的跨平台的集成IDE（A cross-platform IDE for C and C++）。2020版本以前，只支持cmake项目，
-但是2021版本对Makefile项目的支持度增加了。我们看看如何对Makefile项目进行断点调试。</p>
-<span id="more"></span>
-
-<p>我们用一个实际的项目作为例子。</p>
-<h2 id="Go1-4源码"><a href="#Go1-4源码" class="headerlink" title="Go1.4源码"></a>Go1.4源码</h2><p>Go语言项目从源码编译有几种方式，其中一种方式是基于<a href="https://golang.org/doc/install/source#bootstrapFromSource">Bootstrap toolchain from C source code</a>,
-也就是说，首先编译Go 1.4版本，然后用编译出来的<code>Go</code>，编译最新的Go版本。(<strong>UPDATE: Mac12.1 Monterey系统上不支持</strong>)</p>
-<p>那么我下载这个Go1.4版本，<a href="https://dl.google.com/go/go1.4-bootstrap-20171003.tar.gz">go1.4-bootstrap-20171003.tar.gz</a>，
-解压到某个路径下。</p>
-<figure class="highlight stata"><table><tr><td class="code"><pre><code class="hljs stata">~/work/go1.4/ <span class="hljs-keyword">ls</span>          <br>AUTHORS      LICENSE      README       api          doc          <span class="hljs-keyword">include</span>      misc         robots.txt   <span class="hljs-keyword">test</span><br>CONTRIBUTORS PATENTS      <span class="hljs-keyword">VERSION</span>      bin          favicon.ico  lib          pkg          src<br></code></pre></td></tr></table></figure>
-
-<p>进入src路径下，运行make.bash文件，则开始编译。（当然需要build相关的工具）。为了看清楚bash脚本执行的内容，我们修改make.bash的
-第一行改为 <code>set -ex</code>, 这样会打印详细的执行内容如下，</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">g1.4/src/ $  ./make.bash <br>+ <span class="hljs-string">&#x27;[&#x27;</span> <span class="hljs-string">&#x27;!&#x27;</span> -f run.bash <span class="hljs-string">&#x27;]&#x27;</span><br>+ <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;<span class="hljs-subst">$(uname)</span>&quot;</span> <span class="hljs-keyword">in</span><br>++ <span class="hljs-built_in">uname</span><br>+ ld --version<br>+ grep <span class="hljs-string">&#x27;gold.* 2\.20&#x27;</span><br>+ <span class="hljs-keyword">for</span> se_mount <span class="hljs-keyword">in</span> /selinux /sys/fs/selinux<br>+ <span class="hljs-string">&#x27;[&#x27;</span> -d /selinux -a -f /selinux/booleans/allow_execstack -a -x /usr/sbin/selinuxenabled <span class="hljs-string">&#x27;]&#x27;</span><br>+ <span class="hljs-keyword">for</span> se_mount <span class="hljs-keyword">in</span> /selinux /sys/fs/selinux<br>+ <span class="hljs-string">&#x27;[&#x27;</span> -d /sys/fs/selinux -a -f /sys/fs/selinux/booleans/allow_execstack -a -x /usr/sbin/selinuxenabled <span class="hljs-string">&#x27;]&#x27;</span><br>++ <span class="hljs-built_in">uname</span> -s<br>+ <span class="hljs-string">&#x27;[&#x27;</span> Darwin == GNU/kFreeBSD <span class="hljs-string">&#x27;]&#x27;</span><br>+ <span class="hljs-built_in">rm</span> -f ./runtime/runtime_defs.go<br>+ <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;# Building C bootstrap tool.&#x27;</span><br><span class="hljs-comment"># Building C bootstrap tool.</span><br>+ <span class="hljs-built_in">echo</span> cmd/dist<br>cmd/dist<br>++ <span class="hljs-built_in">cd</span> ..<br>++ <span class="hljs-built_in">pwd</span><br>+ <span class="hljs-built_in">export</span> GOROOT=/Users/ym/work/go1.4<br>+ GOROOT=/Users/ym/work/go1.4<br>+ GOROOT_FINAL=/Users/ym/work/go1.4<br>+ DEFGOROOT=<span class="hljs-string">&#x27;-DGOROOT_FINAL=&quot;/Users/ym/work/go1.4&quot;&#x27;</span><br>+ mflag=<br>+ <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;<span class="hljs-variable">$GOHOSTARCH</span>&quot;</span> <span class="hljs-keyword">in</span><br>++ <span class="hljs-built_in">uname</span><br>+ <span class="hljs-string">&#x27;[&#x27;</span> Darwin == Darwin <span class="hljs-string">&#x27;]&#x27;</span><br>+ mflag=<span class="hljs-string">&#x27; -mmacosx-version-min=10.6&#x27;</span><br>++ <span class="hljs-built_in">type</span> -t gcc<br>++ <span class="hljs-built_in">type</span> -t clang<br>+ <span class="hljs-string">&#x27;[&#x27;</span> -z <span class="hljs-string">&#x27;&#x27;</span> -a -z file -a -n file <span class="hljs-string">&#x27;]&#x27;</span><br>+ gcc -mmacosx-version-min=10.6 -O2 -Wall -Werror -o cmd/dist/dist -Icmd/dist <span class="hljs-string">&#x27;-DGOROOT_FINAL=&quot;/Users/ym/work/go1.4&quot;&#x27;</span> cmd/dist/arm.c cmd/dist/buf.c cmd/dist/build.c cmd/dist/buildgc.c cmd/dist/buildgo.c cmd/dist/buildruntime.c cmd/dist/main.c cmd/dist/plan9.c cmd/dist/unix.c cmd/dist/windows.c<br>++ ./cmd/dist/dist <span class="hljs-built_in">env</span> -p<br>+ <span class="hljs-built_in">eval</span> <span class="hljs-string">&#x27;CC=&quot;clang&quot;&#x27;</span> <span class="hljs-string">&#x27;CC_FOR_TARGET=&quot;clang&quot;&#x27;</span> <span class="hljs-string">&#x27;GOROOT=&quot;/Users/ym/work/go1.4&quot;&#x27;</span> <span class="hljs-string">&#x27;GOBIN=&quot;/Users/ym/me/go/test/bin&quot;&#x27;</span> <span class="hljs-string">&#x27;GOARCH=&quot;amd64&quot;&#x27;</span> <span class="hljs-string">&#x27;GOOS=&quot;darwin&quot;&#x27;</span> <span class="hljs-string">&#x27;GOHOSTARCH=&quot;amd64&quot;&#x27;</span> <span class="hljs-string">&#x27;GOHOSTOS=&quot;darwin&quot;&#x27;</span> <span class="hljs-string">&#x27;GOTOOLDIR=&quot;/Users/ym/work/go1.4/pkg/tool/darwin_amd64&quot;&#x27;</span> <span class="hljs-string">&#x27;GOCHAR=&quot;6&quot;&#x27;</span> <span class="hljs-string">&#x27;PATH=&quot;/Users/ym/me/go/test/bin:/usr/local/opt/openssl@1.1/bin:/usr/local/opt/postgresql@12/bin:/Users/ym/work/go1.4/bin:/usr/local/Homebrew/bin:/usr/local/sbin:/usr/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/usr/local/share/dotnet:~/.dotnet/tools:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/ym/mybin/apache-maven-3.6.0/bin:/Users/ym/me/go/test/bin:/Users/ym/.rvm/bin:/Users/ym/mybin/spark-2.4.3-bin-hadoop2.7/bin/&quot;&#x27;</span><br>++ CC=clang<br>++ CC_FOR_TARGET=clang<br>++ GOROOT=/Users/ym/work/go1.4<br>++ GOBIN=/Users/ym/me/go/test/bin<br>++ GOARCH=amd64<br>++ GOOS=darwin<br>++ GOHOSTARCH=amd64<br>++ GOHOSTOS=darwin<br>++ GOTOOLDIR=/Users/ym/work/go1.4/pkg/tool/darwin_amd64<br>++ GOCHAR=6<br>++ PATH=<span class="hljs-string">&#x27;/Users/ym/me/go/test/bin:/usr/local/opt/openssl@1.1/bin:/usr/local/opt/postgresql@12/bin:/Users/ym/work/go1.4/bin:/usr/local/Homebrew/bin:/usr/local/sbin:/usr/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/usr/local/share/dotnet:~/.dotnet/tools:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/ym/mybin/apache-maven-3.6.0/bin:/Users/ym/me/go/test/bin:/Users/ym/.rvm/bin:/Users/ym/mybin/spark-2.4.3-bin-hadoop2.7/bin/&#x27;</span><br>+ <span class="hljs-string">&#x27;[&#x27;</span> <span class="hljs-string">&#x27;&#x27;</span> = <span class="hljs-literal">true</span> <span class="hljs-string">&#x27;]&#x27;</span><br>+ <span class="hljs-built_in">echo</span><br><br>+ <span class="hljs-string">&#x27;[&#x27;</span> <span class="hljs-string">&#x27;&#x27;</span> = --dist-tool <span class="hljs-string">&#x27;]&#x27;</span><br>+ <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;# Building compilers and Go bootstrap tool for host, darwin/amd64.&#x27;</span><br><span class="hljs-comment"># Building compilers and Go bootstrap tool for host, darwin/amd64.</span><br>+ buildall=-a<br>+ <span class="hljs-string">&#x27;[&#x27;</span> <span class="hljs-string">&#x27;&#x27;</span> = --no-clean <span class="hljs-string">&#x27;]&#x27;</span><br>+ ./cmd/dist/dist bootstrap -a -v<br>lib9<br>libbio<br>liblink<br>cmd/cc<br>cmd/gc<br>cmd/6l<br>/Users/ym/work/go1.4/src/cmd/6l/../ld/dwarf.c:1479:15: warning: implicit conversion from <span class="hljs-string">&#x27;int&#x27;</span> to <span class="hljs-string">&#x27;char&#x27;</span> changes value from 156 to -100 [-Wconstant-conversion]<br>/Users/ym/work/go1.4/src/cmd/6l/../ld/dwarf.c:1763:21: warning: implicit conversion from <span class="hljs-string">&#x27;int&#x27;</span> to <span class="hljs-string">&#x27;char&#x27;</span> changes value from 144 to -112 [-Wconstant-conversion]<br>/Users/ym/work/go1.4/src/cmd/6l/../ld/lib.h:168:13: note: expanded from macro <span class="hljs-string">&#x27;cput&#x27;</span><br>cmd/6a<br>cmd/6c<br>/Users/ym/work/go1.4/src/cmd/6c/txt.c:995:28: warning: shifting a negative signed value is undefined [-Wshift-negative-value]<br>/Users/ym/work/go1.4/src/cmd/6c/txt.c:1045:28: warning: shifting a negative signed value is undefined [-Wshift-negative-value]<br>cmd/6g<br>/Users/ym/work/go1.4/src/cmd/6g/peep.c:771:13: warning: converting the enum constant to a boolean [-Wint-in-bool-context]<br>runtime<br>errors<br><span class="hljs-built_in">sync</span>/atomic<br><span class="hljs-built_in">sync</span><br>io<br>unicode<br>unicode/utf8<br>unicode/utf16<br>bytes<br>math<br>strings<br>strconv<br>bufio<br><span class="hljs-built_in">sort</span><br>container/heap<br>encoding/base64<br>syscall<br>time<br>os<br>reflect<br><span class="hljs-built_in">fmt</span><br>encoding<br>encoding/json<br>flag<br>path/filepath<br>path<br>io/ioutil<br><span class="hljs-built_in">log</span><br>regexp/syntax<br>regexp<br>go/token<br>go/scanner<br>go/ast<br>go/parser<br>os/exec<br>os/signal<br>net/url<br>text/template/parse<br>text/template<br>go/doc<br>go/build<br>cmd/go<br>+ <span class="hljs-built_in">cp</span> cmd/dist/dist /Users/ym/work/go1.4/pkg/tool/darwin_amd64/dist<br>+ /Users/ym/work/go1.4/pkg/tool/darwin_amd64/go_bootstrap clean -i std<br>+ <span class="hljs-built_in">echo</span><br><br>+ <span class="hljs-string">&#x27;[&#x27;</span> amd64 <span class="hljs-string">&#x27;!=&#x27;</span> amd64 -o darwin <span class="hljs-string">&#x27;!=&#x27;</span> darwin <span class="hljs-string">&#x27;]&#x27;</span><br>+ <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;# Building packages and commands for darwin/amd64.&#x27;</span><br><span class="hljs-comment"># Building packages and commands for darwin/amd64.</span><br>+ CC=clang<br>+ /Users/ym/work/go1.4/pkg/tool/darwin_amd64/go_bootstrap install -ccflags <span class="hljs-string">&#x27;&#x27;</span> -gcflags <span class="hljs-string">&#x27;&#x27;</span> -ldflags <span class="hljs-string">&#x27;&#x27;</span> -v std<br>runtime<br>errors<br><span class="hljs-built_in">sync</span>/atomic<br>unicode<br>unicode/utf8<br>math<br><span class="hljs-built_in">sort</span><br>encoding<br>unicode/utf16<br>container/list<br><span class="hljs-built_in">sync</span><br>crypto/subtle<br>container/ring<br>image/color<br>runtime/race<br>container/heap<br>io<br>syscall<br>image/color/palette<br><span class="hljs-built_in">hash</span><br>crypto/cipher<br><span class="hljs-built_in">hash</span>/crc32<br>crypto/hmac<br><span class="hljs-built_in">hash</span>/adler32<br><span class="hljs-built_in">hash</span>/crc64<br><span class="hljs-built_in">hash</span>/fnv<br>bytes<br>strings<br>bufio<br>text/tabwriter<br>path<br>html<br>compress/bzip2<br>time<br>strconv<br>math/rand<br>math/cmplx<br>os<br>reflect<br>regexp/syntax<br>crypto<br>encoding/base64<br>net/url<br>crypto/aes<br>crypto/rc4<br>crypto/md5<br>crypto/sha1<br>crypto/sha256<br>crypto/sha512<br>encoding/pem<br>encoding/ascii85<br>encoding/base32<br>image<br>path/filepath<br>net<br>os/signal<br>io/ioutil<br>os/exec<br>regexp<br>image/draw<br>image/jpeg<br><span class="hljs-built_in">fmt</span><br>encoding/binary<br>cmd/pprof/internal/svg<br>crypto/des<br>index/suffixarray<br>cmd/internal/goobj<br>cmd/internal/rsc.io/arm/armasm<br>cmd/internal/rsc.io/x86/x86asm<br>debug/dwarf<br>debug/gosym<br>debug/plan9obj<br>flag<br><span class="hljs-built_in">log</span><br>go/token<br>encoding/json<br>encoding/xml<br>text/template/parse<br>go/scanner<br>debug/elf<br>debug/macho<br>debug/pe<br>go/ast<br>compress/flate<br>text/template<br>math/big<br>encoding/hex<br>mime<br>net/textproto<br>cmd/internal/objfile<br>net/http/internal<br>compress/gzip<br>runtime/pprof<br>cmd/pack<br>cmd/pprof/internal/profile<br>cmd/pprof/internal/tempfile<br>archive/tar<br>archive/zip<br>cmd/addr2line<br>cmd/nm<br>crypto/elliptic<br>encoding/asn1<br>crypto/rand<br>go/parser<br>go/printer<br>go/doc<br>crypto/ecdsa<br>crypto/rsa<br>crypto/dsa<br>crypto/x509/pkix<br>mime/multipart<br>cmd/objdump<br>cmd/pprof/internal/plugin<br>crypto/x509<br>html/template<br>go/build<br>cmd/cgo<br>go/format<br>cmd/fix<br>cmd/gofmt<br>crypto/tls<br>cmd/pprof/internal/symbolizer<br>cmd/pprof/internal/symbolz<br>cmd/pprof/internal/report<br>cmd/yacc<br>compress/lzw<br>compress/zlib<br>database/sql/driver<br>database/sql<br>encoding/csv<br>encoding/gob<br>cmd/pprof/internal/commands<br>image/gif<br>cmd/pprof/internal/driver<br>image/png<br><span class="hljs-built_in">log</span>/syslog<br>net/mail<br>os/user<br>runtime/debug<br>testing<br>testing/iotest<br>net/http<br>net/smtp<br>testing/quick<br>text/scanner<br>cmd/go<br>cmd/pprof/internal/fetch<br>expvar<br>net/http/cgi<br>net/http/cookiejar<br>net/http/httptest<br>net/http/httputil<br>net/http/pprof<br>cmd/pprof<br>net/rpc<br>net/http/fcgi<br>net/rpc/jsonrpc<br>+ <span class="hljs-built_in">echo</span><br><br>+ <span class="hljs-built_in">rm</span> -f /Users/ym/work/go1.4/pkg/tool/darwin_amd64/go_bootstrap<br>+ <span class="hljs-string">&#x27;[&#x27;</span> <span class="hljs-string">&#x27;&#x27;</span> <span class="hljs-string">&#x27;!=&#x27;</span> --no-banner <span class="hljs-string">&#x27;]&#x27;</span><br>+ /Users/ym/work/go1.4/pkg/tool/darwin_amd64/dist banner<br><br>---<br>Installed Go <span class="hljs-keyword">for</span> darwin/amd64 <span class="hljs-keyword">in</span> /Users/ym/work/go1.4<br>Installed commands <span class="hljs-keyword">in</span> /Users/ym/me/go/test/bin<br></code></pre></td></tr></table></figure>
-
-<p>我们看到15-33行, 首先编译了<code>cmd/dist</code>文件夹下的c代码，生成了一个dist可执行文件，并调用了 <code>/cmd/dist/dist env -p</code></p>
-<pre>
-<b># Building C bootstrap tool.</b>
-+ echo cmd/dist
-cmd/dist
-++ cd ..
-++ pwd
-+ export GOROOT=/Users/ym/work/go1.4
-+ GOROOT=/Users/ym/work/go1.4
-+ GOROOT_FINAL=/Users/ym/work/go1.4
-+ DEFGOROOT='-DGOROOT_FINAL="/Users/ym/work/go1.4"'
-+ mflag=
-+ case "$GOHOSTARCH" in
-++ uname
-+ '[' Darwin == Darwin ']'
-+ mflag=' -mmacosx-version-min=10.6'
-++ type -t gcc
-++ type -t clang
-+ '[' -z '' -a -z file -a -n file ']'
-<b>+ gcc -mmacosx-version-min=10.6 -O2 -Wall -Werror -o cmd/dist/dist -Icmd/dist '-DGOROOT_FINAL="/Users/ym/work/go1.4"' cmd/dist/arm.c cmd/dist/buf.c cmd/dist/build.c cmd/dist/buildgc.c cmd/dist/buildgo.c cmd/dist/buildruntime.c cmd/dist/main.c cmd/dist/plan9.c cmd/dist/unix.c cmd/dist/windows.c 
-++ ./cmd/dist/dist env -p</b>
-</pre>
-
-<p>那么我们来看看怎么在CLion中调试<code>/cmd/dist/dist env -p</code></p>
-<h2 id="CLion调试cmd-x2F-dist"><a href="#CLion调试cmd-x2F-dist" class="headerlink" title="CLion调试cmd&#x2F;dist"></a>CLion调试cmd&#x2F;dist</h2><p>如果要用CLion直接打开cmd&#x2F;dist文件夹，会提示创建cmake项目，但是我们想直接使用调试Makefile项目。
-那么我们在cmd&#x2F;dist目录下创建一个Makefile文件，内容如下</p>
-<figure class="highlight makefile"><table><tr><td class="code"><pre><code class="hljs makefile">CFLAGS = -mmacosx-version-min=10.6 -g -Wall -Werror &#x27;-DGOROOT_FINAL=<span class="hljs-string">&quot;/Users/ym/work/go1.4&quot;</span>&#x27;<br>CC = gcc<br><br>SRC=arm.c buf.c build.c buildgc.c buildgo.c buildruntime.c main.c plan9.c unix.c windows.c<br>INCLUDE_DIR = ./<br><br><br>TARGET = dist<br><br><span class="hljs-section">all: <span class="hljs-variable">$(TARGET)</span></span><br><br><span class="hljs-variable">$(TARGET)</span>:<br>	<span class="hljs-variable">$(CC)</span> <span class="hljs-variable">$(CFLAGS)</span> -I<span class="hljs-variable">$(INCLUDE_DIR)</span> <span class="hljs-variable">$(SRC)</span> -o <span class="hljs-variable">$@</span><br><br><br><span class="hljs-section">clean:</span><br>	rm <span class="hljs-variable">$(TARGET)</span><br><br><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: all clean</span><br></code></pre></td></tr></table></figure>
-
-<p>其实就是根据make.bash打印的gcc编译命令改写的。需要注意的是要增加<code>-g</code>选项，这样才能调试。</p>
-<p>然后参考<a href="https://www.jetbrains.com/help/clion/run-debug-configuration-makefile-application.html">Run&#x2F;Debug Configuration: Makefile Application</a></p>
-<p>配置几个参数，核心要指定的就是Target和Executable文件 
-<img src="/images/clion-debug-makefile-config.png" alt="clion-debug-makefile-config"></p>
-<p>最后先clean，然后断点调试<code>unix.c</code>文件中的main入口函数。</p>
-<p><img src="/images/clion-makefile-debug-show.png" alt="clion-makefile-debug-show"></p>
-<p>成功了。</p>
-]]></content>
-      <tags>
-        <tag>debug</tag>
-        <tag>clion</tag>
-        <tag>makefile</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[leetcode 390]Elimination Game原创解法</title>
     <url>/2022/02/06/2022-2-6-leetcode-390/</url>
     <content><![CDATA[<h2 id="题目概述"><a href="#题目概述" class="headerlink" title="题目概述"></a>题目概述</h2><p><code>leetcode</code>现在支持<code>Go</code>了，这次用<code>Go</code>写一个算法题——消除游戏。</p>
@@ -2830,6 +2652,184 @@ Given the integer n, return the last number that remains in arr.
         <tag>leetcode</tag>
         <tag>算法</tag>
         <tag>go</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CLion2021调试Makefile项目</title>
+    <url>/2021/07/15/2021-7-15-clion-makefile-debug/</url>
+    <content><![CDATA[<h2 id="CLion介绍"><a href="#CLion介绍" class="headerlink" title="CLion介绍"></a>CLion介绍</h2><p><code>CLion</code>是一款针对C&#x2F;C++项目的跨平台的集成IDE（A cross-platform IDE for C and C++）。2020版本以前，只支持cmake项目，
+但是2021版本对Makefile项目的支持度增加了。我们看看如何对Makefile项目进行断点调试。</p>
+<span id="more"></span>
+
+<p>我们用一个实际的项目作为例子。</p>
+<h2 id="Go1-4源码"><a href="#Go1-4源码" class="headerlink" title="Go1.4源码"></a>Go1.4源码</h2><p>Go语言项目从源码编译有几种方式，其中一种方式是基于<a href="https://golang.org/doc/install/source#bootstrapFromSource">Bootstrap toolchain from C source code</a>,
+也就是说，首先编译Go 1.4版本，然后用编译出来的<code>Go</code>，编译最新的Go版本。(<strong>UPDATE: Mac12.1 Monterey系统上不支持</strong>)</p>
+<p>那么我下载这个Go1.4版本，<a href="https://dl.google.com/go/go1.4-bootstrap-20171003.tar.gz">go1.4-bootstrap-20171003.tar.gz</a>，
+解压到某个路径下。</p>
+<figure class="highlight stata"><table><tr><td class="code"><pre><code class="hljs stata">~/work/go1.4/ <span class="hljs-keyword">ls</span>          <br>AUTHORS      LICENSE      README       api          doc          <span class="hljs-keyword">include</span>      misc         robots.txt   <span class="hljs-keyword">test</span><br>CONTRIBUTORS PATENTS      <span class="hljs-keyword">VERSION</span>      bin          favicon.ico  lib          pkg          src<br></code></pre></td></tr></table></figure>
+
+<p>进入src路径下，运行make.bash文件，则开始编译。（当然需要build相关的工具）。为了看清楚bash脚本执行的内容，我们修改make.bash的
+第一行改为 <code>set -ex</code>, 这样会打印详细的执行内容如下，</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">g1.4/src/ $  ./make.bash <br>+ <span class="hljs-string">&#x27;[&#x27;</span> <span class="hljs-string">&#x27;!&#x27;</span> -f run.bash <span class="hljs-string">&#x27;]&#x27;</span><br>+ <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;<span class="hljs-subst">$(uname)</span>&quot;</span> <span class="hljs-keyword">in</span><br>++ <span class="hljs-built_in">uname</span><br>+ ld --version<br>+ grep <span class="hljs-string">&#x27;gold.* 2\.20&#x27;</span><br>+ <span class="hljs-keyword">for</span> se_mount <span class="hljs-keyword">in</span> /selinux /sys/fs/selinux<br>+ <span class="hljs-string">&#x27;[&#x27;</span> -d /selinux -a -f /selinux/booleans/allow_execstack -a -x /usr/sbin/selinuxenabled <span class="hljs-string">&#x27;]&#x27;</span><br>+ <span class="hljs-keyword">for</span> se_mount <span class="hljs-keyword">in</span> /selinux /sys/fs/selinux<br>+ <span class="hljs-string">&#x27;[&#x27;</span> -d /sys/fs/selinux -a -f /sys/fs/selinux/booleans/allow_execstack -a -x /usr/sbin/selinuxenabled <span class="hljs-string">&#x27;]&#x27;</span><br>++ <span class="hljs-built_in">uname</span> -s<br>+ <span class="hljs-string">&#x27;[&#x27;</span> Darwin == GNU/kFreeBSD <span class="hljs-string">&#x27;]&#x27;</span><br>+ <span class="hljs-built_in">rm</span> -f ./runtime/runtime_defs.go<br>+ <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;# Building C bootstrap tool.&#x27;</span><br><span class="hljs-comment"># Building C bootstrap tool.</span><br>+ <span class="hljs-built_in">echo</span> cmd/dist<br>cmd/dist<br>++ <span class="hljs-built_in">cd</span> ..<br>++ <span class="hljs-built_in">pwd</span><br>+ <span class="hljs-built_in">export</span> GOROOT=/Users/ym/work/go1.4<br>+ GOROOT=/Users/ym/work/go1.4<br>+ GOROOT_FINAL=/Users/ym/work/go1.4<br>+ DEFGOROOT=<span class="hljs-string">&#x27;-DGOROOT_FINAL=&quot;/Users/ym/work/go1.4&quot;&#x27;</span><br>+ mflag=<br>+ <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;<span class="hljs-variable">$GOHOSTARCH</span>&quot;</span> <span class="hljs-keyword">in</span><br>++ <span class="hljs-built_in">uname</span><br>+ <span class="hljs-string">&#x27;[&#x27;</span> Darwin == Darwin <span class="hljs-string">&#x27;]&#x27;</span><br>+ mflag=<span class="hljs-string">&#x27; -mmacosx-version-min=10.6&#x27;</span><br>++ <span class="hljs-built_in">type</span> -t gcc<br>++ <span class="hljs-built_in">type</span> -t clang<br>+ <span class="hljs-string">&#x27;[&#x27;</span> -z <span class="hljs-string">&#x27;&#x27;</span> -a -z file -a -n file <span class="hljs-string">&#x27;]&#x27;</span><br>+ gcc -mmacosx-version-min=10.6 -O2 -Wall -Werror -o cmd/dist/dist -Icmd/dist <span class="hljs-string">&#x27;-DGOROOT_FINAL=&quot;/Users/ym/work/go1.4&quot;&#x27;</span> cmd/dist/arm.c cmd/dist/buf.c cmd/dist/build.c cmd/dist/buildgc.c cmd/dist/buildgo.c cmd/dist/buildruntime.c cmd/dist/main.c cmd/dist/plan9.c cmd/dist/unix.c cmd/dist/windows.c<br>++ ./cmd/dist/dist <span class="hljs-built_in">env</span> -p<br>+ <span class="hljs-built_in">eval</span> <span class="hljs-string">&#x27;CC=&quot;clang&quot;&#x27;</span> <span class="hljs-string">&#x27;CC_FOR_TARGET=&quot;clang&quot;&#x27;</span> <span class="hljs-string">&#x27;GOROOT=&quot;/Users/ym/work/go1.4&quot;&#x27;</span> <span class="hljs-string">&#x27;GOBIN=&quot;/Users/ym/me/go/test/bin&quot;&#x27;</span> <span class="hljs-string">&#x27;GOARCH=&quot;amd64&quot;&#x27;</span> <span class="hljs-string">&#x27;GOOS=&quot;darwin&quot;&#x27;</span> <span class="hljs-string">&#x27;GOHOSTARCH=&quot;amd64&quot;&#x27;</span> <span class="hljs-string">&#x27;GOHOSTOS=&quot;darwin&quot;&#x27;</span> <span class="hljs-string">&#x27;GOTOOLDIR=&quot;/Users/ym/work/go1.4/pkg/tool/darwin_amd64&quot;&#x27;</span> <span class="hljs-string">&#x27;GOCHAR=&quot;6&quot;&#x27;</span> <span class="hljs-string">&#x27;PATH=&quot;/Users/ym/me/go/test/bin:/usr/local/opt/openssl@1.1/bin:/usr/local/opt/postgresql@12/bin:/Users/ym/work/go1.4/bin:/usr/local/Homebrew/bin:/usr/local/sbin:/usr/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/usr/local/share/dotnet:~/.dotnet/tools:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/ym/mybin/apache-maven-3.6.0/bin:/Users/ym/me/go/test/bin:/Users/ym/.rvm/bin:/Users/ym/mybin/spark-2.4.3-bin-hadoop2.7/bin/&quot;&#x27;</span><br>++ CC=clang<br>++ CC_FOR_TARGET=clang<br>++ GOROOT=/Users/ym/work/go1.4<br>++ GOBIN=/Users/ym/me/go/test/bin<br>++ GOARCH=amd64<br>++ GOOS=darwin<br>++ GOHOSTARCH=amd64<br>++ GOHOSTOS=darwin<br>++ GOTOOLDIR=/Users/ym/work/go1.4/pkg/tool/darwin_amd64<br>++ GOCHAR=6<br>++ PATH=<span class="hljs-string">&#x27;/Users/ym/me/go/test/bin:/usr/local/opt/openssl@1.1/bin:/usr/local/opt/postgresql@12/bin:/Users/ym/work/go1.4/bin:/usr/local/Homebrew/bin:/usr/local/sbin:/usr/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/usr/local/share/dotnet:~/.dotnet/tools:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/ym/mybin/apache-maven-3.6.0/bin:/Users/ym/me/go/test/bin:/Users/ym/.rvm/bin:/Users/ym/mybin/spark-2.4.3-bin-hadoop2.7/bin/&#x27;</span><br>+ <span class="hljs-string">&#x27;[&#x27;</span> <span class="hljs-string">&#x27;&#x27;</span> = <span class="hljs-literal">true</span> <span class="hljs-string">&#x27;]&#x27;</span><br>+ <span class="hljs-built_in">echo</span><br><br>+ <span class="hljs-string">&#x27;[&#x27;</span> <span class="hljs-string">&#x27;&#x27;</span> = --dist-tool <span class="hljs-string">&#x27;]&#x27;</span><br>+ <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;# Building compilers and Go bootstrap tool for host, darwin/amd64.&#x27;</span><br><span class="hljs-comment"># Building compilers and Go bootstrap tool for host, darwin/amd64.</span><br>+ buildall=-a<br>+ <span class="hljs-string">&#x27;[&#x27;</span> <span class="hljs-string">&#x27;&#x27;</span> = --no-clean <span class="hljs-string">&#x27;]&#x27;</span><br>+ ./cmd/dist/dist bootstrap -a -v<br>lib9<br>libbio<br>liblink<br>cmd/cc<br>cmd/gc<br>cmd/6l<br>/Users/ym/work/go1.4/src/cmd/6l/../ld/dwarf.c:1479:15: warning: implicit conversion from <span class="hljs-string">&#x27;int&#x27;</span> to <span class="hljs-string">&#x27;char&#x27;</span> changes value from 156 to -100 [-Wconstant-conversion]<br>/Users/ym/work/go1.4/src/cmd/6l/../ld/dwarf.c:1763:21: warning: implicit conversion from <span class="hljs-string">&#x27;int&#x27;</span> to <span class="hljs-string">&#x27;char&#x27;</span> changes value from 144 to -112 [-Wconstant-conversion]<br>/Users/ym/work/go1.4/src/cmd/6l/../ld/lib.h:168:13: note: expanded from macro <span class="hljs-string">&#x27;cput&#x27;</span><br>cmd/6a<br>cmd/6c<br>/Users/ym/work/go1.4/src/cmd/6c/txt.c:995:28: warning: shifting a negative signed value is undefined [-Wshift-negative-value]<br>/Users/ym/work/go1.4/src/cmd/6c/txt.c:1045:28: warning: shifting a negative signed value is undefined [-Wshift-negative-value]<br>cmd/6g<br>/Users/ym/work/go1.4/src/cmd/6g/peep.c:771:13: warning: converting the enum constant to a boolean [-Wint-in-bool-context]<br>runtime<br>errors<br><span class="hljs-built_in">sync</span>/atomic<br><span class="hljs-built_in">sync</span><br>io<br>unicode<br>unicode/utf8<br>unicode/utf16<br>bytes<br>math<br>strings<br>strconv<br>bufio<br><span class="hljs-built_in">sort</span><br>container/heap<br>encoding/base64<br>syscall<br>time<br>os<br>reflect<br><span class="hljs-built_in">fmt</span><br>encoding<br>encoding/json<br>flag<br>path/filepath<br>path<br>io/ioutil<br><span class="hljs-built_in">log</span><br>regexp/syntax<br>regexp<br>go/token<br>go/scanner<br>go/ast<br>go/parser<br>os/exec<br>os/signal<br>net/url<br>text/template/parse<br>text/template<br>go/doc<br>go/build<br>cmd/go<br>+ <span class="hljs-built_in">cp</span> cmd/dist/dist /Users/ym/work/go1.4/pkg/tool/darwin_amd64/dist<br>+ /Users/ym/work/go1.4/pkg/tool/darwin_amd64/go_bootstrap clean -i std<br>+ <span class="hljs-built_in">echo</span><br><br>+ <span class="hljs-string">&#x27;[&#x27;</span> amd64 <span class="hljs-string">&#x27;!=&#x27;</span> amd64 -o darwin <span class="hljs-string">&#x27;!=&#x27;</span> darwin <span class="hljs-string">&#x27;]&#x27;</span><br>+ <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;# Building packages and commands for darwin/amd64.&#x27;</span><br><span class="hljs-comment"># Building packages and commands for darwin/amd64.</span><br>+ CC=clang<br>+ /Users/ym/work/go1.4/pkg/tool/darwin_amd64/go_bootstrap install -ccflags <span class="hljs-string">&#x27;&#x27;</span> -gcflags <span class="hljs-string">&#x27;&#x27;</span> -ldflags <span class="hljs-string">&#x27;&#x27;</span> -v std<br>runtime<br>errors<br><span class="hljs-built_in">sync</span>/atomic<br>unicode<br>unicode/utf8<br>math<br><span class="hljs-built_in">sort</span><br>encoding<br>unicode/utf16<br>container/list<br><span class="hljs-built_in">sync</span><br>crypto/subtle<br>container/ring<br>image/color<br>runtime/race<br>container/heap<br>io<br>syscall<br>image/color/palette<br><span class="hljs-built_in">hash</span><br>crypto/cipher<br><span class="hljs-built_in">hash</span>/crc32<br>crypto/hmac<br><span class="hljs-built_in">hash</span>/adler32<br><span class="hljs-built_in">hash</span>/crc64<br><span class="hljs-built_in">hash</span>/fnv<br>bytes<br>strings<br>bufio<br>text/tabwriter<br>path<br>html<br>compress/bzip2<br>time<br>strconv<br>math/rand<br>math/cmplx<br>os<br>reflect<br>regexp/syntax<br>crypto<br>encoding/base64<br>net/url<br>crypto/aes<br>crypto/rc4<br>crypto/md5<br>crypto/sha1<br>crypto/sha256<br>crypto/sha512<br>encoding/pem<br>encoding/ascii85<br>encoding/base32<br>image<br>path/filepath<br>net<br>os/signal<br>io/ioutil<br>os/exec<br>regexp<br>image/draw<br>image/jpeg<br><span class="hljs-built_in">fmt</span><br>encoding/binary<br>cmd/pprof/internal/svg<br>crypto/des<br>index/suffixarray<br>cmd/internal/goobj<br>cmd/internal/rsc.io/arm/armasm<br>cmd/internal/rsc.io/x86/x86asm<br>debug/dwarf<br>debug/gosym<br>debug/plan9obj<br>flag<br><span class="hljs-built_in">log</span><br>go/token<br>encoding/json<br>encoding/xml<br>text/template/parse<br>go/scanner<br>debug/elf<br>debug/macho<br>debug/pe<br>go/ast<br>compress/flate<br>text/template<br>math/big<br>encoding/hex<br>mime<br>net/textproto<br>cmd/internal/objfile<br>net/http/internal<br>compress/gzip<br>runtime/pprof<br>cmd/pack<br>cmd/pprof/internal/profile<br>cmd/pprof/internal/tempfile<br>archive/tar<br>archive/zip<br>cmd/addr2line<br>cmd/nm<br>crypto/elliptic<br>encoding/asn1<br>crypto/rand<br>go/parser<br>go/printer<br>go/doc<br>crypto/ecdsa<br>crypto/rsa<br>crypto/dsa<br>crypto/x509/pkix<br>mime/multipart<br>cmd/objdump<br>cmd/pprof/internal/plugin<br>crypto/x509<br>html/template<br>go/build<br>cmd/cgo<br>go/format<br>cmd/fix<br>cmd/gofmt<br>crypto/tls<br>cmd/pprof/internal/symbolizer<br>cmd/pprof/internal/symbolz<br>cmd/pprof/internal/report<br>cmd/yacc<br>compress/lzw<br>compress/zlib<br>database/sql/driver<br>database/sql<br>encoding/csv<br>encoding/gob<br>cmd/pprof/internal/commands<br>image/gif<br>cmd/pprof/internal/driver<br>image/png<br><span class="hljs-built_in">log</span>/syslog<br>net/mail<br>os/user<br>runtime/debug<br>testing<br>testing/iotest<br>net/http<br>net/smtp<br>testing/quick<br>text/scanner<br>cmd/go<br>cmd/pprof/internal/fetch<br>expvar<br>net/http/cgi<br>net/http/cookiejar<br>net/http/httptest<br>net/http/httputil<br>net/http/pprof<br>cmd/pprof<br>net/rpc<br>net/http/fcgi<br>net/rpc/jsonrpc<br>+ <span class="hljs-built_in">echo</span><br><br>+ <span class="hljs-built_in">rm</span> -f /Users/ym/work/go1.4/pkg/tool/darwin_amd64/go_bootstrap<br>+ <span class="hljs-string">&#x27;[&#x27;</span> <span class="hljs-string">&#x27;&#x27;</span> <span class="hljs-string">&#x27;!=&#x27;</span> --no-banner <span class="hljs-string">&#x27;]&#x27;</span><br>+ /Users/ym/work/go1.4/pkg/tool/darwin_amd64/dist banner<br><br>---<br>Installed Go <span class="hljs-keyword">for</span> darwin/amd64 <span class="hljs-keyword">in</span> /Users/ym/work/go1.4<br>Installed commands <span class="hljs-keyword">in</span> /Users/ym/me/go/test/bin<br></code></pre></td></tr></table></figure>
+
+<p>我们看到15-33行, 首先编译了<code>cmd/dist</code>文件夹下的c代码，生成了一个dist可执行文件，并调用了 <code>/cmd/dist/dist env -p</code></p>
+<pre>
+<b># Building C bootstrap tool.</b>
++ echo cmd/dist
+cmd/dist
+++ cd ..
+++ pwd
++ export GOROOT=/Users/ym/work/go1.4
++ GOROOT=/Users/ym/work/go1.4
++ GOROOT_FINAL=/Users/ym/work/go1.4
++ DEFGOROOT='-DGOROOT_FINAL="/Users/ym/work/go1.4"'
++ mflag=
++ case "$GOHOSTARCH" in
+++ uname
++ '[' Darwin == Darwin ']'
++ mflag=' -mmacosx-version-min=10.6'
+++ type -t gcc
+++ type -t clang
++ '[' -z '' -a -z file -a -n file ']'
+<b>+ gcc -mmacosx-version-min=10.6 -O2 -Wall -Werror -o cmd/dist/dist -Icmd/dist '-DGOROOT_FINAL="/Users/ym/work/go1.4"' cmd/dist/arm.c cmd/dist/buf.c cmd/dist/build.c cmd/dist/buildgc.c cmd/dist/buildgo.c cmd/dist/buildruntime.c cmd/dist/main.c cmd/dist/plan9.c cmd/dist/unix.c cmd/dist/windows.c 
+++ ./cmd/dist/dist env -p</b>
+</pre>
+
+<p>那么我们来看看怎么在CLion中调试<code>/cmd/dist/dist env -p</code></p>
+<h2 id="CLion调试cmd-x2F-dist"><a href="#CLion调试cmd-x2F-dist" class="headerlink" title="CLion调试cmd&#x2F;dist"></a>CLion调试cmd&#x2F;dist</h2><p>如果要用CLion直接打开cmd&#x2F;dist文件夹，会提示创建cmake项目，但是我们想直接使用调试Makefile项目。
+那么我们在cmd&#x2F;dist目录下创建一个Makefile文件，内容如下</p>
+<figure class="highlight makefile"><table><tr><td class="code"><pre><code class="hljs makefile">CFLAGS = -mmacosx-version-min=10.6 -g -Wall -Werror &#x27;-DGOROOT_FINAL=<span class="hljs-string">&quot;/Users/ym/work/go1.4&quot;</span>&#x27;<br>CC = gcc<br><br>SRC=arm.c buf.c build.c buildgc.c buildgo.c buildruntime.c main.c plan9.c unix.c windows.c<br>INCLUDE_DIR = ./<br><br><br>TARGET = dist<br><br><span class="hljs-section">all: <span class="hljs-variable">$(TARGET)</span></span><br><br><span class="hljs-variable">$(TARGET)</span>:<br>	<span class="hljs-variable">$(CC)</span> <span class="hljs-variable">$(CFLAGS)</span> -I<span class="hljs-variable">$(INCLUDE_DIR)</span> <span class="hljs-variable">$(SRC)</span> -o <span class="hljs-variable">$@</span><br><br><br><span class="hljs-section">clean:</span><br>	rm <span class="hljs-variable">$(TARGET)</span><br><br><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: all clean</span><br></code></pre></td></tr></table></figure>
+
+<p>其实就是根据make.bash打印的gcc编译命令改写的。需要注意的是要增加<code>-g</code>选项，这样才能调试。</p>
+<p>然后参考<a href="https://www.jetbrains.com/help/clion/run-debug-configuration-makefile-application.html">Run&#x2F;Debug Configuration: Makefile Application</a></p>
+<p>配置几个参数，核心要指定的就是Target和Executable文件 
+<img src="/images/clion-debug-makefile-config.png" alt="clion-debug-makefile-config"></p>
+<p>最后先clean，然后断点调试<code>unix.c</code>文件中的main入口函数。</p>
+<p><img src="/images/clion-makefile-debug-show.png" alt="clion-makefile-debug-show"></p>
+<p>成功了。</p>
+]]></content>
+      <tags>
+        <tag>debug</tag>
+        <tag>clion</tag>
+        <tag>makefile</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ASN.1语言规范介绍</title>
+    <url>/2020/11/08/asn-1/</url>
+    <content><![CDATA[<h2 id="ASN-1介绍"><a href="#ASN-1介绍" class="headerlink" title="ASN.1介绍"></a>ASN.1介绍</h2><p><code>X.509</code>证书常用的编码方式有DER格式和PEM格式。证书是一个对象的话，那么需要一个描述这个对象的语言。ASN.1就是这样的一个语言规范。而DER是ASN.1编码的一种方式。如果要解析DER编码文件，就需要了解ASN.1语言规范的编解码。</p>
+<span id="more"></span>
+
+<p>ASN.1（Abstract Syntax Notation One）是OSI（Open Source Interconnection）使用的描述对象的语言规范。OSI是X.200中定义的。而ASN.1是X.208中描述的。</p>
+<p>下面是一个ASN.1的例子</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs asn.1">Foo DEFINITIONS ::= BEGIN<br><br>    Question ::= SEQUENCE &#123;<br>        id        INTEGER,<br>        question  IA5String<br>    &#125;<br><br>    Answer ::= SEQUENCE &#123;<br>        id        INTEGER,<br>        answer    BOOLEAN<br>    &#125;<br><br>END<br></code></pre></td></tr></table></figure>
+
+<h2 id="以一个证书分析ASN-1语法"><a href="#以一个证书分析ASN-1语法" class="headerlink" title="以一个证书分析ASN.1语法"></a>以一个证书分析ASN.1语法</h2><p>以下是一个<code>PEM</code>格式的证书。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">-----BEGIN CERTIFICATE-----<br><br>MIIFwTCCA6mgAwIBAgIUNQk34EiXUjqgxnfhOZtv6zxIiekwDQYJKoZIhvcNAQEN<br><br>BQAwcDELMAkGA1UEBhMCQ04xEDAOBgNVBAgMB0JlaWppbmcxEDAOBgNVBAcMB0Jl<br><br>aWppbmcxEDAOBgNVBAoMB2V4YW1wbGUxETAPBgNVBAsMCFBlcnNvbmFsMRgwFgYD<br><br>VQQDDA9yZXBvLmVubmlvdC5uZXQwHhcNMjAwODExMDMwMzE0WhcNMzAwODA5MDMw<br><br>MzE0WjBwMQswCQYDVQQGEwJDTjEQMA4GA1UECAwHQmVpamluZzEQMA4GA1UEBwwH<br><br>QmVpamluZzEQMA4GA1UECgwHZXhhbXBsZTERMA8GA1UECwwIUGVyc29uYWwxGDAW<br><br>BgNVBAMMD3JlcG8uZW5uaW90Lm5ldDCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCC<br><br>AgoCggIBAN6xDFkixeboRBjaVLi1/IjCfHvGS2xGihWrx2dN9jXIZWQqU2Lw8rLy<br><br>yzrnzSEJDRcUFGaXpRagHTYJPhcr31Sa4OkCsoorwElagcOOPQXAc1A87vBk1+r/<br><br>3eQu+IPGjr+3DU/yqNNuaq0CZgDDww9ttbyTb8JxZweXdAMjK0D7LiNCkpvwM1l6<br><br>ylVl9o5+ACA34qb81IyVAsGFSHP/ukcFIaC79Zf/7p3Tjm4uRkAdtQYJGwA0Oafk<br><br>HbPaPLOHPJdi+3+a/OmmBJamxyWXF9pJ/BRrxFrqtssnAhIyPsNqKsPDCknJOzwS<br><br>6vdTVsuMkLMUbc0OK1dSIulXxZaea+jXcZMYWUA4ZDNdo1SrMg3Vvj/CrLWgm7b0<br><br>T1Wb8tXsr2NUNoacMzDgN41Kz7Ht57LQURaFf9rzjqACHVYfj/Ad8/PmgA6V3Dc3<br><br>gvMvqOoyp2iic1xQ2GcIItHvqD4YwBSdtyxJc1N5llNBF7A6+JWVc0kJpOQCDKVb<br><br>U+0Py6ugnbb/pQ89/4zXXWyuTQO0BGULoHCo0++eF+pLcW6LstQNSUYxYRr4tmLr<br><br>sbUJFPoFcHXdQ9F8I2rBXdKCePHDBPQ2HexhANUWnRQdjtnYG9UQRQaDVKiCXUMj<br><br>9f6ixjN9DAz+SqndPksE0Ux0cgfkTEfi9N+5c7rCxzZYgH8UlFiDAgMBAAGjUzBR<br><br>MB0GA1UdDgQWBBRaOW9HUg7eACHGDuPMcc/k7nPmbjAfBgNVHSMEGDAWgBRaOW9H<br><br>Ug7eACHGDuPMcc/k7nPmbjAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBDQUA<br><br>A4ICAQCu1kx2rnRp9oiPw3Y2WuJ2hnzkMTUGPv4rpX0hgVSLNAEiDEvujz/pnHaJ<br><br>83+JZuMHebAQnWHXVaUdmzn7Yw9WsZoXu15st0WMOAC8cUZ4uD0t1osPJTSuc3hA<br><br>F0ZG3tHzuJBpX4T6pVrZ3jJvuY5vGJGCMwRdS4V7e6wQmLjzqf3oq05y9JlvKBYX<br><br>JdU69BynZ1vEtUuC91WJTTvlqLtbAS6LTSmnSYWscNpP4KOTXNfdf8HlKFRKGR2e<br><br>cVyAXu9bA89HeEeG8ztceyD2GO+S7xBNuZRV11Oi2xO59rJJAzzrIO1W8oda5lac<br><br>JVRI+n8w+hLG+bbq+24s9tVB0MBZj3/honpYRLOYMAT507YlOvDPjreudYHWJSLG<br><br>cTjRH0dtIgqbi8uTH3iJ2yWTq92OfGSSERofVdSOPrlzH5GpkpeIoRcYlP1KLnIy<br><br>wxlI4E7W50PX5rMKMIp4/p6ALgA7psuC7ZTzk3f7R/tmHBSNb5JiSbp7MjI+iVRE<br><br>zZX73VW1nLf4YaSS+MYNudAQl0ZoUvK3f0QEj4NwzRjDkdsUKI+X7Q2p03foBMCU<br><br>4ijSDMvjyn3JEvT878Fxh7KB4IbZKh3kj9RetGaGEljjgv/Pg3h2gu+GNPgk30xJ<br><br>TfK5QkRaYenm9aWKpHHf4hpUQlMKawxdS1k+3gVGwWu8YM/a0A==<br><br>-----END CERTIFICATE-----<br></code></pre></td></tr></table></figure>
+
+<p>对这个证书进行解析的方法是用一个在线的工具 <a href="http://lapo.it/asn1js/">http://lapo.it/asn1js/</a>。</p>
+<p>可以把上面base64编码的证书复制到网站解码之后，可以看到类似如下的结果。</p>
+<p><img src="/images/2020-11-09.jpg" alt="cert-parse"></p>
+<p>ASN.1的编码基本上遵循的是<code>type+length+value</code>的方式。</p>
+<p>ASN.1的数据tag大概有以下几种，</p>
+<table>
+<thead>
+<tr>
+<th>type</th>
+<th>tagNumber</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Boolean</td>
+<td>0x01</td>
+</tr>
+<tr>
+<td>Integer</td>
+<td>0x02</td>
+</tr>
+<tr>
+<td>BitString</td>
+<td>0x03</td>
+</tr>
+<tr>
+<td>OctetString</td>
+<td>0x04</td>
+</tr>
+<tr>
+<td>Null</td>
+<td>0x05</td>
+</tr>
+<tr>
+<td>ObjectIdentifier</td>
+<td>0x06</td>
+</tr>
+<tr>
+<td>Enumerated</td>
+<td>0x0a</td>
+</tr>
+<tr>
+<td>UTF8String</td>
+<td>0x0c</td>
+</tr>
+<tr>
+<td>Sequence</td>
+<td>0x10</td>
+</tr>
+<tr>
+<td>Set</td>
+<td>0x11</td>
+</tr>
+<tr>
+<td>PrintableString</td>
+<td>0x13</td>
+</tr>
+<tr>
+<td>IA5String</td>
+<td>0x16</td>
+</tr>
+<tr>
+<td>UTCTime</td>
+<td>0x17</td>
+</tr>
+<tr>
+<td>UnicodeString</td>
+<td>0x1e</td>
+</tr>
+</tbody></table>
+<p>那么具体看一下以上ca证书的前四个字节是什么含义。</p>
+<figure class="highlight basic"><table><tr><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">30 </span><span class="hljs-number">82</span> <span class="hljs-number">05</span> C1<br></code></pre></td></tr></table></figure>
+
+<ol>
+<li><p>首先看是什么type。第一个字节<code>0x30</code>描述了type信息。tagClass &#x3D; 0x30 &gt;&gt; 6 &#x3D; 0 ，表示<code>universal isConstructed = 0x30 &amp; 0x20 = True</code>，对于<code>sequence</code>基本都是true,
+<code>tagNumber = 0x30 &amp; 0x1F = 0x10</code> ，因此对应的<code>Sequence</code></p>
+</li>
+<li><p>接下来计算长度。
+第二个字节为<code>0x82</code>,
+分两种情况，判断表达式，<code>byte &amp; 0x7F == byte</code> 如果为true就是小于127。否则就是大于127。</p>
+</li>
+</ol>
+<ul>
+<li>长度是小于127(short form)
+那么该该字节就是length，之后就是value的内容。</li>
+<li>长度大于127(long form)，
+byte &amp; 0x7F 表示length的编码长度。</li>
+</ul>
+<p>对于以上的例子，<code>0x82</code>是long form
+因为 </p>
+<figure class="highlight hy"><table><tr><td class="code"><pre><code class="hljs hy">( <span class="hljs-number">0</span>x82 == (<span class="hljs-number">0</span>x82 &amp; <span class="hljs-number">0</span>x7F) = <span class="hljs-literal">False</span><br></code></pre></td></tr></table></figure>
+<p>那么表示长度的字节数量是 </p>
+<figure class="highlight apache"><table><tr><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">0x82</span> &amp; <span class="hljs-number">0</span>x7F = <span class="hljs-number">0</span>x2<br></code></pre></td></tr></table></figure>
+<p>因此’0x82’之后的两个字节’0x05’和’0xC1’组成长度。</p>
+<figure class="highlight ini"><table><tr><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">0x05C1</span> = <span class="hljs-number">1473</span> <br></code></pre></td></tr></table></figure>
+<p>两个字节表示value的长度1473。</p>
+<p>因此，</p>
+<figure class="highlight basic"><table><tr><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">30 </span><span class="hljs-number">82</span> <span class="hljs-number">05</span> C1<br></code></pre></td></tr></table></figure>
+<p>这个头四个字节的含义是，这个是<code>Sequence</code>类型，
+长度是1473，这四节之后的1473个字节就是<code>Sequence</code>类型的值。</p>
+]]></content>
+      <tags>
+        <tag>X.509</tag>
+        <tag>ASN.1</tag>
       </tags>
   </entry>
   <entry>
