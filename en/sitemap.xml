@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://threelambda.com/about/index.html</loc>
+    <loc>https://threelambda.com/en/about/index.html</loc>
     
     <lastmod>2024-07-22</lastmod>
     
@@ -11,7 +11,7 @@
   </url>
   
   <url>
-    <loc>https://threelambda.com/2024/07/18/2024-7-18-slang-ast-hier-tree/</loc>
+    <loc>https://threelambda.com/en/2024/07/18/2024-7-18-slang-ast-hier-tree/</loc>
     
     <lastmod>2024-07-22</lastmod>
     
@@ -20,7 +20,7 @@
   </url>
   
   <url>
-    <loc>https://threelambda.com/tags/index.html</loc>
+    <loc>https://threelambda.com/en/tags/index.html</loc>
     
     <lastmod>2024-07-22</lastmod>
     
@@ -30,7 +30,7 @@
   
 
   <url>
-    <loc>https://threelambda.com/</loc>
+    <loc>https://threelambda.com/en</loc>
     <lastmod>2024-07-22</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -38,21 +38,21 @@
 
   
   <url>
-    <loc>https://threelambda.com/tags/c/</loc>
+    <loc>https://threelambda.com/en/tags/c/</loc>
     <lastmod>2024-07-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://threelambda.com/tags/AST/</loc>
+    <loc>https://threelambda.com/en/tags/AST/</loc>
     <lastmod>2024-07-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://threelambda.com/tags/tree/</loc>
+    <loc>https://threelambda.com/en/tags/tree/</loc>
     <lastmod>2024-07-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
