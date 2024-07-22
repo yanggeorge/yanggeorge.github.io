@@ -131,9 +131,9 @@
       
       <tag>算法</tag>
       
-      <tag>rust</tag>
-      
       <tag>ChatGPT</tag>
+      
+      <tag>rust</tag>
       
     </tags>
     
@@ -321,11 +321,11 @@
     
     <tags>
       
-      <tag>docker</tag>
-      
       <tag>k8s</tag>
       
       <tag>ingress</tag>
+      
+      <tag>docker</tag>
       
       <tag>mac</tag>
       
@@ -346,11 +346,11 @@
     
     <tags>
       
+      <tag>docker</tag>
+      
       <tag>kafka</tag>
       
       <tag>container</tag>
-      
-      <tag>docker</tag>
       
     </tags>
     
@@ -551,9 +551,9 @@
     
     <tags>
       
-      <tag>clojure</tag>
-      
       <tag>lisp</tag>
+      
+      <tag>clojure</tag>
       
       <tag>macro</tag>
       
@@ -574,9 +574,9 @@
     
     <tags>
       
-      <tag>clojure</tag>
-      
       <tag>lisp</tag>
+      
+      <tag>clojure</tag>
       
       <tag>macro</tag>
       
@@ -666,9 +666,9 @@
     
     <tags>
       
-      <tag>java</tag>
-      
       <tag>algorithm</tag>
+      
+      <tag>java</tag>
       
       <tag>trie</tag>
       
