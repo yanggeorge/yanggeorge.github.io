@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://threelambda.com/tags/index.html</loc>
+    <loc>https://threelambda.com/about/index.html</loc>
     
     <lastmod>2024-07-22</lastmod>
     
@@ -11,7 +11,7 @@
   </url>
   
   <url>
-    <loc>https://threelambda.com/about/index.html</loc>
+    <loc>https://threelambda.com/tags/index.html</loc>
     
     <lastmod>2024-07-22</lastmod>
     
@@ -119,7 +119,7 @@
   </url>
   
   <url>
-    <loc>https://threelambda.com/2020/09/08/remote-debug-with-clion/</loc>
+    <loc>https://threelambda.com/2020/10/09/x509-ca/</loc>
     
     <lastmod>2024-07-22</lastmod>
     
@@ -128,7 +128,7 @@
   </url>
   
   <url>
-    <loc>https://threelambda.com/2020/10/09/x509-ca/</loc>
+    <loc>https://threelambda.com/2020/09/08/remote-debug-with-clion/</loc>
     
     <lastmod>2024-07-22</lastmod>
     
@@ -227,7 +227,7 @@
   </url>
   
   <url>
-    <loc>https://threelambda.com/2018/02/24/2018-2-24-robber-3/</loc>
+    <loc>https://threelambda.com/2018/08/18/2018-8-18-leetcode-341/</loc>
     
     <lastmod>2024-07-22</lastmod>
     
@@ -236,7 +236,7 @@
   </url>
   
   <url>
-    <loc>https://threelambda.com/2018/08/18/2018-8-18-leetcode-341/</loc>
+    <loc>https://threelambda.com/2018/02/24/2018-2-24-robber-3/</loc>
     
     <lastmod>2024-07-22</lastmod>
     
@@ -317,15 +317,6 @@
   </url>
   
   <url>
-    <loc>https://threelambda.com/2017/11/27/find-top-n/</loc>
-    
-    <lastmod>2024-07-22</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://threelambda.com/2017/03/12/2017-3-12-leetcode-329/</loc>
     
     <lastmod>2024-07-22</lastmod>
@@ -336,6 +327,15 @@
   
   <url>
     <loc>https://threelambda.com/2017/03/23/2017-3-23-compile-and-run-clojure/</loc>
+    
+    <lastmod>2024-07-22</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://threelambda.com/2017/11/27/find-top-n/</loc>
     
     <lastmod>2024-07-22</lastmod>
     
@@ -407,15 +407,6 @@
   </url>
   
   <url>
-    <loc>https://threelambda.com/2016/12/21/get-val-name-and-value/</loc>
-    
-    <lastmod>2024-07-22</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://threelambda.com/2016/12/22/pandas-read-csv/</loc>
     
     <lastmod>2024-07-22</lastmod>
@@ -425,7 +416,7 @@
   </url>
   
   <url>
-    <loc>https://threelambda.com/2016/12/19/leetcode-282/</loc>
+    <loc>https://threelambda.com/2016/12/21/get-val-name-and-value/</loc>
     
     <lastmod>2024-07-22</lastmod>
     
@@ -435,6 +426,15 @@
   
   <url>
     <loc>https://threelambda.com/2016/10/24/leetcode-224/</loc>
+    
+    <lastmod>2024-07-22</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://threelambda.com/2016/12/19/leetcode-282/</loc>
     
     <lastmod>2024-07-22</lastmod>
     
@@ -473,14 +473,14 @@
   </url>
   
   <url>
-    <loc>https://threelambda.com/tags/R/</loc>
+    <loc>https://threelambda.com/tags/%E6%8A%80%E5%B7%A7/</loc>
     <lastmod>2024-07-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://threelambda.com/tags/%E6%8A%80%E5%B7%A7/</loc>
+    <loc>https://threelambda.com/tags/R/</loc>
     <lastmod>2024-07-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -501,21 +501,7 @@
   </url>
   
   <url>
-    <loc>https://threelambda.com/tags/algorithm/</loc>
-    <lastmod>2024-07-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://threelambda.com/tags/java/</loc>
-    <lastmod>2024-07-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://threelambda.com/tags/trie/</loc>
     <lastmod>2024-07-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -530,6 +516,20 @@
   
   <url>
     <loc>https://threelambda.com/tags/jvm/</loc>
+    <lastmod>2024-07-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://threelambda.com/tags/algorithm/</loc>
+    <lastmod>2024-07-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://threelambda.com/tags/trie/</loc>
     <lastmod>2024-07-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -711,34 +711,6 @@
   </url>
   
   <url>
-    <loc>https://threelambda.com/tags/debug/</loc>
-    <lastmod>2024-07-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://threelambda.com/tags/CLion/</loc>
-    <lastmod>2024-07-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://threelambda.com/tags/gdb/</loc>
-    <lastmod>2024-07-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://threelambda.com/tags/remote/</loc>
-    <lastmod>2024-07-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://threelambda.com/tags/certificate/</loc>
     <lastmod>2024-07-22</lastmod>
     <changefreq>weekly</changefreq>
@@ -774,21 +746,35 @@
   </url>
   
   <url>
+    <loc>https://threelambda.com/tags/debug/</loc>
+    <lastmod>2024-07-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://threelambda.com/tags/CLion/</loc>
+    <lastmod>2024-07-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://threelambda.com/tags/gdb/</loc>
+    <lastmod>2024-07-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://threelambda.com/tags/remote/</loc>
+    <lastmod>2024-07-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://threelambda.com/tags/ASN-1/</loc>
-    <lastmod>2024-07-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://threelambda.com/tags/pod/</loc>
-    <lastmod>2024-07-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://threelambda.com/tags/coredns/</loc>
     <lastmod>2024-07-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -809,7 +795,21 @@
   </url>
   
   <url>
-    <loc>https://threelambda.com/tags/ChatGPT/</loc>
+    <loc>https://threelambda.com/tags/pod/</loc>
+    <lastmod>2024-07-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://threelambda.com/tags/coredns/</loc>
+    <lastmod>2024-07-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://threelambda.com/tags/go/</loc>
     <lastmod>2024-07-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -830,7 +830,7 @@
   </url>
   
   <url>
-    <loc>https://threelambda.com/tags/go/</loc>
+    <loc>https://threelambda.com/tags/ChatGPT/</loc>
     <lastmod>2024-07-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
