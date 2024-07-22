@@ -136,137 +136,6 @@ not unary) +, -, or * between the digits so they evaluate to the target value.
       </tags>
   </entry>
   <entry>
-    <title>R和Python里得到传入参数的变量名</title>
-    <url>/2016/12/21/get-val-name-and-value/</url>
-    <content><![CDATA[<h2 id="问题"><a href="#问题" class="headerlink" title=" 问题"></a><a name="hh0"></a> 问题</h2><p>同事写R程序的时候，问我能不能获取一个变量的<code>name</code>，
-我说这个好办啊，在R里可以这样写，用<code>quote()</code></p>
-<pre><code class="hljs">&gt; a &lt;- 1
-&gt; quote(a)
-a
-</code></pre>
-<p>不过我把问题想简单了，他实际需要的是要获得传入
-参数的<code>name</code>。例如定义一个函数<code>foo(c)</code>, 给它传入参数<code>a</code>，我能够在函数
-内部知道传入参数的名字<code>a</code>。</p>
-<span id="more"></span>
-
-<p>我说可以增加一个参数嘛。把参数的名字直接传入。</p>
-<pre><code class="hljs">&gt; foo(a,&quot;a&quot;)
-</code></pre>
-<p>但是我立刻意识到，这里存在重复，而写代码是提倡
-<code>do not repeat yourself</code>的。而且对R这种可以随意获取环境变量的高级语言。
-肯定有办法做到。</p>
-<h2 id="python可以做到"><a href="#python可以做到" class="headerlink" title=" python可以做到"></a><a name="hh1"></a> python可以做到</h2><p>但是我还是先看看Python吧，毕竟最近用Python
-多一些。Google关键字<code>python print variable name and value</code>,立刻可以获得
-答案。这段代码的思想也很直白，就是对输入的obj在环境变量（名称,对象）键值对
-中查找，返回名称。</p>
-<pre><code class="hljs">def namestr(obj, namespace=globals()):
-    return [name for name in namespace if namespace[name] is obj]
-</code></pre>
-<p>这样可以这样使用</p>
-<pre><code class="hljs">&gt;&gt;&gt; a = 1
-&gt;&gt;&gt; namestr(a)
-[&#39;a&#39;]
-</code></pre>
-<h2 id="R也可以"><a href="#R也可以" class="headerlink" title=" R也可以"></a><a name="hh2"></a> R也可以</h2><p>那么R肯定也有办法做到。Google关键字
-<code>r print variable name and value</code></p>
-<pre><code class="hljs">myfunc &lt;- function(v1) &#123;
-  deparse(substitute(v1))
-&#125;
-
-myfunc(foo)
-[1] &quot;foo&quot;
-</code></pre>
-<p>真是很不错啊。把结果告诉了同事，他也很高兴。
-但是<code>substitute()</code>和<code>deparse()</code>究竟是啥意思呢？在R里输入<code>?substitute</code>，可以
-看到解释。</p>
-<blockquote>
-<p>substitute returns the parse tree for
-the (unevaluated) expression expr, substituting any variables bound in env.</p>
-</blockquote>
-<p>够晦涩难懂的吧。不过仔细思考一下，也大概明白了。
-在R里，从语法角度来说，所有都是<code>expr</code>，（这跟其他语言都是<code>statement</code>不同）
-在R的函数里，可以对传入的未进行求值的<code>expr</code>进行操作。这点非常有趣。
-而<code>deparse()</code>，比较好理解了至少在我看来，与<code>as.character()</code>的作用是一样的。</p>
-]]></content>
-      <tags>
-        <tag>python</tag>
-        <tag>R</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用pandas.read_csv()读取csv文件</title>
-    <url>/2016/12/22/pandas-read-csv/</url>
-    <content><![CDATA[<h2 id="问题"><a href="#问题" class="headerlink" title=" 问题"></a><a name="hh0"></a> 问题</h2><p>以下Python代码实现对<code>Excel</code>转存的csv文件进行读取。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br>df = pd.read_csv(file_path + file_name + <span class="hljs-string">&quot;.csv&quot;</span>, encoding=<span class="hljs-string">&quot;gbk&quot;</span>)<br></code></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<p>把<code>csv</code>文件入库是一件脏活。表面上看<code>csv</code>文件是一个非常简单的
-逗号分隔符文件。但是其实不然。<code>Excel</code>转存的<code>csv</code>文件并不是标准的以逗号作为分隔符，
-并且对所有的项用双引号包裹。现在我就遇到了从<code>Oracle</code>导出的<code>csv</code>文件，以上的代码
-不起作用了。</p>
-<h2 id="解决问题"><a href="#解决问题" class="headerlink" title=" 解决问题"></a><a name="hh1"></a> 解决问题</h2><p>究竟怎么回事呢，找了一圈也没有发现使用<code>pandas.read_csv()</code>读取
-这种标准csv文件的方法。还是先把问题简化一下，看看<code>Python</code>的<code>csv模块</code>是如何读取的吧。
-简单的查找就可以找到答案。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> csv<br>csv.register_dialect(<br>    <span class="hljs-string">&#x27;mydialect&#x27;</span>,<br>    delimiter = <span class="hljs-string">&#x27;,&#x27;</span>,<br>    quotechar = <span class="hljs-string">&#x27;&quot;&#x27;</span>,<br>    doublequote = <span class="hljs-literal">True</span>,<br>    skipinitialspace = <span class="hljs-literal">True</span>,<br>    lineterminator = <span class="hljs-string">&#x27;\r\n&#x27;</span>,<br>    quoting = csv.QUOTE_MINIMAL)<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;\n Output from an iterable object created from the csv file&#x27;</span>)<br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;smallsample.csv&#x27;</span>, <span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> mycsvfile:<br>    thedata = csv.reader(mycsvfile, dialect=<span class="hljs-string">&#x27;mydialect&#x27;</span>)<br>    <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> thedata:<br>        <span class="hljs-built_in">print</span>(row[<span class="hljs-number">0</span>]+<span class="hljs-string">&quot;\t \t&quot;</span>+row[<span class="hljs-number">1</span>]+<span class="hljs-string">&quot;\t \t&quot;</span>+row[<span class="hljs-number">4</span>])<br></code></pre></td></tr></table></figure>
-
-<p>好的，<code>pandas.read_csv()</code>肯定是要调用csv模块的，那么看看
-它的方法参数表吧。</p>
-<blockquote>
-<p>pandas.read_csv(filepath_or_buffer, sep&#x3D;’, ‘, delimiter&#x3D;None, header&#x3D;’infer’, names&#x3D;None, index_col&#x3D;None, usecols&#x3D;None, squeeze&#x3D;False, prefix&#x3D;None, mangle_dupe_cols&#x3D;True, dtype&#x3D;None, engine&#x3D;None, converters&#x3D;None, true_values&#x3D;None, false_values&#x3D;None, skipinitialspace&#x3D;False, skiprows&#x3D;None, nrows&#x3D;None, na_values&#x3D;None, keep_default_na&#x3D;True, na_filter&#x3D;True, verbose&#x3D;False, skip_blank_lines&#x3D;True, parse_dates&#x3D;False, infer_datetime_format&#x3D;False, keep_date_col&#x3D;False, date_parser&#x3D;None, dayfirst&#x3D;False, iterator&#x3D;False, chunksize&#x3D;None, compression&#x3D;’infer’, thousands&#x3D;None, decimal&#x3D;’.’, lineterminator&#x3D;None, quotechar&#x3D;’”‘, quoting&#x3D;0, escapechar&#x3D;None, comment&#x3D;None, encoding&#x3D;None, <strong>dialect&#x3D;None</strong>, tupleize_cols&#x3D;False, error_bad_lines&#x3D;True, warn_bad_lines&#x3D;True, skipfooter&#x3D;0, skip_footer&#x3D;0, doublequote&#x3D;True, delim_whitespace&#x3D;False, as_recarray&#x3D;False, compact_ints&#x3D;False, use_unsigned&#x3D;False, low_memory&#x3D;True, buffer_lines&#x3D;None, memory_map&#x3D;False, float_precision&#x3D;None)[source]¶</p>
-</blockquote>
-<p>真是够长的，还是搜一下有没有<code>dialect=</code>，呵呵，果然有。</p>
-<blockquote>
-<p>dialect : str or csv.Dialect instance, default None  <br/>
-         If None defaults to Excel dialect. Ignored if sep longer than 1 char See csv.Dialect documentation for more details</p>
-</blockquote>
-<p>那么问题解决了。把第一段代码改改吧。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br>df = pd.read_csv(file_path + file_name + <span class="hljs-string">&quot;.csv&quot;</span>, encoding=<span class="hljs-string">&quot;gbk&quot;</span>, dialect=<span class="hljs-string">&#x27;mydialect&#x27;</span>)<br></code></pre></td></tr></table></figure>
-
-<p>一运行还是报错，这是怎么回事呢，编码换成<code>utf8</code>，也不行。最后才发现
-需要使用<code>gb18030</code>才行。即使使用<code>chardet</code>的编码探测模块，也不一定能探测出来，因为整个文档
-只有少数字符是超出了<code>gbk</code>，所以不可能既高效又准确的解决这个问题。</p>
-]]></content>
-      <tags>
-        <tag>python</tag>
-        <tag>技巧</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[leetcode 200]Number of Islands 原创解法</title>
-    <url>/2016/09/27/2016-9-27-leetcode-200/</url>
-    <content><![CDATA[<h2 id="题目概述"><a href="#题目概述" class="headerlink" title=" 题目概述"></a><a name="hh0"></a> 题目概述</h2><p><a href="https://leetcode.com/problems/number-of-islands/">原题链接</a></p>
-<pre><code class="hljs">Given a 2d grid map of &#39;1&#39;s (land) and &#39;0&#39;s (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
-
-Example 1:
-
-11110
-11010
-11000
-00000
-Answer: 1
-
-Example 2:
-
-11000
-11000
-00100
-00011
-Answer: 3
-</code></pre>
-<span id="more"></span>
-
-<h2 id="最终解法"><a href="#最终解法" class="headerlink" title=" 最终解法"></a><a name="hh1"></a> 最终解法</h2><p>解法的代码先贴出来了，解题思路后补啊。总体来说，就是一行一行的扫描。
-是个不错的<code>在线算法</code>，也就是说如果数据量非常大也没关系，呵呵。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">numIslands</span>(<span class="hljs-params">self, grid</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        基本思路，一行一行的扫描。</span><br><span class="hljs-string">        :type grid: List[List[str]]</span><br><span class="hljs-string">        :rtype: int</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;====&quot;</span>)<br>        n = <span class="hljs-built_in">len</span>(grid)<br>        <span class="hljs-keyword">if</span> n == <span class="hljs-number">0</span>: <span class="hljs-keyword">return</span> <span class="hljs-number">0</span><br><br>        length = <span class="hljs-built_in">len</span>(grid[<span class="hljs-number">0</span>])<br>        h_pre = &#123;&#125;   <span class="hljs-comment"># key : 是 “i,j” 字符串。value =》 [accumulator] ，一个list包含了岛的索引。</span><br>        h_curr = &#123;&#125;  <span class="hljs-comment"># 当前行</span><br>        a = []  <span class="hljs-comment"># 保存的是一个个的list，list的长度是1，值对应岛的索引。</span><br>        debug = []<br>        accumulator = <span class="hljs-number">1</span> <span class="hljs-comment"># 表示岛的自增索引，每当发现一个新的岛，自增。</span><br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, length):<br>            <span class="hljs-keyword">if</span> i == <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> grid[<span class="hljs-number">0</span>][i] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                h_curr[<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i)] = [accumulator]<br>                a.append(h_curr[<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i)])<br>                debug.append(<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i))<br>            <span class="hljs-keyword">elif</span> i &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> grid[<span class="hljs-number">0</span>][i] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                <span class="hljs-keyword">if</span> grid[<span class="hljs-number">0</span>][i - <span class="hljs-number">1</span>] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                    h_curr[<span class="hljs-built_in">str</span>(<span class="hljs-number">0</span>) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(i)] = h_curr[<span class="hljs-built_in">str</span>(<span class="hljs-number">0</span>) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(i - <span class="hljs-number">1</span>)]<br>                <span class="hljs-keyword">else</span>:<br>                    accumulator += <span class="hljs-number">1</span><br>                    h_curr[<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i)] = [accumulator]<br>                    a.append(h_curr[<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i)])<br>                    debug.append(<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i))<br><br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n):<br>            h_pre = h_curr<br>            h_curr = &#123;&#125;<br>            <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, length):<br>                <span class="hljs-keyword">if</span> j == <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> grid[i][j] == <span class="hljs-string">&#x27;1&#x27;</span>:<br><br>                    <span class="hljs-keyword">if</span> grid[i - <span class="hljs-number">1</span>][j] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                        h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = h_pre[<span class="hljs-built_in">str</span>(i - <span class="hljs-number">1</span>) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)]<br>                    <span class="hljs-keyword">else</span>:<br>                        accumulator += <span class="hljs-number">1</span><br>                        h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = [accumulator]<br>                        a.append(h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)])<br>                        debug.append(<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j))<br><br>                <span class="hljs-keyword">elif</span> j &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> grid[i][j] == <span class="hljs-string">&#x27;1&#x27;</span>:<br><br>                    <span class="hljs-keyword">if</span> grid[i - <span class="hljs-number">1</span>][j] == <span class="hljs-string">&#x27;1&#x27;</span> <span class="hljs-keyword">and</span> grid[i][j - <span class="hljs-number">1</span>] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                        pre = h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j - <span class="hljs-number">1</span>)]<br>                        above = h_pre[<span class="hljs-built_in">str</span>(i - <span class="hljs-number">1</span>) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)]<br><br>                        <span class="hljs-keyword">if</span> pre[<span class="hljs-number">0</span>] == above[<span class="hljs-number">0</span>]:<br>                            <span class="hljs-comment"># 对pre的值进行更新</span><br>                            h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = pre<br>                        <span class="hljs-keyword">else</span> :<br>                            h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = above<br>                            v1 = pre[<span class="hljs-number">0</span>]<br>                            v2 = above[<span class="hljs-number">0</span>]  <span class="hljs-comment"># z这里一定要换成静态的值，否则的话当a[k]的值进行更新时，会影响到pre的值。</span><br>                            <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(a)):<br>                                <span class="hljs-keyword">if</span> a[k][<span class="hljs-number">0</span>] == v1:<br>                                    a[k][<span class="hljs-number">0</span>] = v2<br><br><br>                    <span class="hljs-keyword">elif</span> grid[i][j - <span class="hljs-number">1</span>] == <span class="hljs-string">&#x27;1&#x27;</span> <span class="hljs-keyword">and</span> grid[i - <span class="hljs-number">1</span>][j] != <span class="hljs-string">&#x27;1&#x27;</span>:<br>                        pre = h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j - <span class="hljs-number">1</span>)]<br>                        h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = pre<br>                    <span class="hljs-keyword">elif</span> grid[i][j - <span class="hljs-number">1</span>] != <span class="hljs-string">&#x27;1&#x27;</span> <span class="hljs-keyword">and</span> grid[i - <span class="hljs-number">1</span>][j] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                        above = h_pre[<span class="hljs-built_in">str</span>(i - <span class="hljs-number">1</span>) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)]<br>                        h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = above<br>                    <span class="hljs-keyword">else</span>:<br>                        accumulator += <span class="hljs-number">1</span><br>                        h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = [accumulator]<br>                        a.append(h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)])<br>                        debug.append(<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j))<br>        s = <span class="hljs-built_in">set</span>()<br>        <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> a:<br>            s.add(item[<span class="hljs-number">0</span>])<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(s)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    grid = [<span class="hljs-string">&quot;11000&quot;</span>,<br>            <span class="hljs-string">&quot;11000&quot;</span>,<br>            <span class="hljs-string">&quot;00100&quot;</span>,<br>            <span class="hljs-string">&quot;00011&quot;</span>]  <span class="hljs-comment"># 3</span><br>    <span class="hljs-built_in">print</span>(Solution().numIslands(grid))<br>    grid = [<span class="hljs-string">&quot;10111&quot;</span>,<br>            <span class="hljs-string">&quot;10101&quot;</span>,<br>            <span class="hljs-string">&quot;11101&quot;</span>]  <span class="hljs-comment"># 1</span><br>    <span class="hljs-built_in">print</span>(Solution().numIslands(grid))<br>    grid = [<span class="hljs-string">&quot;1111111&quot;</span>,<br>            <span class="hljs-string">&quot;0000001&quot;</span>,<br>            <span class="hljs-string">&quot;1111101&quot;</span>,<br>            <span class="hljs-string">&quot;1000101&quot;</span>,<br>            <span class="hljs-string">&quot;1010101&quot;</span>,<br>            <span class="hljs-string">&quot;1011101&quot;</span>,<br>            <span class="hljs-string">&quot;1111111&quot;</span>]  <span class="hljs-comment"># 1</span><br>    <span class="hljs-built_in">print</span>(Solution().numIslands(grid))<br><br><br>    grid = [<span class="hljs-string">&quot;10011101100000000000&quot;</span>,<br>            <span class="hljs-string">&quot;10011001000101010010&quot;</span>,<br>            <span class="hljs-string">&quot;00011110101100001010&quot;</span>,<br>            <span class="hljs-string">&quot;00011001000111001001&quot;</span>,<br>            <span class="hljs-string">&quot;00000001110000000000&quot;</span>,<br>            <span class="hljs-string">&quot;10000101011000000101&quot;</span>,<br>            <span class="hljs-string">&quot;00010001010101010101&quot;</span>,<br>            <span class="hljs-string">&quot;00010100110101101110&quot;</span>,<br>            <span class="hljs-string">&quot;00001001100001000101&quot;</span>,<br>            <span class="hljs-string">&quot;00100100000100100010&quot;</span>,<br>            <span class="hljs-string">&quot;10010000000100101010&quot;</span>,<br>            <span class="hljs-string">&quot;01000101011011101100&quot;</span>,<br>            <span class="hljs-string">&quot;11010000100000010001&quot;</span>,<br>            <span class="hljs-string">&quot;01001110001111101000&quot;</span>,<br>            <span class="hljs-string">&quot;00111000110001010000&quot;</span>,<br>            <span class="hljs-string">&quot;10010100001000101011&quot;</span>,<br>            <span class="hljs-string">&quot;10100000010001010000&quot;</span>,<br>            <span class="hljs-string">&quot;01100011101010111100&quot;</span>,<br>            <span class="hljs-string">&quot;01000011001010010011&quot;</span>,<br>            <span class="hljs-string">&quot;00000011110100011000&quot;</span>]  <span class="hljs-comment"># 58</span><br>    <span class="hljs-built_in">print</span>(Solution().numIslands(grid))<br></code></pre></td></tr></table></figure>
-]]></content>
-      <tags>
-        <tag>leetcode</tag>
-        <tag>算法</tag>
-        <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[leetcode 315]Count of Smaller Numbers After Self 原创解法</title>
     <url>/2016/12/26/leetcode-315/</url>
     <content><![CDATA[<h2 id="题目概述"><a href="#题目概述" class="headerlink" title=" 题目概述"></a><a name="hh0"></a> 题目概述</h2><p><a href="https://leetcode.com/problems/count-of-smaller-numbers-after-self/">原题链接</a></p>
@@ -427,6 +296,98 @@ The three ranges are : [0, 0], [2, 2], [0, 2] and their respective sums are: -2,
       </tags>
   </entry>
   <entry>
+    <title>R和Python里得到传入参数的变量名</title>
+    <url>/2016/12/21/get-val-name-and-value/</url>
+    <content><![CDATA[<h2 id="问题"><a href="#问题" class="headerlink" title=" 问题"></a><a name="hh0"></a> 问题</h2><p>同事写R程序的时候，问我能不能获取一个变量的<code>name</code>，
+我说这个好办啊，在R里可以这样写，用<code>quote()</code></p>
+<pre><code class="hljs">&gt; a &lt;- 1
+&gt; quote(a)
+a
+</code></pre>
+<p>不过我把问题想简单了，他实际需要的是要获得传入
+参数的<code>name</code>。例如定义一个函数<code>foo(c)</code>, 给它传入参数<code>a</code>，我能够在函数
+内部知道传入参数的名字<code>a</code>。</p>
+<span id="more"></span>
+
+<p>我说可以增加一个参数嘛。把参数的名字直接传入。</p>
+<pre><code class="hljs">&gt; foo(a,&quot;a&quot;)
+</code></pre>
+<p>但是我立刻意识到，这里存在重复，而写代码是提倡
+<code>do not repeat yourself</code>的。而且对R这种可以随意获取环境变量的高级语言。
+肯定有办法做到。</p>
+<h2 id="python可以做到"><a href="#python可以做到" class="headerlink" title=" python可以做到"></a><a name="hh1"></a> python可以做到</h2><p>但是我还是先看看Python吧，毕竟最近用Python
+多一些。Google关键字<code>python print variable name and value</code>,立刻可以获得
+答案。这段代码的思想也很直白，就是对输入的obj在环境变量（名称,对象）键值对
+中查找，返回名称。</p>
+<pre><code class="hljs">def namestr(obj, namespace=globals()):
+    return [name for name in namespace if namespace[name] is obj]
+</code></pre>
+<p>这样可以这样使用</p>
+<pre><code class="hljs">&gt;&gt;&gt; a = 1
+&gt;&gt;&gt; namestr(a)
+[&#39;a&#39;]
+</code></pre>
+<h2 id="R也可以"><a href="#R也可以" class="headerlink" title=" R也可以"></a><a name="hh2"></a> R也可以</h2><p>那么R肯定也有办法做到。Google关键字
+<code>r print variable name and value</code></p>
+<pre><code class="hljs">myfunc &lt;- function(v1) &#123;
+  deparse(substitute(v1))
+&#125;
+
+myfunc(foo)
+[1] &quot;foo&quot;
+</code></pre>
+<p>真是很不错啊。把结果告诉了同事，他也很高兴。
+但是<code>substitute()</code>和<code>deparse()</code>究竟是啥意思呢？在R里输入<code>?substitute</code>，可以
+看到解释。</p>
+<blockquote>
+<p>substitute returns the parse tree for
+the (unevaluated) expression expr, substituting any variables bound in env.</p>
+</blockquote>
+<p>够晦涩难懂的吧。不过仔细思考一下，也大概明白了。
+在R里，从语法角度来说，所有都是<code>expr</code>，（这跟其他语言都是<code>statement</code>不同）
+在R的函数里，可以对传入的未进行求值的<code>expr</code>进行操作。这点非常有趣。
+而<code>deparse()</code>，比较好理解了至少在我看来，与<code>as.character()</code>的作用是一样的。</p>
+]]></content>
+      <tags>
+        <tag>python</tag>
+        <tag>R</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[leetcode 200]Number of Islands 原创解法</title>
+    <url>/2016/09/27/2016-9-27-leetcode-200/</url>
+    <content><![CDATA[<h2 id="题目概述"><a href="#题目概述" class="headerlink" title=" 题目概述"></a><a name="hh0"></a> 题目概述</h2><p><a href="https://leetcode.com/problems/number-of-islands/">原题链接</a></p>
+<pre><code class="hljs">Given a 2d grid map of &#39;1&#39;s (land) and &#39;0&#39;s (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+
+Example 1:
+
+11110
+11010
+11000
+00000
+Answer: 1
+
+Example 2:
+
+11000
+11000
+00100
+00011
+Answer: 3
+</code></pre>
+<span id="more"></span>
+
+<h2 id="最终解法"><a href="#最终解法" class="headerlink" title=" 最终解法"></a><a name="hh1"></a> 最终解法</h2><p>解法的代码先贴出来了，解题思路后补啊。总体来说，就是一行一行的扫描。
+是个不错的<code>在线算法</code>，也就是说如果数据量非常大也没关系，呵呵。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">numIslands</span>(<span class="hljs-params">self, grid</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        基本思路，一行一行的扫描。</span><br><span class="hljs-string">        :type grid: List[List[str]]</span><br><span class="hljs-string">        :rtype: int</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;====&quot;</span>)<br>        n = <span class="hljs-built_in">len</span>(grid)<br>        <span class="hljs-keyword">if</span> n == <span class="hljs-number">0</span>: <span class="hljs-keyword">return</span> <span class="hljs-number">0</span><br><br>        length = <span class="hljs-built_in">len</span>(grid[<span class="hljs-number">0</span>])<br>        h_pre = &#123;&#125;   <span class="hljs-comment"># key : 是 “i,j” 字符串。value =》 [accumulator] ，一个list包含了岛的索引。</span><br>        h_curr = &#123;&#125;  <span class="hljs-comment"># 当前行</span><br>        a = []  <span class="hljs-comment"># 保存的是一个个的list，list的长度是1，值对应岛的索引。</span><br>        debug = []<br>        accumulator = <span class="hljs-number">1</span> <span class="hljs-comment"># 表示岛的自增索引，每当发现一个新的岛，自增。</span><br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, length):<br>            <span class="hljs-keyword">if</span> i == <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> grid[<span class="hljs-number">0</span>][i] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                h_curr[<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i)] = [accumulator]<br>                a.append(h_curr[<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i)])<br>                debug.append(<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i))<br>            <span class="hljs-keyword">elif</span> i &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> grid[<span class="hljs-number">0</span>][i] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                <span class="hljs-keyword">if</span> grid[<span class="hljs-number">0</span>][i - <span class="hljs-number">1</span>] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                    h_curr[<span class="hljs-built_in">str</span>(<span class="hljs-number">0</span>) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(i)] = h_curr[<span class="hljs-built_in">str</span>(<span class="hljs-number">0</span>) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(i - <span class="hljs-number">1</span>)]<br>                <span class="hljs-keyword">else</span>:<br>                    accumulator += <span class="hljs-number">1</span><br>                    h_curr[<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i)] = [accumulator]<br>                    a.append(h_curr[<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i)])<br>                    debug.append(<span class="hljs-string">&#x27;0,&#x27;</span> + <span class="hljs-built_in">str</span>(i))<br><br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n):<br>            h_pre = h_curr<br>            h_curr = &#123;&#125;<br>            <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, length):<br>                <span class="hljs-keyword">if</span> j == <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> grid[i][j] == <span class="hljs-string">&#x27;1&#x27;</span>:<br><br>                    <span class="hljs-keyword">if</span> grid[i - <span class="hljs-number">1</span>][j] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                        h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = h_pre[<span class="hljs-built_in">str</span>(i - <span class="hljs-number">1</span>) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)]<br>                    <span class="hljs-keyword">else</span>:<br>                        accumulator += <span class="hljs-number">1</span><br>                        h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = [accumulator]<br>                        a.append(h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)])<br>                        debug.append(<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j))<br><br>                <span class="hljs-keyword">elif</span> j &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> grid[i][j] == <span class="hljs-string">&#x27;1&#x27;</span>:<br><br>                    <span class="hljs-keyword">if</span> grid[i - <span class="hljs-number">1</span>][j] == <span class="hljs-string">&#x27;1&#x27;</span> <span class="hljs-keyword">and</span> grid[i][j - <span class="hljs-number">1</span>] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                        pre = h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j - <span class="hljs-number">1</span>)]<br>                        above = h_pre[<span class="hljs-built_in">str</span>(i - <span class="hljs-number">1</span>) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)]<br><br>                        <span class="hljs-keyword">if</span> pre[<span class="hljs-number">0</span>] == above[<span class="hljs-number">0</span>]:<br>                            <span class="hljs-comment"># 对pre的值进行更新</span><br>                            h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = pre<br>                        <span class="hljs-keyword">else</span> :<br>                            h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = above<br>                            v1 = pre[<span class="hljs-number">0</span>]<br>                            v2 = above[<span class="hljs-number">0</span>]  <span class="hljs-comment"># z这里一定要换成静态的值，否则的话当a[k]的值进行更新时，会影响到pre的值。</span><br>                            <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(a)):<br>                                <span class="hljs-keyword">if</span> a[k][<span class="hljs-number">0</span>] == v1:<br>                                    a[k][<span class="hljs-number">0</span>] = v2<br><br><br>                    <span class="hljs-keyword">elif</span> grid[i][j - <span class="hljs-number">1</span>] == <span class="hljs-string">&#x27;1&#x27;</span> <span class="hljs-keyword">and</span> grid[i - <span class="hljs-number">1</span>][j] != <span class="hljs-string">&#x27;1&#x27;</span>:<br>                        pre = h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j - <span class="hljs-number">1</span>)]<br>                        h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = pre<br>                    <span class="hljs-keyword">elif</span> grid[i][j - <span class="hljs-number">1</span>] != <span class="hljs-string">&#x27;1&#x27;</span> <span class="hljs-keyword">and</span> grid[i - <span class="hljs-number">1</span>][j] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>                        above = h_pre[<span class="hljs-built_in">str</span>(i - <span class="hljs-number">1</span>) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)]<br>                        h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = above<br>                    <span class="hljs-keyword">else</span>:<br>                        accumulator += <span class="hljs-number">1</span><br>                        h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)] = [accumulator]<br>                        a.append(h_curr[<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j)])<br>                        debug.append(<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">&#x27;,&#x27;</span> + <span class="hljs-built_in">str</span>(j))<br>        s = <span class="hljs-built_in">set</span>()<br>        <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> a:<br>            s.add(item[<span class="hljs-number">0</span>])<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(s)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    grid = [<span class="hljs-string">&quot;11000&quot;</span>,<br>            <span class="hljs-string">&quot;11000&quot;</span>,<br>            <span class="hljs-string">&quot;00100&quot;</span>,<br>            <span class="hljs-string">&quot;00011&quot;</span>]  <span class="hljs-comment"># 3</span><br>    <span class="hljs-built_in">print</span>(Solution().numIslands(grid))<br>    grid = [<span class="hljs-string">&quot;10111&quot;</span>,<br>            <span class="hljs-string">&quot;10101&quot;</span>,<br>            <span class="hljs-string">&quot;11101&quot;</span>]  <span class="hljs-comment"># 1</span><br>    <span class="hljs-built_in">print</span>(Solution().numIslands(grid))<br>    grid = [<span class="hljs-string">&quot;1111111&quot;</span>,<br>            <span class="hljs-string">&quot;0000001&quot;</span>,<br>            <span class="hljs-string">&quot;1111101&quot;</span>,<br>            <span class="hljs-string">&quot;1000101&quot;</span>,<br>            <span class="hljs-string">&quot;1010101&quot;</span>,<br>            <span class="hljs-string">&quot;1011101&quot;</span>,<br>            <span class="hljs-string">&quot;1111111&quot;</span>]  <span class="hljs-comment"># 1</span><br>    <span class="hljs-built_in">print</span>(Solution().numIslands(grid))<br><br><br>    grid = [<span class="hljs-string">&quot;10011101100000000000&quot;</span>,<br>            <span class="hljs-string">&quot;10011001000101010010&quot;</span>,<br>            <span class="hljs-string">&quot;00011110101100001010&quot;</span>,<br>            <span class="hljs-string">&quot;00011001000111001001&quot;</span>,<br>            <span class="hljs-string">&quot;00000001110000000000&quot;</span>,<br>            <span class="hljs-string">&quot;10000101011000000101&quot;</span>,<br>            <span class="hljs-string">&quot;00010001010101010101&quot;</span>,<br>            <span class="hljs-string">&quot;00010100110101101110&quot;</span>,<br>            <span class="hljs-string">&quot;00001001100001000101&quot;</span>,<br>            <span class="hljs-string">&quot;00100100000100100010&quot;</span>,<br>            <span class="hljs-string">&quot;10010000000100101010&quot;</span>,<br>            <span class="hljs-string">&quot;01000101011011101100&quot;</span>,<br>            <span class="hljs-string">&quot;11010000100000010001&quot;</span>,<br>            <span class="hljs-string">&quot;01001110001111101000&quot;</span>,<br>            <span class="hljs-string">&quot;00111000110001010000&quot;</span>,<br>            <span class="hljs-string">&quot;10010100001000101011&quot;</span>,<br>            <span class="hljs-string">&quot;10100000010001010000&quot;</span>,<br>            <span class="hljs-string">&quot;01100011101010111100&quot;</span>,<br>            <span class="hljs-string">&quot;01000011001010010011&quot;</span>,<br>            <span class="hljs-string">&quot;00000011110100011000&quot;</span>]  <span class="hljs-comment"># 58</span><br>    <span class="hljs-built_in">print</span>(Solution().numIslands(grid))<br></code></pre></td></tr></table></figure>
+]]></content>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>算法</tag>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>在WIN10下使用Cython</title>
     <url>/2017/01/12/2017-1-12-cython-on-win10/</url>
     <content><![CDATA[<h2 id="Cython"><a href="#Cython" class="headerlink" title=" Cython"></a><a name="hh0"></a> Cython</h2><p><code>Cython</code>不是<code>CPython</code>的简称，而是一种提升<code>Python</code>代码执行效率的解决方案。
@@ -501,6 +462,45 @@ cython fib : 0.00059495s
       <tags>
         <tag>python</tag>
         <tag>Cython</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用pandas.read_csv()读取csv文件</title>
+    <url>/2016/12/22/pandas-read-csv/</url>
+    <content><![CDATA[<h2 id="问题"><a href="#问题" class="headerlink" title=" 问题"></a><a name="hh0"></a> 问题</h2><p>以下Python代码实现对<code>Excel</code>转存的csv文件进行读取。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br>df = pd.read_csv(file_path + file_name + <span class="hljs-string">&quot;.csv&quot;</span>, encoding=<span class="hljs-string">&quot;gbk&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<p>把<code>csv</code>文件入库是一件脏活。表面上看<code>csv</code>文件是一个非常简单的
+逗号分隔符文件。但是其实不然。<code>Excel</code>转存的<code>csv</code>文件并不是标准的以逗号作为分隔符，
+并且对所有的项用双引号包裹。现在我就遇到了从<code>Oracle</code>导出的<code>csv</code>文件，以上的代码
+不起作用了。</p>
+<h2 id="解决问题"><a href="#解决问题" class="headerlink" title=" 解决问题"></a><a name="hh1"></a> 解决问题</h2><p>究竟怎么回事呢，找了一圈也没有发现使用<code>pandas.read_csv()</code>读取
+这种标准csv文件的方法。还是先把问题简化一下，看看<code>Python</code>的<code>csv模块</code>是如何读取的吧。
+简单的查找就可以找到答案。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> csv<br>csv.register_dialect(<br>    <span class="hljs-string">&#x27;mydialect&#x27;</span>,<br>    delimiter = <span class="hljs-string">&#x27;,&#x27;</span>,<br>    quotechar = <span class="hljs-string">&#x27;&quot;&#x27;</span>,<br>    doublequote = <span class="hljs-literal">True</span>,<br>    skipinitialspace = <span class="hljs-literal">True</span>,<br>    lineterminator = <span class="hljs-string">&#x27;\r\n&#x27;</span>,<br>    quoting = csv.QUOTE_MINIMAL)<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;\n Output from an iterable object created from the csv file&#x27;</span>)<br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;smallsample.csv&#x27;</span>, <span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> mycsvfile:<br>    thedata = csv.reader(mycsvfile, dialect=<span class="hljs-string">&#x27;mydialect&#x27;</span>)<br>    <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> thedata:<br>        <span class="hljs-built_in">print</span>(row[<span class="hljs-number">0</span>]+<span class="hljs-string">&quot;\t \t&quot;</span>+row[<span class="hljs-number">1</span>]+<span class="hljs-string">&quot;\t \t&quot;</span>+row[<span class="hljs-number">4</span>])<br></code></pre></td></tr></table></figure>
+
+<p>好的，<code>pandas.read_csv()</code>肯定是要调用csv模块的，那么看看
+它的方法参数表吧。</p>
+<blockquote>
+<p>pandas.read_csv(filepath_or_buffer, sep&#x3D;’, ‘, delimiter&#x3D;None, header&#x3D;’infer’, names&#x3D;None, index_col&#x3D;None, usecols&#x3D;None, squeeze&#x3D;False, prefix&#x3D;None, mangle_dupe_cols&#x3D;True, dtype&#x3D;None, engine&#x3D;None, converters&#x3D;None, true_values&#x3D;None, false_values&#x3D;None, skipinitialspace&#x3D;False, skiprows&#x3D;None, nrows&#x3D;None, na_values&#x3D;None, keep_default_na&#x3D;True, na_filter&#x3D;True, verbose&#x3D;False, skip_blank_lines&#x3D;True, parse_dates&#x3D;False, infer_datetime_format&#x3D;False, keep_date_col&#x3D;False, date_parser&#x3D;None, dayfirst&#x3D;False, iterator&#x3D;False, chunksize&#x3D;None, compression&#x3D;’infer’, thousands&#x3D;None, decimal&#x3D;’.’, lineterminator&#x3D;None, quotechar&#x3D;’”‘, quoting&#x3D;0, escapechar&#x3D;None, comment&#x3D;None, encoding&#x3D;None, <strong>dialect&#x3D;None</strong>, tupleize_cols&#x3D;False, error_bad_lines&#x3D;True, warn_bad_lines&#x3D;True, skipfooter&#x3D;0, skip_footer&#x3D;0, doublequote&#x3D;True, delim_whitespace&#x3D;False, as_recarray&#x3D;False, compact_ints&#x3D;False, use_unsigned&#x3D;False, low_memory&#x3D;True, buffer_lines&#x3D;None, memory_map&#x3D;False, float_precision&#x3D;None)[source]¶</p>
+</blockquote>
+<p>真是够长的，还是搜一下有没有<code>dialect=</code>，呵呵，果然有。</p>
+<blockquote>
+<p>dialect : str or csv.Dialect instance, default None  <br/>
+         If None defaults to Excel dialect. Ignored if sep longer than 1 char See csv.Dialect documentation for more details</p>
+</blockquote>
+<p>那么问题解决了。把第一段代码改改吧。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br>df = pd.read_csv(file_path + file_name + <span class="hljs-string">&quot;.csv&quot;</span>, encoding=<span class="hljs-string">&quot;gbk&quot;</span>, dialect=<span class="hljs-string">&#x27;mydialect&#x27;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>一运行还是报错，这是怎么回事呢，编码换成<code>utf8</code>，也不行。最后才发现
+需要使用<code>gb18030</code>才行。即使使用<code>chardet</code>的编码探测模块，也不一定能探测出来，因为整个文档
+只有少数字符是超出了<code>gbk</code>，所以不可能既高效又准确的解决这个问题。</p>
+]]></content>
+      <tags>
+        <tag>python</tag>
+        <tag>技巧</tag>
       </tags>
   </entry>
   <entry>
@@ -740,6 +740,52 @@ coins =  3*1*5      +  3*5*8    +  1*3*8      + 1*8*1   = 167
       </tags>
   </entry>
   <entry>
+    <title>How to call java code in Grails 3.2.6</title>
+    <url>/2017/03/06/2017-3-6-grails-call-java/</url>
+    <content><![CDATA[<h2 id="解决方法"><a href="#解决方法" class="headerlink" title=" 解决方法"></a><a name="hh0"></a> 解决方法</h2><p>我的<code>Grails</code>的环境是</p>
+<pre><code class="hljs">grails -v
+| Grails Version: 3.2.6
+| Groovy Version: 2.4.7
+| JVM Version: 1.8.0_71
+</code></pre>
+<span id="more"></span>
+
+<p>grails 3.2.6是用gradle进行构建的。所以如果要添加java类，
+就需要修改<code>build.gradle</code>。</p>
+<h2 id="第一步"><a href="#第一步" class="headerlink" title=" 第一步"></a><a name="hh1"></a> 第一步</h2><p>创建<code>src/main/java</code>目录。对于<code>com.yanggeorge.XMLtest</code>类，
+则要创建<code>src/main/java/com/yanggeorge/</code>目录，并把XMLtest.java放在该
+路径下。</p>
+<h2 id="第二步"><a href="#第二步" class="headerlink" title=" 第二步"></a><a name="hh2"></a> 第二步</h2><p>在<code>build.gradle</code>文件中添加如下代码</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><code class="hljs groovy">apply <span class="hljs-attr">plugin:</span> <span class="hljs-string">&quot;java&quot;</span><br><br>task compileOne (<span class="hljs-attr">type:</span> JavaCompile) &#123;<br>    source = sourceSets.main.java.srcDirs<br>    include <span class="hljs-string">&#x27;com/yanggeorge/XMLtest.java&#x27;</span><br>    classpath = sourceSets.main.compileClasspath<br>    destinationDir = sourceSets.main.output.classesDir<br>&#125;<br><br>compileOne.options.compilerArgs = [<span class="hljs-string">&quot;-sourcepath&quot;</span>, <span class="hljs-string">&quot;$projectDir/src/main/java&quot;</span>]<br></code></pre></td></tr></table></figure>
+
+<h2 id="第三步"><a href="#第三步" class="headerlink" title=" 第三步"></a><a name="hh3"></a> 第三步</h2><p>编译XMLtest.java。可以用<code>grails compile</code>进行编译。</p>
+<pre><code class="hljs">D:\work\grails&gt;grails compile
+:compileJava UP-TO-DATE
+:compileGroovy UP-TO-DATE
+:buildProperties
+:processResources UP-TO-DATE
+:classes UP-TO-DATE
+
+BUILD SUCCESSFUL
+
+Total time: 23.638 secs
+D:\work\grails&gt;
+</code></pre>
+<h2 id="第四步"><a href="#第四步" class="headerlink" title=" 第四步"></a><a name="hh4"></a> 第四步</h2><p>修改<code>grails-app/conf/spring/resources.groovy</code></p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><code class="hljs groovy"><span class="hljs-keyword">import</span> com.yanggeorge.XMLtest<br><br>beans = &#123;<br>    myXMLtest(XMLtest)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="第五步"><a href="#第五步" class="headerlink" title=" 第五步"></a><a name="hh5"></a> 第五步</h2><p>已经可以使用<code>myXMLtest</code>了，例如创建一个service，<code>grails-app/services/rss/RssService.groovy</code>
+第６行就是依赖注入的bean。</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><code class="hljs groovy"><span class="hljs-keyword">import</span> grails.transaction.Transactional<br><br><span class="hljs-meta">@Transactional</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">RssService</span> &#123;<br><br>    <span class="hljs-keyword">def</span> myXMLtest<br><br>    <span class="hljs-keyword">def</span> serviceMethod(String url, String keyword) &#123;<br>        <span class="hljs-keyword">def</span> items = myXMLtest.getAllItems(url)<br><br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+]]></content>
+      <tags>
+        <tag>java</tag>
+        <tag>grails</tag>
+        <tag>gradle</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[leetcode 329]Longest Increasing Path in a Matrix 原创解法</title>
     <url>/2017/03/12/2017-3-12-leetcode-329/</url>
     <content><![CDATA[<h2 id="题目概述"><a href="#题目概述" class="headerlink" title=" 题目概述"></a><a name="hh0"></a> 题目概述</h2><p><a href="https://leetcode.com/problems/longest-increasing-path-in-a-matrix/">原题链接</a></p>
@@ -858,52 +904,6 @@ hello world
         <tag>java</tag>
         <tag>clojure</tag>
         <tag>jvm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>How to call java code in Grails 3.2.6</title>
-    <url>/2017/03/06/2017-3-6-grails-call-java/</url>
-    <content><![CDATA[<h2 id="解决方法"><a href="#解决方法" class="headerlink" title=" 解决方法"></a><a name="hh0"></a> 解决方法</h2><p>我的<code>Grails</code>的环境是</p>
-<pre><code class="hljs">grails -v
-| Grails Version: 3.2.6
-| Groovy Version: 2.4.7
-| JVM Version: 1.8.0_71
-</code></pre>
-<span id="more"></span>
-
-<p>grails 3.2.6是用gradle进行构建的。所以如果要添加java类，
-就需要修改<code>build.gradle</code>。</p>
-<h2 id="第一步"><a href="#第一步" class="headerlink" title=" 第一步"></a><a name="hh1"></a> 第一步</h2><p>创建<code>src/main/java</code>目录。对于<code>com.yanggeorge.XMLtest</code>类，
-则要创建<code>src/main/java/com/yanggeorge/</code>目录，并把XMLtest.java放在该
-路径下。</p>
-<h2 id="第二步"><a href="#第二步" class="headerlink" title=" 第二步"></a><a name="hh2"></a> 第二步</h2><p>在<code>build.gradle</code>文件中添加如下代码</p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><code class="hljs groovy">apply <span class="hljs-attr">plugin:</span> <span class="hljs-string">&quot;java&quot;</span><br><br>task compileOne (<span class="hljs-attr">type:</span> JavaCompile) &#123;<br>    source = sourceSets.main.java.srcDirs<br>    include <span class="hljs-string">&#x27;com/yanggeorge/XMLtest.java&#x27;</span><br>    classpath = sourceSets.main.compileClasspath<br>    destinationDir = sourceSets.main.output.classesDir<br>&#125;<br><br>compileOne.options.compilerArgs = [<span class="hljs-string">&quot;-sourcepath&quot;</span>, <span class="hljs-string">&quot;$projectDir/src/main/java&quot;</span>]<br></code></pre></td></tr></table></figure>
-
-<h2 id="第三步"><a href="#第三步" class="headerlink" title=" 第三步"></a><a name="hh3"></a> 第三步</h2><p>编译XMLtest.java。可以用<code>grails compile</code>进行编译。</p>
-<pre><code class="hljs">D:\work\grails&gt;grails compile
-:compileJava UP-TO-DATE
-:compileGroovy UP-TO-DATE
-:buildProperties
-:processResources UP-TO-DATE
-:classes UP-TO-DATE
-
-BUILD SUCCESSFUL
-
-Total time: 23.638 secs
-D:\work\grails&gt;
-</code></pre>
-<h2 id="第四步"><a href="#第四步" class="headerlink" title=" 第四步"></a><a name="hh4"></a> 第四步</h2><p>修改<code>grails-app/conf/spring/resources.groovy</code></p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><code class="hljs groovy"><span class="hljs-keyword">import</span> com.yanggeorge.XMLtest<br><br>beans = &#123;<br>    myXMLtest(XMLtest)<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<h2 id="第五步"><a href="#第五步" class="headerlink" title=" 第五步"></a><a name="hh5"></a> 第五步</h2><p>已经可以使用<code>myXMLtest</code>了，例如创建一个service，<code>grails-app/services/rss/RssService.groovy</code>
-第６行就是依赖注入的bean。</p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><code class="hljs groovy"><span class="hljs-keyword">import</span> grails.transaction.Transactional<br><br><span class="hljs-meta">@Transactional</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">RssService</span> &#123;<br><br>    <span class="hljs-keyword">def</span> myXMLtest<br><br>    <span class="hljs-keyword">def</span> serviceMethod(String url, String keyword) &#123;<br>        <span class="hljs-keyword">def</span> items = myXMLtest.getAllItems(url)<br><br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
-
-]]></content>
-      <tags>
-        <tag>java</tag>
-        <tag>grails</tag>
-        <tag>gradle</tag>
       </tags>
   </entry>
   <entry>
@@ -1203,65 +1203,6 @@ Replace the swap UUID with the new one (run sudo blkid to find it) after the pri
       </tags>
   </entry>
   <entry>
-    <title>[leetcode 337]打败了100%的解法</title>
-    <url>/2018/02/24/2018-2-24-robber-3/</url>
-    <content><![CDATA[<h2 id="题目概述"><a href="#题目概述" class="headerlink" title=" 题目概述"></a><a name="hh0"></a> 题目概述</h2><p><a href="https://leetcode.com/problems/house-robber-iii/description/">原题链接</a></p>
-<pre><code class="hljs">The thief has found himself a new place for his thievery again. There is only one entrance to this area, called the &quot;root.&quot; Besides the root, each house has one and only one parent house. After a tour, the smart thief realized that &quot;all houses in this place forms a binary tree&quot;. It will automatically contact the police if two directly-linked houses were broken into on the same night.
-Determine the maximum amount of money the thief can rob tonight without alerting the police.
-</code></pre>
-<figure class="highlight tap"><table><tr><td class="code"><pre><code class="hljs tap">Example 1:<br>     3<br>    / \<br>  <span class="hljs-number"> 2 </span>  2<br>    \   \ <br>    <span class="hljs-number"> 4 </span>  1<br>Maximum amount of money the thief can rob =<span class="hljs-number"> 3 </span>+<span class="hljs-number"> 4 </span>+<span class="hljs-number"> 1 </span>= 8.<br></code></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<h2 id="最快的解法"><a href="#最快的解法" class="headerlink" title=" 最快的解法"></a><a name="hh1"></a> 最快的解法</h2><p>以下代码打败了100%的其它python3解法。
-带记忆体的递归，也就是动态规划。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span>:<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">rob</span>(<span class="hljs-params">self, root</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        :type root: TreeNode</span><br><span class="hljs-string">        :rtype: int</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        <span class="hljs-variable language_">self</span>.memo = &#123;&#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.dp(root)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">dp</span>(<span class="hljs-params">self, root</span>):<br>        <span class="hljs-keyword">if</span> root <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">0</span><br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-keyword">if</span> root <span class="hljs-keyword">in</span> <span class="hljs-variable language_">self</span>.memo :<br>                <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.memo[root]<br><br>            v1 = <span class="hljs-variable language_">self</span>.dp(root.left) + <span class="hljs-variable language_">self</span>.dp(root.right)<br><br>            v2 = root.val<br>            <span class="hljs-keyword">if</span> root.left <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>                v2 += <span class="hljs-variable language_">self</span>.dp(root.left.left) + <span class="hljs-variable language_">self</span>.dp(root.left.right)<br>            <span class="hljs-keyword">if</span> root.right <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>                v2 += <span class="hljs-variable language_">self</span>.dp(root.right.left) + <span class="hljs-variable language_">self</span>.dp(root.right.right)<br>            <span class="hljs-variable language_">self</span>.memo[root] = <span class="hljs-built_in">max</span>(v1, v2)<br>            <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.memo[root]<br></code></pre></td></tr></table></figure>
-
-
-
-<h2 id="截图留念"><a href="#截图留念" class="headerlink" title=" 截图留念"></a><a name="hh2"></a> 截图留念</h2><figure class="highlight apache"><table><tr><td class="code"><pre><code class="hljs apache">              <span class="hljs-attribute">You</span> are Here!<br><span class="hljs-attribute">Your</span> runtime beats <span class="hljs-number">100</span>.<span class="hljs-number">00</span>% of python3 submissions.<br></code></pre></td></tr></table></figure>
-<p><img src="/images/2018-2-24.png" alt="robber3_submit_result"></p>
-]]></content>
-      <tags>
-        <tag>leetcode</tag>
-        <tag>算法</tag>
-        <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[leetcode 341]练练手</title>
-    <url>/2018/08/18/2018-8-18-leetcode-341/</url>
-    <content><![CDATA[<h2 id="题目概述"><a href="#题目概述" class="headerlink" title=" 题目概述"></a><a name="hh0"></a> 题目概述</h2><p><a href="https://leetcode.com//problems/flatten-nested-list-iterator/description/">原题链接</a></p>
-<blockquote>
-<p>  Given a nested list of integers, implement an iterator to flatten it.</p>
-<p>  Each element is either an integer, or a list – whose elements may also be integers or other lists.
-  Input: [[1,1],2,[1,1]]
-  Output: [1,1,2,1,1]</p>
-</blockquote>
-<span id="more"></span>
-
-<h2 id="解题思路"><a href="#解题思路" class="headerlink" title=" 解题思路"></a><a name="hh1"></a> 解题思路</h2><p>如果只是遍历一遍，用类似二叉树的中序遍历就好了。但是因为要生成迭代子，那么就得
-考虑用栈来模拟递归了。</p>
-<p>当然这个题目是比较简单的，压栈的是一个tuple－(list, index)。第一个是list，第二个指向
-list的第几个item。</p>
-<h2 id="第一次通过的解法"><a href="#第一次通过的解法" class="headerlink" title=" 第一次通过的解法"></a><a name="hh2"></a> 第一次通过的解法</h2><p>比较慢。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">NestedIterator</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, nestedList</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        Initialize your data structure here.</span><br><span class="hljs-string">        :type nestedList: List[NestedInteger]</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        <span class="hljs-variable language_">self</span>.q = [(nestedList, <span class="hljs-number">0</span>)]<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">next</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        :rtype: int</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br><br>        val = <span class="hljs-literal">None</span><br>        not_find = <span class="hljs-literal">True</span><br>        <span class="hljs-keyword">while</span> <span class="hljs-variable language_">self</span>.q <span class="hljs-keyword">and</span> not_find:<br>            arr, num = <span class="hljs-variable language_">self</span>.q.pop()<br>            <span class="hljs-keyword">if</span> num &lt; <span class="hljs-built_in">len</span>(arr):<br>                ele = arr[num]<br>                <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(ele, <span class="hljs-built_in">int</span>): <span class="hljs-comment"># 如果提交需要改成　ele.isInteger()</span><br>                    val = ele            <span class="hljs-comment"># ................  ele.getInteger()</span><br>                    not_find = <span class="hljs-literal">False</span><br>                    <span class="hljs-variable language_">self</span>.q.append((arr, num + <span class="hljs-number">1</span>))<br>                <span class="hljs-keyword">else</span>:<br>                    <span class="hljs-variable language_">self</span>.q.append((arr, num + <span class="hljs-number">1</span>))<br>                    <span class="hljs-variable language_">self</span>.q.append((ele, <span class="hljs-number">0</span>))  <span class="hljs-comment"># 如果提交改成，self.q.append((ele.getList(),0))</span><br><br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">if</span> not_find <span class="hljs-keyword">else</span> val<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">hasNext</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        :rtype: bool</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        has_next = <span class="hljs-literal">False</span><br>        <span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> has_next <span class="hljs-keyword">and</span> <span class="hljs-variable language_">self</span>.q:<br>            arr, num = <span class="hljs-variable language_">self</span>.q.pop()<br>            <span class="hljs-keyword">if</span> num &lt; <span class="hljs-built_in">len</span>(arr):<br>                ele = arr[num]<br>                <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(ele, <span class="hljs-built_in">int</span>):<br>                    has_next = <span class="hljs-literal">True</span><br>                    <span class="hljs-variable language_">self</span>.q.append((arr, num))<br>                <span class="hljs-keyword">else</span>:<br>                    <span class="hljs-variable language_">self</span>.q.append((arr, num + <span class="hljs-number">1</span>))<br>                    <span class="hljs-variable language_">self</span>.q.append((ele, <span class="hljs-number">0</span>))<br><br>        <span class="hljs-keyword">return</span> has_next<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    nestedlist = [[<span class="hljs-number">1</span>, <span class="hljs-number">2</span>], <span class="hljs-number">3</span>, [<span class="hljs-number">4</span>, <span class="hljs-number">5</span>], <span class="hljs-number">6</span>]<br>    i, v = NestedIterator(nestedlist), []<br>    <span class="hljs-keyword">while</span> i.hasNext(): v.append(i.<span class="hljs-built_in">next</span>())<br>    <span class="hljs-built_in">print</span>(v)  <span class="hljs-comment"># [1, 2, 3, 4, 5, 6]</span><br></code></pre></td></tr></table></figure>
-
-<h2 id="优化后的解法"><a href="#优化后的解法" class="headerlink" title=" 优化后的解法"></a><a name="hh3"></a> 优化后的解法</h2><p>之前的解法大概是140ms跑通了44个测试。而大多数的解法则在70ms左右。
-怎么改进呢？
-has_next和next方法本质上是一样的，可以只保留一个next就可以实现两个方法了。
-那么我们可以提前跑next方法，缓存两个值。</p>
-<p>以下是改进后的速度提升了一倍。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">NestedIterator2</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, nestedList</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        Initialize your data structure here.</span><br><span class="hljs-string">        :type nestedList: List[NestedInteger]</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        <span class="hljs-variable language_">self</span>.q = [(nestedList, <span class="hljs-number">0</span>)]<br>        <span class="hljs-variable language_">self</span>.next_val = <span class="hljs-variable language_">self</span>.next0()<br>        <span class="hljs-keyword">if</span> <span class="hljs-variable language_">self</span>.next_val <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span> :<br>            <span class="hljs-variable language_">self</span>.has_next = <span class="hljs-literal">True</span><br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-variable language_">self</span>.has_next = <span class="hljs-literal">False</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">next</span>(<span class="hljs-params">self</span>):<br>        curr_val = <span class="hljs-variable language_">self</span>.next_val<br>        <span class="hljs-keyword">if</span> <span class="hljs-variable language_">self</span>.has_next:<br>            <span class="hljs-variable language_">self</span>.next_val = <span class="hljs-variable language_">self</span>.next0()<br><br>        <span class="hljs-keyword">if</span> <span class="hljs-variable language_">self</span>.next_val <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>            <span class="hljs-variable language_">self</span>.has_next = <span class="hljs-literal">True</span><br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-variable language_">self</span>.has_next = <span class="hljs-literal">False</span><br><br>        <span class="hljs-keyword">return</span> curr_val<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">hasNext</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        :rtype: bool</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.has_next<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">next0</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        :rtype: int</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br><br>        val = <span class="hljs-literal">None</span><br>        not_find = <span class="hljs-literal">True</span><br>        <span class="hljs-keyword">while</span> <span class="hljs-variable language_">self</span>.q <span class="hljs-keyword">and</span> not_find:<br>            arr, num = <span class="hljs-variable language_">self</span>.q.pop()<br>            <span class="hljs-keyword">if</span> num &lt; <span class="hljs-built_in">len</span>(arr):<br>                ele = arr[num]<br>                <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(ele, <span class="hljs-built_in">int</span>):<br>                    val = ele<br>                    not_find = <span class="hljs-literal">False</span><br>                    <span class="hljs-variable language_">self</span>.q.append((arr, num + <span class="hljs-number">1</span>))<br>                <span class="hljs-keyword">else</span>:<br>                    <span class="hljs-variable language_">self</span>.q.append((arr, num + <span class="hljs-number">1</span>))<br>                    <span class="hljs-variable language_">self</span>.q.append((ele, <span class="hljs-number">0</span>))<br><br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">if</span> not_find <span class="hljs-keyword">else</span> val<br></code></pre></td></tr></table></figure>
-
-]]></content>
-      <tags>
-        <tag>leetcode</tag>
-        <tag>算法</tag>
-        <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>BitTorrent协议（二）之获取下载源</title>
     <url>/2019/01/10/2019-1-10-bt-2/</url>
     <content><![CDATA[<h2 id="如何获取下载源"><a href="#如何获取下载源" class="headerlink" title="如何获取下载源"></a>如何获取下载源</h2><p>作为一个downloader开始下载资源首先要向tracker宣布自己的存在，同时获得其他downloader的地址。
@@ -1325,6 +1266,65 @@ port = 6969  # get from tracker list
         <tag>bitTorrent</tag>
         <tag>protocol</tag>
         <tag>p2p</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[leetcode 337]打败了100%的解法</title>
+    <url>/2018/02/24/2018-2-24-robber-3/</url>
+    <content><![CDATA[<h2 id="题目概述"><a href="#题目概述" class="headerlink" title=" 题目概述"></a><a name="hh0"></a> 题目概述</h2><p><a href="https://leetcode.com/problems/house-robber-iii/description/">原题链接</a></p>
+<pre><code class="hljs">The thief has found himself a new place for his thievery again. There is only one entrance to this area, called the &quot;root.&quot; Besides the root, each house has one and only one parent house. After a tour, the smart thief realized that &quot;all houses in this place forms a binary tree&quot;. It will automatically contact the police if two directly-linked houses were broken into on the same night.
+Determine the maximum amount of money the thief can rob tonight without alerting the police.
+</code></pre>
+<figure class="highlight tap"><table><tr><td class="code"><pre><code class="hljs tap">Example 1:<br>     3<br>    / \<br>  <span class="hljs-number"> 2 </span>  2<br>    \   \ <br>    <span class="hljs-number"> 4 </span>  1<br>Maximum amount of money the thief can rob =<span class="hljs-number"> 3 </span>+<span class="hljs-number"> 4 </span>+<span class="hljs-number"> 1 </span>= 8.<br></code></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<h2 id="最快的解法"><a href="#最快的解法" class="headerlink" title=" 最快的解法"></a><a name="hh1"></a> 最快的解法</h2><p>以下代码打败了100%的其它python3解法。
+带记忆体的递归，也就是动态规划。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span>:<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">rob</span>(<span class="hljs-params">self, root</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        :type root: TreeNode</span><br><span class="hljs-string">        :rtype: int</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        <span class="hljs-variable language_">self</span>.memo = &#123;&#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.dp(root)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">dp</span>(<span class="hljs-params">self, root</span>):<br>        <span class="hljs-keyword">if</span> root <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">0</span><br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-keyword">if</span> root <span class="hljs-keyword">in</span> <span class="hljs-variable language_">self</span>.memo :<br>                <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.memo[root]<br><br>            v1 = <span class="hljs-variable language_">self</span>.dp(root.left) + <span class="hljs-variable language_">self</span>.dp(root.right)<br><br>            v2 = root.val<br>            <span class="hljs-keyword">if</span> root.left <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>                v2 += <span class="hljs-variable language_">self</span>.dp(root.left.left) + <span class="hljs-variable language_">self</span>.dp(root.left.right)<br>            <span class="hljs-keyword">if</span> root.right <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>                v2 += <span class="hljs-variable language_">self</span>.dp(root.right.left) + <span class="hljs-variable language_">self</span>.dp(root.right.right)<br>            <span class="hljs-variable language_">self</span>.memo[root] = <span class="hljs-built_in">max</span>(v1, v2)<br>            <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.memo[root]<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="截图留念"><a href="#截图留念" class="headerlink" title=" 截图留念"></a><a name="hh2"></a> 截图留念</h2><figure class="highlight apache"><table><tr><td class="code"><pre><code class="hljs apache">              <span class="hljs-attribute">You</span> are Here!<br><span class="hljs-attribute">Your</span> runtime beats <span class="hljs-number">100</span>.<span class="hljs-number">00</span>% of python3 submissions.<br></code></pre></td></tr></table></figure>
+<p><img src="/images/2018-2-24.png" alt="robber3_submit_result"></p>
+]]></content>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>算法</tag>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[leetcode 341]练练手</title>
+    <url>/2018/08/18/2018-8-18-leetcode-341/</url>
+    <content><![CDATA[<h2 id="题目概述"><a href="#题目概述" class="headerlink" title=" 题目概述"></a><a name="hh0"></a> 题目概述</h2><p><a href="https://leetcode.com//problems/flatten-nested-list-iterator/description/">原题链接</a></p>
+<blockquote>
+<p>  Given a nested list of integers, implement an iterator to flatten it.</p>
+<p>  Each element is either an integer, or a list – whose elements may also be integers or other lists.
+  Input: [[1,1],2,[1,1]]
+  Output: [1,1,2,1,1]</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="解题思路"><a href="#解题思路" class="headerlink" title=" 解题思路"></a><a name="hh1"></a> 解题思路</h2><p>如果只是遍历一遍，用类似二叉树的中序遍历就好了。但是因为要生成迭代子，那么就得
+考虑用栈来模拟递归了。</p>
+<p>当然这个题目是比较简单的，压栈的是一个tuple－(list, index)。第一个是list，第二个指向
+list的第几个item。</p>
+<h2 id="第一次通过的解法"><a href="#第一次通过的解法" class="headerlink" title=" 第一次通过的解法"></a><a name="hh2"></a> 第一次通过的解法</h2><p>比较慢。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">NestedIterator</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, nestedList</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        Initialize your data structure here.</span><br><span class="hljs-string">        :type nestedList: List[NestedInteger]</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        <span class="hljs-variable language_">self</span>.q = [(nestedList, <span class="hljs-number">0</span>)]<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">next</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        :rtype: int</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br><br>        val = <span class="hljs-literal">None</span><br>        not_find = <span class="hljs-literal">True</span><br>        <span class="hljs-keyword">while</span> <span class="hljs-variable language_">self</span>.q <span class="hljs-keyword">and</span> not_find:<br>            arr, num = <span class="hljs-variable language_">self</span>.q.pop()<br>            <span class="hljs-keyword">if</span> num &lt; <span class="hljs-built_in">len</span>(arr):<br>                ele = arr[num]<br>                <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(ele, <span class="hljs-built_in">int</span>): <span class="hljs-comment"># 如果提交需要改成　ele.isInteger()</span><br>                    val = ele            <span class="hljs-comment"># ................  ele.getInteger()</span><br>                    not_find = <span class="hljs-literal">False</span><br>                    <span class="hljs-variable language_">self</span>.q.append((arr, num + <span class="hljs-number">1</span>))<br>                <span class="hljs-keyword">else</span>:<br>                    <span class="hljs-variable language_">self</span>.q.append((arr, num + <span class="hljs-number">1</span>))<br>                    <span class="hljs-variable language_">self</span>.q.append((ele, <span class="hljs-number">0</span>))  <span class="hljs-comment"># 如果提交改成，self.q.append((ele.getList(),0))</span><br><br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">if</span> not_find <span class="hljs-keyword">else</span> val<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">hasNext</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        :rtype: bool</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        has_next = <span class="hljs-literal">False</span><br>        <span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> has_next <span class="hljs-keyword">and</span> <span class="hljs-variable language_">self</span>.q:<br>            arr, num = <span class="hljs-variable language_">self</span>.q.pop()<br>            <span class="hljs-keyword">if</span> num &lt; <span class="hljs-built_in">len</span>(arr):<br>                ele = arr[num]<br>                <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(ele, <span class="hljs-built_in">int</span>):<br>                    has_next = <span class="hljs-literal">True</span><br>                    <span class="hljs-variable language_">self</span>.q.append((arr, num))<br>                <span class="hljs-keyword">else</span>:<br>                    <span class="hljs-variable language_">self</span>.q.append((arr, num + <span class="hljs-number">1</span>))<br>                    <span class="hljs-variable language_">self</span>.q.append((ele, <span class="hljs-number">0</span>))<br><br>        <span class="hljs-keyword">return</span> has_next<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    nestedlist = [[<span class="hljs-number">1</span>, <span class="hljs-number">2</span>], <span class="hljs-number">3</span>, [<span class="hljs-number">4</span>, <span class="hljs-number">5</span>], <span class="hljs-number">6</span>]<br>    i, v = NestedIterator(nestedlist), []<br>    <span class="hljs-keyword">while</span> i.hasNext(): v.append(i.<span class="hljs-built_in">next</span>())<br>    <span class="hljs-built_in">print</span>(v)  <span class="hljs-comment"># [1, 2, 3, 4, 5, 6]</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="优化后的解法"><a href="#优化后的解法" class="headerlink" title=" 优化后的解法"></a><a name="hh3"></a> 优化后的解法</h2><p>之前的解法大概是140ms跑通了44个测试。而大多数的解法则在70ms左右。
+怎么改进呢？
+has_next和next方法本质上是一样的，可以只保留一个next就可以实现两个方法了。
+那么我们可以提前跑next方法，缓存两个值。</p>
+<p>以下是改进后的速度提升了一倍。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">NestedIterator2</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, nestedList</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        Initialize your data structure here.</span><br><span class="hljs-string">        :type nestedList: List[NestedInteger]</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        <span class="hljs-variable language_">self</span>.q = [(nestedList, <span class="hljs-number">0</span>)]<br>        <span class="hljs-variable language_">self</span>.next_val = <span class="hljs-variable language_">self</span>.next0()<br>        <span class="hljs-keyword">if</span> <span class="hljs-variable language_">self</span>.next_val <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span> :<br>            <span class="hljs-variable language_">self</span>.has_next = <span class="hljs-literal">True</span><br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-variable language_">self</span>.has_next = <span class="hljs-literal">False</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">next</span>(<span class="hljs-params">self</span>):<br>        curr_val = <span class="hljs-variable language_">self</span>.next_val<br>        <span class="hljs-keyword">if</span> <span class="hljs-variable language_">self</span>.has_next:<br>            <span class="hljs-variable language_">self</span>.next_val = <span class="hljs-variable language_">self</span>.next0()<br><br>        <span class="hljs-keyword">if</span> <span class="hljs-variable language_">self</span>.next_val <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>            <span class="hljs-variable language_">self</span>.has_next = <span class="hljs-literal">True</span><br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-variable language_">self</span>.has_next = <span class="hljs-literal">False</span><br><br>        <span class="hljs-keyword">return</span> curr_val<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">hasNext</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        :rtype: bool</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.has_next<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">next0</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        :rtype: int</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br><br>        val = <span class="hljs-literal">None</span><br>        not_find = <span class="hljs-literal">True</span><br>        <span class="hljs-keyword">while</span> <span class="hljs-variable language_">self</span>.q <span class="hljs-keyword">and</span> not_find:<br>            arr, num = <span class="hljs-variable language_">self</span>.q.pop()<br>            <span class="hljs-keyword">if</span> num &lt; <span class="hljs-built_in">len</span>(arr):<br>                ele = arr[num]<br>                <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(ele, <span class="hljs-built_in">int</span>):<br>                    val = ele<br>                    not_find = <span class="hljs-literal">False</span><br>                    <span class="hljs-variable language_">self</span>.q.append((arr, num + <span class="hljs-number">1</span>))<br>                <span class="hljs-keyword">else</span>:<br>                    <span class="hljs-variable language_">self</span>.q.append((arr, num + <span class="hljs-number">1</span>))<br>                    <span class="hljs-variable language_">self</span>.q.append((ele, <span class="hljs-number">0</span>))<br><br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">if</span> not_find <span class="hljs-keyword">else</span> val<br></code></pre></td></tr></table></figure>
+
+]]></content>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>算法</tag>
+        <tag>python</tag>
       </tags>
   </entry>
   <entry>
@@ -2059,143 +2059,6 @@ Process finished with exit code 0
       </tags>
   </entry>
   <entry>
-    <title>Java语言中bytes convert to string and back not equal</title>
-    <url>/2019/04/28/2019-4-28-byte-to-string-and-back/</url>
-    <content><![CDATA[<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>用google搜索关键词”java bytes to string and back not equal”，第一个就是我说的这个问题。
-什么意思呢？就是在java中，bytes转化为string之后，再转换回bytes的时候，发现不相同了。
-<strong>但是<code>Go</code>语言就没有这个问题哦</strong>。</p>
-<span id="more"></span>
-
-<p>运行如下java代码</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-type">byte</span>[] a = <span class="hljs-keyword">new</span> <span class="hljs-title class_">byte</span>[]&#123;(<span class="hljs-type">byte</span>) <span class="hljs-number">0xc0</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0xa8</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x00</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x01</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x04</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x38</span>&#125;;<br>System.out.println(ByteBufUtil.hexDump(a));<br><span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>(a);<br>System.out.println(ByteBufUtil.hexDump(s.getBytes()));<br></code></pre></td></tr></table></figure>
-
-<p>输出的结果如下：</p>
-<figure class="highlight dns"><table><tr><td class="code"><pre><code class="hljs dns">c0a<span class="hljs-number">800010438</span><br>efbfbdefbfbd<span class="hljs-number">00010438</span><br></code></pre></td></tr></table></figure>
-
-<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>bytes转化为string类型，本质上要选择一种编码。那么选择的是什么呢？
-我们看看<code>new String()</code>执行的代码。通过跟踪，可以看到，使用了默认的编码。
-csn为<code>UTF-8</code>。</p>
-<figure class="highlight aspectj"><table><tr><td class="code"><pre><code class="hljs aspectj"><span class="hljs-keyword">static</span> <span class="hljs-keyword">char</span>[] decode(<span class="hljs-keyword">byte</span>[] ba, <span class="hljs-keyword">int</span> off, <span class="hljs-keyword">int</span> len) &#123;<br>    String csn = Charset.defaultCharset().name();<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-comment">// use charset name decode() variant which provides caching.</span><br>        <span class="hljs-function"><span class="hljs-keyword">return</span> <span class="hljs-title">decode</span><span class="hljs-params">(csn, ba, off, len)</span></span>;<br>    &#125; <span class="hljs-keyword">catch</span> (UnsupportedEncodingException x) &#123;<br>        warnUnsupportedCharset(csn);<br>    &#125;<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-function"><span class="hljs-keyword">return</span> <span class="hljs-title">decode</span><span class="hljs-params">(<span class="hljs-string">&quot;ISO-8859-1&quot;</span>, ba, off, len)</span></span>;<br>    &#125; <span class="hljs-keyword">catch</span> (UnsupportedEncodingException x) &#123;<br>        <span class="hljs-comment">// If this code is hit during VM initialization, MessageUtils is</span><br>        <span class="hljs-comment">// the only way we will be able to get any kind of error message.</span><br>        MessageUtils.err(<span class="hljs-string">&quot;ISO-8859-1 charset not available: &quot;</span><br>                         + x.toString());<br>        <span class="hljs-comment">// If we can not find ISO-8859-1 (a required encoding) then things</span><br>        <span class="hljs-comment">// are seriously wrong with the installation.</span><br>        System.exit(<span class="hljs-number">1</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>因为通常java编译的时候的默认编码是<code>UTF-8</code>。
-那么如何保证转化为字符串还能够转换回来呢？</p>
-<p>一种方法是使用<code>ISO-8859-1</code>。例如，</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-type">byte</span>[] a = <span class="hljs-keyword">new</span> <span class="hljs-title class_">byte</span>[]&#123;(<span class="hljs-type">byte</span>) <span class="hljs-number">0xC0</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0xa8</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x00</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x01</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x04</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x38</span>&#125;;<br>System.out.println(ByteBufUtil.hexDump(a));<br><span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>(a, Charset.forName(<span class="hljs-string">&quot;ISO-8859-1&quot;</span>));<br>System.out.println(ByteBufUtil.hexDump(s.getBytes(Charset.forName(<span class="hljs-string">&quot;ISO-8859-1&quot;</span>))));<br></code></pre></td></tr></table></figure>
-<p>结果是相等的。</p>
-<figure class="highlight dns"><table><tr><td class="code"><pre><code class="hljs dns">c0a<span class="hljs-number">800010438</span><br>c0a<span class="hljs-number">800010438</span><br></code></pre></td></tr></table></figure>
-
-<h2 id="Go语言没有这个问题"><a href="#Go语言没有这个问题" class="headerlink" title="Go语言没有这个问题"></a>Go语言没有这个问题</h2><p>Go语言则对这个问题解决的非常好。</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><code class="hljs go">a := []<span class="hljs-type">byte</span>&#123;<span class="hljs-number">0xc0</span>, <span class="hljs-number">0xa8</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x01</span>, <span class="hljs-number">0x04</span>, <span class="hljs-number">0x38</span>&#125;<br>fmt.Println(a)<br>s := <span class="hljs-type">string</span>(a)<br>b := []<span class="hljs-type">byte</span>(s)<br>fmt.Println(b)<br></code></pre></td></tr></table></figure>
-<p>运行结果是相等的。</p>
-<figure class="highlight tap"><table><tr><td class="code"><pre><code class="hljs tap">[192<span class="hljs-number"> 168 </span>0<span class="hljs-number"> 1 </span>4 56]<br>[192<span class="hljs-number"> 168 </span>0<span class="hljs-number"> 1 </span>4 56]<br></code></pre></td></tr></table></figure>
-]]></content>
-      <tags>
-        <tag>java</tag>
-        <tag>golang</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用delve调试K3s</title>
-    <url>/2019/11/19/debug-k3s/</url>
-    <content><![CDATA[<h2 id="k3s是什么"><a href="#k3s是什么" class="headerlink" title="k3s是什么"></a>k3s是什么</h2><p><a href="http://k3s.io/">K3s</a>是什么？k8s的精简版。编译之后执行程序大小不到50M。
-可以用在物联网的边缘计算侧。如果想深入了解k8s，那么k3s是个很好的起点。
-那么如果能够断点调试k3s，就更好了。下面我们来看看怎么做。</p>
-<span id="more"></span>
-
-<h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><ul>
-<li>建议使用linux 64位操作系统。这样可以native构建。</li>
-<li>建议性能好一些的机器，虚拟机编译会很慢</li>
-<li>建议安装好docker</li>
-<li>配置好go的环境，设置<code>GOPATH</code>，同时把<code>$GOPATH/bin</code>加入到<code>PATH</code></li>
-<li>安装Goland这个集成开发环境</li>
-<li>从github克隆k3s的代码，加上depth参数则不下载历史，速度会快很多<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ git <span class="hljs-built_in">clone</span> --depth 1 https://github.com/rancher/k3s.git <span class="hljs-variable">$GOPATH</span>/src/github.com/rancher/k3s<br></code></pre></td></tr></table></figure></li>
-<li>安装delve的debug工具。完成之后会生成可执行文件<code>$GOPATH/bin/dlv</code><figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ git <span class="hljs-built_in">clone</span> --depth 1 https://github.com/go-delve/delve.git <span class="hljs-variable">$GOPATH</span>/src/github.com/go-delve/delve<br>$ <span class="hljs-built_in">cd</span> <span class="hljs-variable">$GOPATH</span>/src/github.com/go-delve/delve<br>$ make install<br></code></pre></td></tr></table></figure></li>
-<li>构建含有调试信息的可执行文件<code>k3s</code>,所在路径是<code>$GOPATH/src/github.com/rancher/k3s/</code><figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ <span class="hljs-built_in">cd</span> <span class="hljs-variable">$GOPATH</span>/src/github.com/rancher/k3s<br>$ go build -gcflags <span class="hljs-string">&quot;all=-N -l&quot;</span> -o k3s<br></code></pre></td></tr></table></figure></li>
-<li>用delve执行。这时候线程会监听2345的远程调试接入。<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ <span class="hljs-built_in">cd</span> <span class="hljs-variable">$GOPATH</span>/src/github.com/rancher/k3s<br>$ dlv --listen=:2345 --headless=<span class="hljs-literal">true</span> --api-version=2 <span class="hljs-built_in">exec</span> -- ./k3s server --docker --disable-agent<br></code></pre></td></tr></table></figure></li>
-<li>Goland中添加k3s项目。项目根路径为<code>$GOPATH</code>，然后配置增加一个remote调试。在运行之前，在main.go上打一个断点。</li>
-</ul>
-<p>运行远程调试之后，成功。
-<img src="/images/20191119-k3s-remote-debug.jpg" alt="remote-debug"></p>
-]]></content>
-      <tags>
-        <tag>golang</tag>
-        <tag>k3s</tag>
-        <tag>delve</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>docker容器内访问mac主机的kafka</title>
-    <url>/2020/03/09/connect-kafka/</url>
-    <content><![CDATA[<h2 id="从容器内访问主机的kafka"><a href="#从容器内访问主机的kafka" class="headerlink" title="从容器内访问主机的kafka"></a>从容器内访问主机的kafka</h2><p>我最近遇到这样一个需求，需要从容器内的ClickHouse访问安装在mac主机的kafka。这个问题似乎很简单，
-因为在windows上，虚拟机可以和host组成一个局域网，因此kafka只要绑定此网段的ip地址即可。
-但是在我的mac主机下，这个方案行不通。</p>
-<span id="more"></span>
-
-<p>有几个原因，</p>
-<ol>
-<li>ClickHouse无法直接安装在mac上，需要编译（当然8G内存也可以编译，但是ninja需要限制job数量，要花很长时间）。</li>
-<li>我的mac内存只有8G，使用vbox根本不可能，只能使用docker。</li>
-<li>有现成的镜像，直接可以启动。并且host上可以直接连接ClickHouse。</li>
-</ol>
-<p>难点就在于容器和host根本不在一个网段。</p>
-<h2 id="解决步骤"><a href="#解决步骤" class="headerlink" title="解决步骤"></a>解决步骤</h2><ol>
-<li>修改主机上的kafka的相关配置如下</li>
-</ol>
-<figure class="highlight text"><table><tr><td class="code"><pre><code class="hljs text">listeners=PLAINTEXT://0.0.0.0:9092<br><br>advertised.listeners=PLAINTEXT://host.docker.internal:9092<br></code></pre></td></tr></table></figure>
-
-<ol start="2">
-<li><code>/etc/hosts</code>文件添加</li>
-</ol>
-<figure class="highlight text"><table><tr><td class="code"><pre><code class="hljs text">127.0.0.1       host.docker.internal<br></code></pre></td></tr></table></figure>
-
-<ol start="3">
-<li>在容器内，访问<code>host.docker.internal:9092</code></li>
-</ol>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>docker desktop for mac会默认提供一个域名<code>host.docker.internal</code>给容器内
-的应用访问主机的服务。所以，如果主机上启动一个rest服务<code>localhost:8080</code>，则容器内可以通过
-<code>host.docker.internal:8080</code>直接访问。</p>
-<p>但是如果kafka只是配置为</p>
-<figure class="highlight ruby"><table><tr><td class="code"><pre><code class="hljs ruby">listeners=<span class="hljs-variable constant_">PLAINTEXT</span><span class="hljs-symbol">://localhost</span><span class="hljs-symbol">:</span><span class="hljs-number">9092</span><br></code></pre></td></tr></table></figure>
-<p>想直接访问kafka的broker则是不行的。我们会发现，在容器内，<code>telnet host.docker.internal 9092</code>是通的。这是为什么呢？</p>
-<p>想要连接kafka的broker会进行基本的两步交互。</p>
-<ol>
-<li>client访问broker的地址”A”，然后broker会发送回去一个<code>advertised</code>地址”B”</li>
-<li>client接收到地址”B”，然后尝试访问”B”</li>
-</ol>
-<p>如果不设置<code>advertised.listeners</code>，那么默认等于<code>listeners</code>的值。</p>
-<p>所以对于这样的设置
-<code>B=A=PLAINTEXT://localhost:9092</code>。容器内尝试访问”host.docker.internal:9092”，则会这样子，</p>
-<ol>
-<li>容器内访问host.docker.internal:9092，接收到地址B&#x3D;PLAINTEXT:&#x2F;&#x2F;localhost:9092</li>
-<li>然后访问地址localhost:9092，失败。</li>
-</ol>
-<p>而如果在主机上访问则显然是成功的。</p>
-<p>而我们的解决方法配置是这样的
-<code>A=PLAINTEXT://localhost:9092, B=PLAINTEXT://host.docker.internal:9092</code></p>
-<p>所以如果容器内访问的过程就是，</p>
-<ol>
-<li>容器内访问host.docker.internal:9092，接收到地址B&#x3D;PLAINTEXT:&#x2F;&#x2F;host.docker.internal:9092</li>
-<li>然后访问host.docker.internal:9092，成功。</li>
-</ol>
-<p>而主机上的过程是，</p>
-<ol>
-<li>主机上访问localhost:9092,接收到地址B&#x3D;PLAINTEXT:&#x2F;&#x2F;host.docker.internal:9092</li>
-<li>然后访问host.docker.internal:9092，根据&#x2F;etc&#x2F;hosts的域名解析为127.0.0.1:9092，成功。</li>
-</ol>
-<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>我这里用<code>kafkacat</code>测试，实际上容器内的应用可以使用其他kafka客户端。</p>
-<p>连接broker,并显示metadata</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">root@bb6b85562200:/# kafkacat -b host.docker.internal:9092 -L<br>Metadata for all topics (from broker 0: host.docker.internal:9092/0):<br> 1 brokers:<br>  broker 0 at host.docker.internal:9092<br> 8 topics:<br>  topic &quot;test-topic&quot; with 1 partitions:<br>    partition 0, leader 0, replicas: 0, isrs: 0<br>  topic &quot;flink-test&quot; with 1 partitions:<br>    partition 0, leader 0, replicas: 0, isrs: 0<br>  topic &quot;__consumer_offsets&quot; with 50 partitions:<br>    partition 0, leader 0, replicas: 0, isrs: 0<br>    partition 10, leader 0, replicas: 0, isrs: 0<br>...<br>...<br></code></pre></td></tr></table></figure>
-
-<p>显示消息</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">^Croot@bb6b85562200:/# kafkacat -b host.docker.internal:9092 -C -t flink-test -o beginning<br>&#123;seqNo: 1, eventTs: 1583739799986, id: even偶数, value: 4.57&#125;<br><span class="hljs-meta prompt_">% </span><span class="language-bash">Reached end of topic flink-test [0] at offset 1</span><br></code></pre></td></tr></table></figure>
-]]></content>
-      <tags>
-        <tag>kafka</tag>
-        <tag>container</tag>
-        <tag>docker</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>BitTorrent协议（六）之种子嗅探器</title>
     <url>/2019/02/18/2019-2-18-bt-6/</url>
     <content><![CDATA[<h2 id="Sniffer（嗅探器）"><a href="#Sniffer（嗅探器）" class="headerlink" title="Sniffer（嗅探器）"></a>Sniffer（嗅探器）</h2><p>实现一个简单的BT种子嗅探器才算是有点实际价值的吧。这样就可以把种子的metadata信息
@@ -2271,6 +2134,143 @@ csn为<code>UTF-8</code>。</p>
       </tags>
   </entry>
   <entry>
+    <title>使用delve调试K3s</title>
+    <url>/2019/11/19/debug-k3s/</url>
+    <content><![CDATA[<h2 id="k3s是什么"><a href="#k3s是什么" class="headerlink" title="k3s是什么"></a>k3s是什么</h2><p><a href="http://k3s.io/">K3s</a>是什么？k8s的精简版。编译之后执行程序大小不到50M。
+可以用在物联网的边缘计算侧。如果想深入了解k8s，那么k3s是个很好的起点。
+那么如果能够断点调试k3s，就更好了。下面我们来看看怎么做。</p>
+<span id="more"></span>
+
+<h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><ul>
+<li>建议使用linux 64位操作系统。这样可以native构建。</li>
+<li>建议性能好一些的机器，虚拟机编译会很慢</li>
+<li>建议安装好docker</li>
+<li>配置好go的环境，设置<code>GOPATH</code>，同时把<code>$GOPATH/bin</code>加入到<code>PATH</code></li>
+<li>安装Goland这个集成开发环境</li>
+<li>从github克隆k3s的代码，加上depth参数则不下载历史，速度会快很多<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ git <span class="hljs-built_in">clone</span> --depth 1 https://github.com/rancher/k3s.git <span class="hljs-variable">$GOPATH</span>/src/github.com/rancher/k3s<br></code></pre></td></tr></table></figure></li>
+<li>安装delve的debug工具。完成之后会生成可执行文件<code>$GOPATH/bin/dlv</code><figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ git <span class="hljs-built_in">clone</span> --depth 1 https://github.com/go-delve/delve.git <span class="hljs-variable">$GOPATH</span>/src/github.com/go-delve/delve<br>$ <span class="hljs-built_in">cd</span> <span class="hljs-variable">$GOPATH</span>/src/github.com/go-delve/delve<br>$ make install<br></code></pre></td></tr></table></figure></li>
+<li>构建含有调试信息的可执行文件<code>k3s</code>,所在路径是<code>$GOPATH/src/github.com/rancher/k3s/</code><figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ <span class="hljs-built_in">cd</span> <span class="hljs-variable">$GOPATH</span>/src/github.com/rancher/k3s<br>$ go build -gcflags <span class="hljs-string">&quot;all=-N -l&quot;</span> -o k3s<br></code></pre></td></tr></table></figure></li>
+<li>用delve执行。这时候线程会监听2345的远程调试接入。<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ <span class="hljs-built_in">cd</span> <span class="hljs-variable">$GOPATH</span>/src/github.com/rancher/k3s<br>$ dlv --listen=:2345 --headless=<span class="hljs-literal">true</span> --api-version=2 <span class="hljs-built_in">exec</span> -- ./k3s server --docker --disable-agent<br></code></pre></td></tr></table></figure></li>
+<li>Goland中添加k3s项目。项目根路径为<code>$GOPATH</code>，然后配置增加一个remote调试。在运行之前，在main.go上打一个断点。</li>
+</ul>
+<p>运行远程调试之后，成功。
+<img src="/images/20191119-k3s-remote-debug.jpg" alt="remote-debug"></p>
+]]></content>
+      <tags>
+        <tag>k3s</tag>
+        <tag>delve</tag>
+        <tag>golang</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>docker容器内访问mac主机的kafka</title>
+    <url>/2020/03/09/connect-kafka/</url>
+    <content><![CDATA[<h2 id="从容器内访问主机的kafka"><a href="#从容器内访问主机的kafka" class="headerlink" title="从容器内访问主机的kafka"></a>从容器内访问主机的kafka</h2><p>我最近遇到这样一个需求，需要从容器内的ClickHouse访问安装在mac主机的kafka。这个问题似乎很简单，
+因为在windows上，虚拟机可以和host组成一个局域网，因此kafka只要绑定此网段的ip地址即可。
+但是在我的mac主机下，这个方案行不通。</p>
+<span id="more"></span>
+
+<p>有几个原因，</p>
+<ol>
+<li>ClickHouse无法直接安装在mac上，需要编译（当然8G内存也可以编译，但是ninja需要限制job数量，要花很长时间）。</li>
+<li>我的mac内存只有8G，使用vbox根本不可能，只能使用docker。</li>
+<li>有现成的镜像，直接可以启动。并且host上可以直接连接ClickHouse。</li>
+</ol>
+<p>难点就在于容器和host根本不在一个网段。</p>
+<h2 id="解决步骤"><a href="#解决步骤" class="headerlink" title="解决步骤"></a>解决步骤</h2><ol>
+<li>修改主机上的kafka的相关配置如下</li>
+</ol>
+<figure class="highlight text"><table><tr><td class="code"><pre><code class="hljs text">listeners=PLAINTEXT://0.0.0.0:9092<br><br>advertised.listeners=PLAINTEXT://host.docker.internal:9092<br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><code>/etc/hosts</code>文件添加</li>
+</ol>
+<figure class="highlight text"><table><tr><td class="code"><pre><code class="hljs text">127.0.0.1       host.docker.internal<br></code></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>在容器内，访问<code>host.docker.internal:9092</code></li>
+</ol>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>docker desktop for mac会默认提供一个域名<code>host.docker.internal</code>给容器内
+的应用访问主机的服务。所以，如果主机上启动一个rest服务<code>localhost:8080</code>，则容器内可以通过
+<code>host.docker.internal:8080</code>直接访问。</p>
+<p>但是如果kafka只是配置为</p>
+<figure class="highlight ruby"><table><tr><td class="code"><pre><code class="hljs ruby">listeners=<span class="hljs-variable constant_">PLAINTEXT</span><span class="hljs-symbol">://localhost</span><span class="hljs-symbol">:</span><span class="hljs-number">9092</span><br></code></pre></td></tr></table></figure>
+<p>想直接访问kafka的broker则是不行的。我们会发现，在容器内，<code>telnet host.docker.internal 9092</code>是通的。这是为什么呢？</p>
+<p>想要连接kafka的broker会进行基本的两步交互。</p>
+<ol>
+<li>client访问broker的地址”A”，然后broker会发送回去一个<code>advertised</code>地址”B”</li>
+<li>client接收到地址”B”，然后尝试访问”B”</li>
+</ol>
+<p>如果不设置<code>advertised.listeners</code>，那么默认等于<code>listeners</code>的值。</p>
+<p>所以对于这样的设置
+<code>B=A=PLAINTEXT://localhost:9092</code>。容器内尝试访问”host.docker.internal:9092”，则会这样子，</p>
+<ol>
+<li>容器内访问host.docker.internal:9092，接收到地址B&#x3D;PLAINTEXT:&#x2F;&#x2F;localhost:9092</li>
+<li>然后访问地址localhost:9092，失败。</li>
+</ol>
+<p>而如果在主机上访问则显然是成功的。</p>
+<p>而我们的解决方法配置是这样的
+<code>A=PLAINTEXT://localhost:9092, B=PLAINTEXT://host.docker.internal:9092</code></p>
+<p>所以如果容器内访问的过程就是，</p>
+<ol>
+<li>容器内访问host.docker.internal:9092，接收到地址B&#x3D;PLAINTEXT:&#x2F;&#x2F;host.docker.internal:9092</li>
+<li>然后访问host.docker.internal:9092，成功。</li>
+</ol>
+<p>而主机上的过程是，</p>
+<ol>
+<li>主机上访问localhost:9092,接收到地址B&#x3D;PLAINTEXT:&#x2F;&#x2F;host.docker.internal:9092</li>
+<li>然后访问host.docker.internal:9092，根据&#x2F;etc&#x2F;hosts的域名解析为127.0.0.1:9092，成功。</li>
+</ol>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>我这里用<code>kafkacat</code>测试，实际上容器内的应用可以使用其他kafka客户端。</p>
+<p>连接broker,并显示metadata</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">root@bb6b85562200:/# kafkacat -b host.docker.internal:9092 -L<br>Metadata for all topics (from broker 0: host.docker.internal:9092/0):<br> 1 brokers:<br>  broker 0 at host.docker.internal:9092<br> 8 topics:<br>  topic &quot;test-topic&quot; with 1 partitions:<br>    partition 0, leader 0, replicas: 0, isrs: 0<br>  topic &quot;flink-test&quot; with 1 partitions:<br>    partition 0, leader 0, replicas: 0, isrs: 0<br>  topic &quot;__consumer_offsets&quot; with 50 partitions:<br>    partition 0, leader 0, replicas: 0, isrs: 0<br>    partition 10, leader 0, replicas: 0, isrs: 0<br>...<br>...<br></code></pre></td></tr></table></figure>
+
+<p>显示消息</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">^Croot@bb6b85562200:/# kafkacat -b host.docker.internal:9092 -C -t flink-test -o beginning<br>&#123;seqNo: 1, eventTs: 1583739799986, id: even偶数, value: 4.57&#125;<br><span class="hljs-meta prompt_">% </span><span class="language-bash">Reached end of topic flink-test [0] at offset 1</span><br></code></pre></td></tr></table></figure>
+]]></content>
+      <tags>
+        <tag>kafka</tag>
+        <tag>container</tag>
+        <tag>docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java语言中bytes convert to string and back not equal</title>
+    <url>/2019/04/28/2019-4-28-byte-to-string-and-back/</url>
+    <content><![CDATA[<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>用google搜索关键词”java bytes to string and back not equal”，第一个就是我说的这个问题。
+什么意思呢？就是在java中，bytes转化为string之后，再转换回bytes的时候，发现不相同了。
+<strong>但是<code>Go</code>语言就没有这个问题哦</strong>。</p>
+<span id="more"></span>
+
+<p>运行如下java代码</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-type">byte</span>[] a = <span class="hljs-keyword">new</span> <span class="hljs-title class_">byte</span>[]&#123;(<span class="hljs-type">byte</span>) <span class="hljs-number">0xc0</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0xa8</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x00</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x01</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x04</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x38</span>&#125;;<br>System.out.println(ByteBufUtil.hexDump(a));<br><span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>(a);<br>System.out.println(ByteBufUtil.hexDump(s.getBytes()));<br></code></pre></td></tr></table></figure>
+
+<p>输出的结果如下：</p>
+<figure class="highlight dns"><table><tr><td class="code"><pre><code class="hljs dns">c0a<span class="hljs-number">800010438</span><br>efbfbdefbfbd<span class="hljs-number">00010438</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>bytes转化为string类型，本质上要选择一种编码。那么选择的是什么呢？
+我们看看<code>new String()</code>执行的代码。通过跟踪，可以看到，使用了默认的编码。
+csn为<code>UTF-8</code>。</p>
+<figure class="highlight aspectj"><table><tr><td class="code"><pre><code class="hljs aspectj"><span class="hljs-keyword">static</span> <span class="hljs-keyword">char</span>[] decode(<span class="hljs-keyword">byte</span>[] ba, <span class="hljs-keyword">int</span> off, <span class="hljs-keyword">int</span> len) &#123;<br>    String csn = Charset.defaultCharset().name();<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-comment">// use charset name decode() variant which provides caching.</span><br>        <span class="hljs-function"><span class="hljs-keyword">return</span> <span class="hljs-title">decode</span><span class="hljs-params">(csn, ba, off, len)</span></span>;<br>    &#125; <span class="hljs-keyword">catch</span> (UnsupportedEncodingException x) &#123;<br>        warnUnsupportedCharset(csn);<br>    &#125;<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-function"><span class="hljs-keyword">return</span> <span class="hljs-title">decode</span><span class="hljs-params">(<span class="hljs-string">&quot;ISO-8859-1&quot;</span>, ba, off, len)</span></span>;<br>    &#125; <span class="hljs-keyword">catch</span> (UnsupportedEncodingException x) &#123;<br>        <span class="hljs-comment">// If this code is hit during VM initialization, MessageUtils is</span><br>        <span class="hljs-comment">// the only way we will be able to get any kind of error message.</span><br>        MessageUtils.err(<span class="hljs-string">&quot;ISO-8859-1 charset not available: &quot;</span><br>                         + x.toString());<br>        <span class="hljs-comment">// If we can not find ISO-8859-1 (a required encoding) then things</span><br>        <span class="hljs-comment">// are seriously wrong with the installation.</span><br>        System.exit(<span class="hljs-number">1</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>因为通常java编译的时候的默认编码是<code>UTF-8</code>。
+那么如何保证转化为字符串还能够转换回来呢？</p>
+<p>一种方法是使用<code>ISO-8859-1</code>。例如，</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-type">byte</span>[] a = <span class="hljs-keyword">new</span> <span class="hljs-title class_">byte</span>[]&#123;(<span class="hljs-type">byte</span>) <span class="hljs-number">0xC0</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0xa8</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x00</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x01</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x04</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x38</span>&#125;;<br>System.out.println(ByteBufUtil.hexDump(a));<br><span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>(a, Charset.forName(<span class="hljs-string">&quot;ISO-8859-1&quot;</span>));<br>System.out.println(ByteBufUtil.hexDump(s.getBytes(Charset.forName(<span class="hljs-string">&quot;ISO-8859-1&quot;</span>))));<br></code></pre></td></tr></table></figure>
+<p>结果是相等的。</p>
+<figure class="highlight dns"><table><tr><td class="code"><pre><code class="hljs dns">c0a<span class="hljs-number">800010438</span><br>c0a<span class="hljs-number">800010438</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="Go语言没有这个问题"><a href="#Go语言没有这个问题" class="headerlink" title="Go语言没有这个问题"></a>Go语言没有这个问题</h2><p>Go语言则对这个问题解决的非常好。</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><code class="hljs go">a := []<span class="hljs-type">byte</span>&#123;<span class="hljs-number">0xc0</span>, <span class="hljs-number">0xa8</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x01</span>, <span class="hljs-number">0x04</span>, <span class="hljs-number">0x38</span>&#125;<br>fmt.Println(a)<br>s := <span class="hljs-type">string</span>(a)<br>b := []<span class="hljs-type">byte</span>(s)<br>fmt.Println(b)<br></code></pre></td></tr></table></figure>
+<p>运行结果是相等的。</p>
+<figure class="highlight tap"><table><tr><td class="code"><pre><code class="hljs tap">[192<span class="hljs-number"> 168 </span>0<span class="hljs-number"> 1 </span>4 56]<br>[192<span class="hljs-number"> 168 </span>0<span class="hljs-number"> 1 </span>4 56]<br></code></pre></td></tr></table></figure>
+]]></content>
+      <tags>
+        <tag>java</tag>
+        <tag>golang</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>在mac下跑一个Ingress的例子</title>
     <url>/2020/07/06/run-ingress-example-on-mac/</url>
     <content><![CDATA[<h2 id="Ingress是什么"><a href="#Ingress是什么" class="headerlink" title="Ingress是什么"></a>Ingress是什么</h2><p>在Kubernetes中，Ingress是一个对象，该对象允许从Kubernetes集群外部访问Kubernetes服务。 您可以 
@@ -2320,6 +2320,34 @@ csn为<code>UTF-8</code>。</p>
         <tag>k8s</tag>
         <tag>ingress</tag>
         <tag>mac</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>基于Spring Integration实现文件写入</title>
+    <url>/2020/08/14/write-file-with-spring-integration/</url>
+    <content><![CDATA[<h2 id="Spring-Integration是什么"><a href="#Spring-Integration是什么" class="headerlink" title="Spring Integration是什么"></a>Spring Integration是什么</h2><p>Spring Integration是一个出现了10年的技术。随便搜索一下，就能看到历史的久远，但是实际项目中用的人很少？原因是什么呢？</p>
+<span id="more"></span>
+
+<p>难！很难！</p>
+<p>因为Spring Integration已经是一套DSL了。所以学习它就是学习一种新的语言，一种新的编程范式。</p>
+<h2 id="写入文件"><a href="#写入文件" class="headerlink" title="写入文件"></a>写入文件</h2><p>就拿最简单的一个使用，如何写入一个文件，Google了几遍只能找到Spring的官方文档中的例子。如下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@SpringBootApplication</span><br><span class="hljs-meta">@IntegrationComponentScan</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">FileWritingJavaApplication</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">ConfigurableApplicationContext</span> <span class="hljs-variable">context</span> <span class="hljs-operator">=</span><br>                      <span class="hljs-keyword">new</span> <span class="hljs-title class_">SpringApplicationBuilder</span>(FileWritingJavaApplication.class)<br>                              .web(<span class="hljs-literal">false</span>)<br>                              .run(args);<br>             <span class="hljs-type">MyGateway</span> <span class="hljs-variable">gateway</span> <span class="hljs-operator">=</span> context.getBean(MyGateway.class);<br>             gateway.writeToFile(<span class="hljs-string">&quot;foo.txt&quot;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">File</span>(tmpDir.getRoot(), <span class="hljs-string">&quot;fileWritingFlow&quot;</span>), <span class="hljs-string">&quot;foo&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-meta">@ServiceActivator(inputChannel = &quot;writeToFileChannel&quot;)</span><br>    <span class="hljs-keyword">public</span> MessageHandler <span class="hljs-title function_">fileWritingMessageHandler</span><span class="hljs-params">()</span> &#123;<br>         <span class="hljs-type">Expression</span> <span class="hljs-variable">directoryExpression</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SpelExpressionParser</span>().parseExpression(<span class="hljs-string">&quot;headers.directory&quot;</span>);<br>         <span class="hljs-type">FileWritingMessageHandler</span> <span class="hljs-variable">handler</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">FileWritingMessageHandler</span>(directoryExpression);<br>         handler.setFileExistsMode(FileExistsMode.APPEND);<br>         <span class="hljs-keyword">return</span> handler;<br>    &#125;<br><br>    <span class="hljs-meta">@MessagingGateway(defaultRequestChannel = &quot;writeToFileChannel&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">MyGateway</span> &#123;<br><br>        <span class="hljs-keyword">void</span> <span class="hljs-title function_">writeToFile</span><span class="hljs-params">(<span class="hljs-meta">@Header(FileHeaders.FILENAME)</span> String fileName,</span><br><span class="hljs-params">                       <span class="hljs-meta">@Header(FileHeaders.FILENAME)</span> File directory, String data)</span>;<br><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可是一运行发现根本跑不起来，而且问题不止一处。</p>
+<h2 id="完整的例子"><a href="#完整的例子" class="headerlink" title="完整的例子"></a>完整的例子</h2><p>我先给出修改后的可以正常运行的代码吧。可以和上面的比较一下，差别有好几处。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration</span><br><span class="hljs-meta">@IntegrationComponentScan</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">FileWriteConfig</span> &#123;<br><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> MessageChannel <span class="hljs-title function_">writeToFileChannel</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">DirectChannel</span> <span class="hljs-variable">directChannel</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">DirectChannel</span>();<br>        directChannel.subscribe(fileWritingMessageHandler());<br>        <span class="hljs-keyword">return</span> directChannel;<br>    &#125;<br><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> MessageHandler <span class="hljs-title function_">fileWritingMessageHandler</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">Expression</span> <span class="hljs-variable">directoryExpression</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SpelExpressionParser</span>().parseExpression(<span class="hljs-string">&quot;headers.directory&quot;</span>);<br>        <span class="hljs-type">FileWritingMessageHandler</span> <span class="hljs-variable">handler</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">FileWritingMessageHandler</span>(directoryExpression);<br>        handler.setFileExistsMode(FileExistsMode.REPLACE);<br>        <span class="hljs-comment">//https://stackoverflow.com/questions/29274479/spring-integration-no-output-channel-or-replychannel-header-available</span><br>        handler.setExpectReply(<span class="hljs-literal">false</span>);<br>        <span class="hljs-keyword">return</span> handler;<br>    &#125;<br><br>    <span class="hljs-meta">@MessagingGateway(defaultRequestChannel = &quot;writeToFileChannel&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">FileWriteGateway</span> &#123;<br><br>        <span class="hljs-keyword">void</span> <span class="hljs-title function_">writeToFile</span><span class="hljs-params">(<span class="hljs-meta">@Header(FileHeaders.FILENAME)</span> String fileName,</span><br><span class="hljs-params">                         <span class="hljs-meta">@Header(&quot;directory&quot;)</span> File directory,</span><br><span class="hljs-params">                         String data)</span>;<br><br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>然后写一个测试。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RunWith(SpringRunner.class)</span><br><span class="hljs-meta">@SpringBootTest(classes = Application.class)</span><br><span class="hljs-meta">@WebAppConfiguration</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">FileWriteGatewayTest</span> &#123;<br><br>    <span class="hljs-meta">@SuppressWarnings(&quot;SpringJavaInjectionPointsAutowiringInspection&quot;)</span><br>    <span class="hljs-meta">@Autowired</span><br>    FileWriteConfig.FileWriteGateway gateway;<br><br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test</span><span class="hljs-params">()</span>&#123;<br>        gateway.writeToFile(<span class="hljs-string">&quot;foo.txt&quot;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">File</span>(<span class="hljs-string">&quot;/Users/ym/tmp/&quot;</span>), <span class="hljs-string">&quot;fff&quot;</span>);<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>用法非常简单。但是配置却花了好长时间。但是只有通过使用才能慢慢理解这个框架。</p>
+<p>写代码是不是像搭积木，像玩<code>magspace</code>。</p>
+]]></content>
+      <tags>
+        <tag>spring</tag>
+        <tag>integration</tag>
+        <tag>write</tag>
+        <tag>file</tag>
       </tags>
   </entry>
   <entry>
@@ -2422,152 +2450,6 @@ remote path为<code>/home/keyvalue/ym/operation</code>，local path为<code>/Use
         <tag>nginx</tag>
         <tag>openssl</tag>
         <tag>ssl</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>基于Spring Integration实现文件写入</title>
-    <url>/2020/08/14/write-file-with-spring-integration/</url>
-    <content><![CDATA[<h2 id="Spring-Integration是什么"><a href="#Spring-Integration是什么" class="headerlink" title="Spring Integration是什么"></a>Spring Integration是什么</h2><p>Spring Integration是一个出现了10年的技术。随便搜索一下，就能看到历史的久远，但是实际项目中用的人很少？原因是什么呢？</p>
-<span id="more"></span>
-
-<p>难！很难！</p>
-<p>因为Spring Integration已经是一套DSL了。所以学习它就是学习一种新的语言，一种新的编程范式。</p>
-<h2 id="写入文件"><a href="#写入文件" class="headerlink" title="写入文件"></a>写入文件</h2><p>就拿最简单的一个使用，如何写入一个文件，Google了几遍只能找到Spring的官方文档中的例子。如下</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@SpringBootApplication</span><br><span class="hljs-meta">@IntegrationComponentScan</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">FileWritingJavaApplication</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">ConfigurableApplicationContext</span> <span class="hljs-variable">context</span> <span class="hljs-operator">=</span><br>                      <span class="hljs-keyword">new</span> <span class="hljs-title class_">SpringApplicationBuilder</span>(FileWritingJavaApplication.class)<br>                              .web(<span class="hljs-literal">false</span>)<br>                              .run(args);<br>             <span class="hljs-type">MyGateway</span> <span class="hljs-variable">gateway</span> <span class="hljs-operator">=</span> context.getBean(MyGateway.class);<br>             gateway.writeToFile(<span class="hljs-string">&quot;foo.txt&quot;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">File</span>(tmpDir.getRoot(), <span class="hljs-string">&quot;fileWritingFlow&quot;</span>), <span class="hljs-string">&quot;foo&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-meta">@ServiceActivator(inputChannel = &quot;writeToFileChannel&quot;)</span><br>    <span class="hljs-keyword">public</span> MessageHandler <span class="hljs-title function_">fileWritingMessageHandler</span><span class="hljs-params">()</span> &#123;<br>         <span class="hljs-type">Expression</span> <span class="hljs-variable">directoryExpression</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SpelExpressionParser</span>().parseExpression(<span class="hljs-string">&quot;headers.directory&quot;</span>);<br>         <span class="hljs-type">FileWritingMessageHandler</span> <span class="hljs-variable">handler</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">FileWritingMessageHandler</span>(directoryExpression);<br>         handler.setFileExistsMode(FileExistsMode.APPEND);<br>         <span class="hljs-keyword">return</span> handler;<br>    &#125;<br><br>    <span class="hljs-meta">@MessagingGateway(defaultRequestChannel = &quot;writeToFileChannel&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">MyGateway</span> &#123;<br><br>        <span class="hljs-keyword">void</span> <span class="hljs-title function_">writeToFile</span><span class="hljs-params">(<span class="hljs-meta">@Header(FileHeaders.FILENAME)</span> String fileName,</span><br><span class="hljs-params">                       <span class="hljs-meta">@Header(FileHeaders.FILENAME)</span> File directory, String data)</span>;<br><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>可是一运行发现根本跑不起来，而且问题不止一处。</p>
-<h2 id="完整的例子"><a href="#完整的例子" class="headerlink" title="完整的例子"></a>完整的例子</h2><p>我先给出修改后的可以正常运行的代码吧。可以和上面的比较一下，差别有好几处。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration</span><br><span class="hljs-meta">@IntegrationComponentScan</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">FileWriteConfig</span> &#123;<br><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> MessageChannel <span class="hljs-title function_">writeToFileChannel</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">DirectChannel</span> <span class="hljs-variable">directChannel</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">DirectChannel</span>();<br>        directChannel.subscribe(fileWritingMessageHandler());<br>        <span class="hljs-keyword">return</span> directChannel;<br>    &#125;<br><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> MessageHandler <span class="hljs-title function_">fileWritingMessageHandler</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">Expression</span> <span class="hljs-variable">directoryExpression</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SpelExpressionParser</span>().parseExpression(<span class="hljs-string">&quot;headers.directory&quot;</span>);<br>        <span class="hljs-type">FileWritingMessageHandler</span> <span class="hljs-variable">handler</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">FileWritingMessageHandler</span>(directoryExpression);<br>        handler.setFileExistsMode(FileExistsMode.REPLACE);<br>        <span class="hljs-comment">//https://stackoverflow.com/questions/29274479/spring-integration-no-output-channel-or-replychannel-header-available</span><br>        handler.setExpectReply(<span class="hljs-literal">false</span>);<br>        <span class="hljs-keyword">return</span> handler;<br>    &#125;<br><br>    <span class="hljs-meta">@MessagingGateway(defaultRequestChannel = &quot;writeToFileChannel&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">FileWriteGateway</span> &#123;<br><br>        <span class="hljs-keyword">void</span> <span class="hljs-title function_">writeToFile</span><span class="hljs-params">(<span class="hljs-meta">@Header(FileHeaders.FILENAME)</span> String fileName,</span><br><span class="hljs-params">                         <span class="hljs-meta">@Header(&quot;directory&quot;)</span> File directory,</span><br><span class="hljs-params">                         String data)</span>;<br><br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>然后写一个测试。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RunWith(SpringRunner.class)</span><br><span class="hljs-meta">@SpringBootTest(classes = Application.class)</span><br><span class="hljs-meta">@WebAppConfiguration</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">FileWriteGatewayTest</span> &#123;<br><br>    <span class="hljs-meta">@SuppressWarnings(&quot;SpringJavaInjectionPointsAutowiringInspection&quot;)</span><br>    <span class="hljs-meta">@Autowired</span><br>    FileWriteConfig.FileWriteGateway gateway;<br><br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test</span><span class="hljs-params">()</span>&#123;<br>        gateway.writeToFile(<span class="hljs-string">&quot;foo.txt&quot;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">File</span>(<span class="hljs-string">&quot;/Users/ym/tmp/&quot;</span>), <span class="hljs-string">&quot;fff&quot;</span>);<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>用法非常简单。但是配置却花了好长时间。但是只有通过使用才能慢慢理解这个框架。</p>
-<p>写代码是不是像搭积木，像玩<code>magspace</code>。</p>
-]]></content>
-      <tags>
-        <tag>spring</tag>
-        <tag>integration</tag>
-        <tag>write</tag>
-        <tag>file</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>ASN.1语言规范介绍</title>
-    <url>/2020/11/08/asn-1/</url>
-    <content><![CDATA[<h2 id="ASN-1介绍"><a href="#ASN-1介绍" class="headerlink" title="ASN.1介绍"></a>ASN.1介绍</h2><p><code>X.509</code>证书常用的编码方式有DER格式和PEM格式。证书是一个对象的话，那么需要一个描述这个对象的语言。ASN.1就是这样的一个语言规范。而DER是ASN.1编码的一种方式。如果要解析DER编码文件，就需要了解ASN.1语言规范的编解码。</p>
-<span id="more"></span>
-
-<p>ASN.1（Abstract Syntax Notation One）是OSI（Open Source Interconnection）使用的描述对象的语言规范。OSI是X.200中定义的。而ASN.1是X.208中描述的。</p>
-<p>下面是一个ASN.1的例子</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs asn.1">Foo DEFINITIONS ::= BEGIN<br><br>    Question ::= SEQUENCE &#123;<br>        id        INTEGER,<br>        question  IA5String<br>    &#125;<br><br>    Answer ::= SEQUENCE &#123;<br>        id        INTEGER,<br>        answer    BOOLEAN<br>    &#125;<br><br>END<br></code></pre></td></tr></table></figure>
-
-<h2 id="以一个证书分析ASN-1语法"><a href="#以一个证书分析ASN-1语法" class="headerlink" title="以一个证书分析ASN.1语法"></a>以一个证书分析ASN.1语法</h2><p>以下是一个<code>PEM</code>格式的证书。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">-----BEGIN CERTIFICATE-----<br><br>MIIFwTCCA6mgAwIBAgIUNQk34EiXUjqgxnfhOZtv6zxIiekwDQYJKoZIhvcNAQEN<br><br>BQAwcDELMAkGA1UEBhMCQ04xEDAOBgNVBAgMB0JlaWppbmcxEDAOBgNVBAcMB0Jl<br><br>aWppbmcxEDAOBgNVBAoMB2V4YW1wbGUxETAPBgNVBAsMCFBlcnNvbmFsMRgwFgYD<br><br>VQQDDA9yZXBvLmVubmlvdC5uZXQwHhcNMjAwODExMDMwMzE0WhcNMzAwODA5MDMw<br><br>MzE0WjBwMQswCQYDVQQGEwJDTjEQMA4GA1UECAwHQmVpamluZzEQMA4GA1UEBwwH<br><br>QmVpamluZzEQMA4GA1UECgwHZXhhbXBsZTERMA8GA1UECwwIUGVyc29uYWwxGDAW<br><br>BgNVBAMMD3JlcG8uZW5uaW90Lm5ldDCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCC<br><br>AgoCggIBAN6xDFkixeboRBjaVLi1/IjCfHvGS2xGihWrx2dN9jXIZWQqU2Lw8rLy<br><br>yzrnzSEJDRcUFGaXpRagHTYJPhcr31Sa4OkCsoorwElagcOOPQXAc1A87vBk1+r/<br><br>3eQu+IPGjr+3DU/yqNNuaq0CZgDDww9ttbyTb8JxZweXdAMjK0D7LiNCkpvwM1l6<br><br>ylVl9o5+ACA34qb81IyVAsGFSHP/ukcFIaC79Zf/7p3Tjm4uRkAdtQYJGwA0Oafk<br><br>HbPaPLOHPJdi+3+a/OmmBJamxyWXF9pJ/BRrxFrqtssnAhIyPsNqKsPDCknJOzwS<br><br>6vdTVsuMkLMUbc0OK1dSIulXxZaea+jXcZMYWUA4ZDNdo1SrMg3Vvj/CrLWgm7b0<br><br>T1Wb8tXsr2NUNoacMzDgN41Kz7Ht57LQURaFf9rzjqACHVYfj/Ad8/PmgA6V3Dc3<br><br>gvMvqOoyp2iic1xQ2GcIItHvqD4YwBSdtyxJc1N5llNBF7A6+JWVc0kJpOQCDKVb<br><br>U+0Py6ugnbb/pQ89/4zXXWyuTQO0BGULoHCo0++eF+pLcW6LstQNSUYxYRr4tmLr<br><br>sbUJFPoFcHXdQ9F8I2rBXdKCePHDBPQ2HexhANUWnRQdjtnYG9UQRQaDVKiCXUMj<br><br>9f6ixjN9DAz+SqndPksE0Ux0cgfkTEfi9N+5c7rCxzZYgH8UlFiDAgMBAAGjUzBR<br><br>MB0GA1UdDgQWBBRaOW9HUg7eACHGDuPMcc/k7nPmbjAfBgNVHSMEGDAWgBRaOW9H<br><br>Ug7eACHGDuPMcc/k7nPmbjAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBDQUA<br><br>A4ICAQCu1kx2rnRp9oiPw3Y2WuJ2hnzkMTUGPv4rpX0hgVSLNAEiDEvujz/pnHaJ<br><br>83+JZuMHebAQnWHXVaUdmzn7Yw9WsZoXu15st0WMOAC8cUZ4uD0t1osPJTSuc3hA<br><br>F0ZG3tHzuJBpX4T6pVrZ3jJvuY5vGJGCMwRdS4V7e6wQmLjzqf3oq05y9JlvKBYX<br><br>JdU69BynZ1vEtUuC91WJTTvlqLtbAS6LTSmnSYWscNpP4KOTXNfdf8HlKFRKGR2e<br><br>cVyAXu9bA89HeEeG8ztceyD2GO+S7xBNuZRV11Oi2xO59rJJAzzrIO1W8oda5lac<br><br>JVRI+n8w+hLG+bbq+24s9tVB0MBZj3/honpYRLOYMAT507YlOvDPjreudYHWJSLG<br><br>cTjRH0dtIgqbi8uTH3iJ2yWTq92OfGSSERofVdSOPrlzH5GpkpeIoRcYlP1KLnIy<br><br>wxlI4E7W50PX5rMKMIp4/p6ALgA7psuC7ZTzk3f7R/tmHBSNb5JiSbp7MjI+iVRE<br><br>zZX73VW1nLf4YaSS+MYNudAQl0ZoUvK3f0QEj4NwzRjDkdsUKI+X7Q2p03foBMCU<br><br>4ijSDMvjyn3JEvT878Fxh7KB4IbZKh3kj9RetGaGEljjgv/Pg3h2gu+GNPgk30xJ<br><br>TfK5QkRaYenm9aWKpHHf4hpUQlMKawxdS1k+3gVGwWu8YM/a0A==<br><br>-----END CERTIFICATE-----<br></code></pre></td></tr></table></figure>
-
-<p>对这个证书进行解析的方法是用一个在线的工具 <a href="http://lapo.it/asn1js/">http://lapo.it/asn1js/</a>。</p>
-<p>可以把上面base64编码的证书复制到网站解码之后，可以看到类似如下的结果。</p>
-<p><img src="/images/2020-11-09.jpg" alt="cert-parse"></p>
-<p>ASN.1的编码基本上遵循的是<code>type+length+value</code>的方式。</p>
-<p>ASN.1的数据tag大概有以下几种，</p>
-<table>
-<thead>
-<tr>
-<th>type</th>
-<th>tagNumber</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Boolean</td>
-<td>0x01</td>
-</tr>
-<tr>
-<td>Integer</td>
-<td>0x02</td>
-</tr>
-<tr>
-<td>BitString</td>
-<td>0x03</td>
-</tr>
-<tr>
-<td>OctetString</td>
-<td>0x04</td>
-</tr>
-<tr>
-<td>Null</td>
-<td>0x05</td>
-</tr>
-<tr>
-<td>ObjectIdentifier</td>
-<td>0x06</td>
-</tr>
-<tr>
-<td>Enumerated</td>
-<td>0x0a</td>
-</tr>
-<tr>
-<td>UTF8String</td>
-<td>0x0c</td>
-</tr>
-<tr>
-<td>Sequence</td>
-<td>0x10</td>
-</tr>
-<tr>
-<td>Set</td>
-<td>0x11</td>
-</tr>
-<tr>
-<td>PrintableString</td>
-<td>0x13</td>
-</tr>
-<tr>
-<td>IA5String</td>
-<td>0x16</td>
-</tr>
-<tr>
-<td>UTCTime</td>
-<td>0x17</td>
-</tr>
-<tr>
-<td>UnicodeString</td>
-<td>0x1e</td>
-</tr>
-</tbody></table>
-<p>那么具体看一下以上ca证书的前四个字节是什么含义。</p>
-<figure class="highlight basic"><table><tr><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">30 </span><span class="hljs-number">82</span> <span class="hljs-number">05</span> C1<br></code></pre></td></tr></table></figure>
-
-<ol>
-<li><p>首先看是什么type。第一个字节<code>0x30</code>描述了type信息。tagClass &#x3D; 0x30 &gt;&gt; 6 &#x3D; 0 ，表示<code>universal isConstructed = 0x30 &amp; 0x20 = True</code>，对于<code>sequence</code>基本都是true,
-<code>tagNumber = 0x30 &amp; 0x1F = 0x10</code> ，因此对应的<code>Sequence</code></p>
-</li>
-<li><p>接下来计算长度。
-第二个字节为<code>0x82</code>,
-分两种情况，判断表达式，<code>byte &amp; 0x7F == byte</code> 如果为true就是小于127。否则就是大于127。</p>
-</li>
-</ol>
-<ul>
-<li>长度是小于127(short form)
-那么该该字节就是length，之后就是value的内容。</li>
-<li>长度大于127(long form)，
-byte &amp; 0x7F 表示length的编码长度。</li>
-</ul>
-<p>对于以上的例子，<code>0x82</code>是long form
-因为 </p>
-<figure class="highlight hy"><table><tr><td class="code"><pre><code class="hljs hy">( <span class="hljs-number">0</span>x82 == (<span class="hljs-number">0</span>x82 &amp; <span class="hljs-number">0</span>x7F) = <span class="hljs-literal">False</span><br></code></pre></td></tr></table></figure>
-<p>那么表示长度的字节数量是 </p>
-<figure class="highlight apache"><table><tr><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">0x82</span> &amp; <span class="hljs-number">0</span>x7F = <span class="hljs-number">0</span>x2<br></code></pre></td></tr></table></figure>
-<p>因此’0x82’之后的两个字节’0x05’和’0xC1’组成长度。</p>
-<figure class="highlight ini"><table><tr><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">0x05C1</span> = <span class="hljs-number">1473</span> <br></code></pre></td></tr></table></figure>
-<p>两个字节表示value的长度1473。</p>
-<p>因此，</p>
-<figure class="highlight basic"><table><tr><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">30 </span><span class="hljs-number">82</span> <span class="hljs-number">05</span> C1<br></code></pre></td></tr></table></figure>
-<p>这个头四个字节的含义是，这个是<code>Sequence</code>类型，
-长度是1473，这四节之后的1473个字节就是<code>Sequence</code>类型的值。</p>
-]]></content>
-      <tags>
-        <tag>X.509</tag>
-        <tag>ASN.1</tag>
       </tags>
   </entry>
   <entry>
@@ -2773,6 +2655,124 @@ Given the integer n, return the last number that remains in arr.
       </tags>
   </entry>
   <entry>
+    <title>ASN.1语言规范介绍</title>
+    <url>/2020/11/08/asn-1/</url>
+    <content><![CDATA[<h2 id="ASN-1介绍"><a href="#ASN-1介绍" class="headerlink" title="ASN.1介绍"></a>ASN.1介绍</h2><p><code>X.509</code>证书常用的编码方式有DER格式和PEM格式。证书是一个对象的话，那么需要一个描述这个对象的语言。ASN.1就是这样的一个语言规范。而DER是ASN.1编码的一种方式。如果要解析DER编码文件，就需要了解ASN.1语言规范的编解码。</p>
+<span id="more"></span>
+
+<p>ASN.1（Abstract Syntax Notation One）是OSI（Open Source Interconnection）使用的描述对象的语言规范。OSI是X.200中定义的。而ASN.1是X.208中描述的。</p>
+<p>下面是一个ASN.1的例子</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs asn.1">Foo DEFINITIONS ::= BEGIN<br><br>    Question ::= SEQUENCE &#123;<br>        id        INTEGER,<br>        question  IA5String<br>    &#125;<br><br>    Answer ::= SEQUENCE &#123;<br>        id        INTEGER,<br>        answer    BOOLEAN<br>    &#125;<br><br>END<br></code></pre></td></tr></table></figure>
+
+<h2 id="以一个证书分析ASN-1语法"><a href="#以一个证书分析ASN-1语法" class="headerlink" title="以一个证书分析ASN.1语法"></a>以一个证书分析ASN.1语法</h2><p>以下是一个<code>PEM</code>格式的证书。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">-----BEGIN CERTIFICATE-----<br><br>MIIFwTCCA6mgAwIBAgIUNQk34EiXUjqgxnfhOZtv6zxIiekwDQYJKoZIhvcNAQEN<br><br>BQAwcDELMAkGA1UEBhMCQ04xEDAOBgNVBAgMB0JlaWppbmcxEDAOBgNVBAcMB0Jl<br><br>aWppbmcxEDAOBgNVBAoMB2V4YW1wbGUxETAPBgNVBAsMCFBlcnNvbmFsMRgwFgYD<br><br>VQQDDA9yZXBvLmVubmlvdC5uZXQwHhcNMjAwODExMDMwMzE0WhcNMzAwODA5MDMw<br><br>MzE0WjBwMQswCQYDVQQGEwJDTjEQMA4GA1UECAwHQmVpamluZzEQMA4GA1UEBwwH<br><br>QmVpamluZzEQMA4GA1UECgwHZXhhbXBsZTERMA8GA1UECwwIUGVyc29uYWwxGDAW<br><br>BgNVBAMMD3JlcG8uZW5uaW90Lm5ldDCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCC<br><br>AgoCggIBAN6xDFkixeboRBjaVLi1/IjCfHvGS2xGihWrx2dN9jXIZWQqU2Lw8rLy<br><br>yzrnzSEJDRcUFGaXpRagHTYJPhcr31Sa4OkCsoorwElagcOOPQXAc1A87vBk1+r/<br><br>3eQu+IPGjr+3DU/yqNNuaq0CZgDDww9ttbyTb8JxZweXdAMjK0D7LiNCkpvwM1l6<br><br>ylVl9o5+ACA34qb81IyVAsGFSHP/ukcFIaC79Zf/7p3Tjm4uRkAdtQYJGwA0Oafk<br><br>HbPaPLOHPJdi+3+a/OmmBJamxyWXF9pJ/BRrxFrqtssnAhIyPsNqKsPDCknJOzwS<br><br>6vdTVsuMkLMUbc0OK1dSIulXxZaea+jXcZMYWUA4ZDNdo1SrMg3Vvj/CrLWgm7b0<br><br>T1Wb8tXsr2NUNoacMzDgN41Kz7Ht57LQURaFf9rzjqACHVYfj/Ad8/PmgA6V3Dc3<br><br>gvMvqOoyp2iic1xQ2GcIItHvqD4YwBSdtyxJc1N5llNBF7A6+JWVc0kJpOQCDKVb<br><br>U+0Py6ugnbb/pQ89/4zXXWyuTQO0BGULoHCo0++eF+pLcW6LstQNSUYxYRr4tmLr<br><br>sbUJFPoFcHXdQ9F8I2rBXdKCePHDBPQ2HexhANUWnRQdjtnYG9UQRQaDVKiCXUMj<br><br>9f6ixjN9DAz+SqndPksE0Ux0cgfkTEfi9N+5c7rCxzZYgH8UlFiDAgMBAAGjUzBR<br><br>MB0GA1UdDgQWBBRaOW9HUg7eACHGDuPMcc/k7nPmbjAfBgNVHSMEGDAWgBRaOW9H<br><br>Ug7eACHGDuPMcc/k7nPmbjAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBDQUA<br><br>A4ICAQCu1kx2rnRp9oiPw3Y2WuJ2hnzkMTUGPv4rpX0hgVSLNAEiDEvujz/pnHaJ<br><br>83+JZuMHebAQnWHXVaUdmzn7Yw9WsZoXu15st0WMOAC8cUZ4uD0t1osPJTSuc3hA<br><br>F0ZG3tHzuJBpX4T6pVrZ3jJvuY5vGJGCMwRdS4V7e6wQmLjzqf3oq05y9JlvKBYX<br><br>JdU69BynZ1vEtUuC91WJTTvlqLtbAS6LTSmnSYWscNpP4KOTXNfdf8HlKFRKGR2e<br><br>cVyAXu9bA89HeEeG8ztceyD2GO+S7xBNuZRV11Oi2xO59rJJAzzrIO1W8oda5lac<br><br>JVRI+n8w+hLG+bbq+24s9tVB0MBZj3/honpYRLOYMAT507YlOvDPjreudYHWJSLG<br><br>cTjRH0dtIgqbi8uTH3iJ2yWTq92OfGSSERofVdSOPrlzH5GpkpeIoRcYlP1KLnIy<br><br>wxlI4E7W50PX5rMKMIp4/p6ALgA7psuC7ZTzk3f7R/tmHBSNb5JiSbp7MjI+iVRE<br><br>zZX73VW1nLf4YaSS+MYNudAQl0ZoUvK3f0QEj4NwzRjDkdsUKI+X7Q2p03foBMCU<br><br>4ijSDMvjyn3JEvT878Fxh7KB4IbZKh3kj9RetGaGEljjgv/Pg3h2gu+GNPgk30xJ<br><br>TfK5QkRaYenm9aWKpHHf4hpUQlMKawxdS1k+3gVGwWu8YM/a0A==<br><br>-----END CERTIFICATE-----<br></code></pre></td></tr></table></figure>
+
+<p>对这个证书进行解析的方法是用一个在线的工具 <a href="http://lapo.it/asn1js/">http://lapo.it/asn1js/</a>。</p>
+<p>可以把上面base64编码的证书复制到网站解码之后，可以看到类似如下的结果。</p>
+<p><img src="/images/2020-11-09.jpg" alt="cert-parse"></p>
+<p>ASN.1的编码基本上遵循的是<code>type+length+value</code>的方式。</p>
+<p>ASN.1的数据tag大概有以下几种，</p>
+<table>
+<thead>
+<tr>
+<th>type</th>
+<th>tagNumber</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Boolean</td>
+<td>0x01</td>
+</tr>
+<tr>
+<td>Integer</td>
+<td>0x02</td>
+</tr>
+<tr>
+<td>BitString</td>
+<td>0x03</td>
+</tr>
+<tr>
+<td>OctetString</td>
+<td>0x04</td>
+</tr>
+<tr>
+<td>Null</td>
+<td>0x05</td>
+</tr>
+<tr>
+<td>ObjectIdentifier</td>
+<td>0x06</td>
+</tr>
+<tr>
+<td>Enumerated</td>
+<td>0x0a</td>
+</tr>
+<tr>
+<td>UTF8String</td>
+<td>0x0c</td>
+</tr>
+<tr>
+<td>Sequence</td>
+<td>0x10</td>
+</tr>
+<tr>
+<td>Set</td>
+<td>0x11</td>
+</tr>
+<tr>
+<td>PrintableString</td>
+<td>0x13</td>
+</tr>
+<tr>
+<td>IA5String</td>
+<td>0x16</td>
+</tr>
+<tr>
+<td>UTCTime</td>
+<td>0x17</td>
+</tr>
+<tr>
+<td>UnicodeString</td>
+<td>0x1e</td>
+</tr>
+</tbody></table>
+<p>那么具体看一下以上ca证书的前四个字节是什么含义。</p>
+<figure class="highlight basic"><table><tr><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">30 </span><span class="hljs-number">82</span> <span class="hljs-number">05</span> C1<br></code></pre></td></tr></table></figure>
+
+<ol>
+<li><p>首先看是什么type。第一个字节<code>0x30</code>描述了type信息。tagClass &#x3D; 0x30 &gt;&gt; 6 &#x3D; 0 ，表示<code>universal isConstructed = 0x30 &amp; 0x20 = True</code>，对于<code>sequence</code>基本都是true,
+<code>tagNumber = 0x30 &amp; 0x1F = 0x10</code> ，因此对应的<code>Sequence</code></p>
+</li>
+<li><p>接下来计算长度。
+第二个字节为<code>0x82</code>,
+分两种情况，判断表达式，<code>byte &amp; 0x7F == byte</code> 如果为true就是小于127。否则就是大于127。</p>
+</li>
+</ol>
+<ul>
+<li>长度是小于127(short form)
+那么该该字节就是length，之后就是value的内容。</li>
+<li>长度大于127(long form)，
+byte &amp; 0x7F 表示length的编码长度。</li>
+</ul>
+<p>对于以上的例子，<code>0x82</code>是long form
+因为 </p>
+<figure class="highlight hy"><table><tr><td class="code"><pre><code class="hljs hy">( <span class="hljs-number">0</span>x82 == (<span class="hljs-number">0</span>x82 &amp; <span class="hljs-number">0</span>x7F) = <span class="hljs-literal">False</span><br></code></pre></td></tr></table></figure>
+<p>那么表示长度的字节数量是 </p>
+<figure class="highlight apache"><table><tr><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">0x82</span> &amp; <span class="hljs-number">0</span>x7F = <span class="hljs-number">0</span>x2<br></code></pre></td></tr></table></figure>
+<p>因此’0x82’之后的两个字节’0x05’和’0xC1’组成长度。</p>
+<figure class="highlight ini"><table><tr><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">0x05C1</span> = <span class="hljs-number">1473</span> <br></code></pre></td></tr></table></figure>
+<p>两个字节表示value的长度1473。</p>
+<p>因此，</p>
+<figure class="highlight basic"><table><tr><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">30 </span><span class="hljs-number">82</span> <span class="hljs-number">05</span> C1<br></code></pre></td></tr></table></figure>
+<p>这个头四个字节的含义是，这个是<code>Sequence</code>类型，
+长度是1473，这四节之后的1473个字节就是<code>Sequence</code>类型的值。</p>
+]]></content>
+      <tags>
+        <tag>X.509</tag>
+        <tag>ASN.1</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>CLion2021调试Makefile项目</title>
     <url>/2021/07/15/2021-7-15-clion-makefile-debug/</url>
     <content><![CDATA[<h2 id="CLion介绍"><a href="#CLion介绍" class="headerlink" title="CLion介绍"></a>CLion介绍</h2><p><code>CLion</code>是一款针对C&#x2F;C++项目的跨平台的集成IDE（A cross-platform IDE for C and C++）。2020版本以前，只支持cmake项目，
@@ -2939,6 +2939,48 @@ cmd/dist
       </tags>
   </entry>
   <entry>
+    <title>MacOS下基于CMake自动打包部署Qt5项目</title>
+    <url>/2023/06/07/2023-6-7-qt5-macos-bundle-app/</url>
+    <content><![CDATA[<h2 id="Qt5项目打包部署"><a href="#Qt5项目打包部署" class="headerlink" title="Qt5项目打包部署"></a>Qt5项目打包部署</h2><p>MacOS下打包部署Qt5项目可以参考<a href="https://doc.qt.io/qt-5/macos-deployment.html">Qt for macOS - Deployment</a>。
+这里采用cmake构建Qt5项目。</p>
+<span id="more"></span>
+
+<h2 id="CMake打包要点说明"><a href="#CMake打包要点说明" class="headerlink" title="CMake打包要点说明"></a>CMake打包要点说明</h2><p>MacOS下针对一个PicPicker的具体项目，说明CMake打包项目的要点:</p>
+<ol>
+<li>设置针对构建Qt项目的全局选项。<figure class="highlight cmake"><table><tr><td class="code"><pre><code class="hljs cmake"><span class="hljs-comment"># MOC（Meta-Object Compiler）是 Qt 框架中的一个工具，它用于在编译时生成元对象代码（meta-object code）。</span><br><span class="hljs-keyword">set</span>(CMAKE_AUTOMOC <span class="hljs-keyword">ON</span>)  <br><br><span class="hljs-comment"># RCC（Resource Compiler）是 Qt 框架中的一个工具，它用于将应用程序所需的资源文件（如图像、音频、样式表等）编译成二进制文件，并将其嵌入到可执行文件中，以便在运行时使用。</span><br><span class="hljs-keyword">set</span>(CMAKE_AUTORCC <span class="hljs-keyword">ON</span>)  <br><br><span class="hljs-comment"># UIC（User Interface Compiler）是 Qt 框架中的一个工具，它用于将 Qt Designer 设计的用户界面（UI）文件（.ui 文件）编译成 C++ 代码，以便在应用程序中使用。</span><br><span class="hljs-keyword">set</span>(CMAKE_AUTOUIC <span class="hljs-keyword">ON</span>)  <br><br><span class="hljs-comment"># 将当前目录包含到查找头文件的路径中，以便在处理 *.ui 文件时能够正确地找到相关的头文件。</span><br><span class="hljs-keyword">set</span>(CMAKE_INCLUDE_CURRENT_DIR <span class="hljs-keyword">ON</span>) <br></code></pre></td></tr></table></figure></li>
+<li>find_package 命令用于查找指定的软件包，并加载该软件包所提供的一些变量和模块。<figure class="highlight cmake"><table><tr><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">find_package</span>(Qt5 COMPONENTS<br>        Core<br>        Gui<br>        Widgets<br>        Xml<br>        REQUIRED)<br></code></pre></td></tr></table></figure></li>
+<li>QT5_ADD_RESOURCES 是 CMake 中用于将 Qt 资源文件（.qrc 文件）编译成 C++ 代码的命令。<figure class="highlight cmake"><table><tr><td class="code"><pre><code class="hljs cmake"><span class="hljs-comment"># MyResources 是生成的 C++ 代码的输出文件名，application.qrc 是要编译的 Qt 资源文件的路径和文件名</span><br>QT5_ADD_RESOURCES(MyResources application.qrc)<br></code></pre></td></tr></table></figure></li>
+<li>应用图标icns打包设置和国际化的打包路径设置<figure class="highlight cmake"><table><tr><td class="code"><pre><code class="hljs cmake"><span class="hljs-comment"># 这样会设置应用图标的文件名</span><br><span class="hljs-keyword">set</span>(MACOSX_BUNDLE_ICON_FILE AppIcon.icns)<br><span class="hljs-comment"># 把&quot;$&#123;CMAKE_SOURCE_DIR&#125;/AppIcon.icns&quot;图标打包到&quot;Resources/&quot;路径下</span><br><span class="hljs-keyword">set</span>(app_icon_macos <span class="hljs-string">&quot;$&#123;CMAKE_SOURCE_DIR&#125;/AppIcon.icns&quot;</span>)<br><span class="hljs-keyword">set_source_files_properties</span>(<span class="hljs-variable">$&#123;app_icon_macos&#125;</span> PROPERTIES MACOSX_PACKAGE_LOCATION <span class="hljs-string">&quot;Resources&quot;</span>)<br><br><span class="hljs-comment"># 把国际化的*.qm打包到&quot;Resources/l10n&quot;路径下（这里目录l10n可以修改）</span><br><span class="hljs-keyword">set_source_files_properties</span>(<span class="hljs-variable">$&#123;l10n_files&#125;</span> PROPERTIES MACOSX_PACKAGE_LOCATION <span class="hljs-string">&quot;Resources/l10n&quot;</span>)<br></code></pre></td></tr></table></figure></li>
+<li>构建可执行二进制目标为PicPicker。<figure class="highlight cmake"><table><tr><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">add_executable</span>(PicPicker<br>        <span class="hljs-variable">$&#123;SOURCES&#125;</span><br>        <span class="hljs-variable">$&#123;MyResources&#125;</span><br>        <span class="hljs-variable">$&#123;app_icon_macos&#125;</span><br>        <span class="hljs-variable">$&#123;l10n_files&#125;</span><br>        )<br><br><span class="hljs-comment"># 这里的设置会告诉cmake在生成目标文件PicPicker之后，创建PicPicker.app/Contents/目录结构，并把二进制复制到</span><br><span class="hljs-comment"># &quot;PicPicker.app/Contents/MacOS/&quot;路径下。因此PicPicker运行时读取资源文件的相对路径为&quot;../Resources/&quot;</span><br><span class="hljs-keyword">set_target_properties</span>(PicPicker PROPERTIES<br>        MACOSX_BUNDLE <span class="hljs-keyword">TRUE</span><br>        )<br><br><span class="hljs-keyword">target_link_libraries</span>(PicPicker<br>        Qt5::Core<br>        Qt5::Gui<br>        Qt5::Widgets<br>        Qt5::Xml<br>        )<br></code></pre></td></tr></table></figure></li>
+<li>使用 macdeployqt 工具自动处理Qt库的依赖关系和相关文件，将应用程序打包成一个独立的、可执行的 macOS 应用程序包（.app 文件），以便在其他机器上运行。<figure class="highlight cmake"><table><tr><td class="code"><pre><code class="hljs cmake"><span class="hljs-comment"># 找到环境macdeployqt工具</span><br><span class="hljs-keyword">get_target_property</span>(_qmake_executable Qt5::qmake IMPORTED_LOCATION)<br><span class="hljs-keyword">get_filename_component</span>(_qt_bin_dir <span class="hljs-string">&quot;$&#123;_qmake_executable&#125;&quot;</span> DIRECTORY)<br><span class="hljs-keyword">find_program</span>(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS <span class="hljs-string">&quot;$&#123;_qt_bin_dir&#125;&quot;</span>)<br><br><span class="hljs-comment"># 添加自定义命令，执行的时间为PicPicker二进制构建完成。</span><br><span class="hljs-keyword">add_custom_command</span>(<span class="hljs-keyword">TARGET</span> PicPicker POST_BUILD<br>        <span class="hljs-keyword">COMMAND</span> <span class="hljs-variable">$&#123;CMAKE_COMMAND&#125;</span> -E copy<br>        <span class="hljs-string">&quot;$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/AppIcon.icns&quot;</span><br>        <span class="hljs-string">&quot;$&lt;TARGET_FILE_DIR:PicPicker&gt;/../Resources/&quot;</span><br>        COMMENT <span class="hljs-string">&quot;Copy AppIcon.icns to Resources/&quot;</span><br>        &amp;&amp;<br>        <span class="hljs-keyword">COMMAND</span> <span class="hljs-string">&quot;$&#123;MACDEPLOYQT_EXECUTABLE&#125;&quot;</span><br>        ARGS <span class="hljs-string">&quot;PicPicker.app&quot;</span> <span class="hljs-string">&quot;-dmg&quot;</span> <span class="hljs-string">&quot;-always-overwrite&quot;</span> <span class="hljs-string">&quot;-no-strip&quot;</span><br>        COMMENT <span class="hljs-string">&quot;Execute macdeployqt to create macOS bundle&quot;</span><br>        )<br></code></pre></td></tr></table></figure></li>
+</ol>
+<p><strong>注意</strong> </p>
+<p><code>MACOSX_BUNDLE</code>设置为<code>TRUE</code>已经会把文件拷贝到相应的路径，而这里再做一遍是因为
+POST_BUILD 事件的触发是PicPicker链接完成，而不是复制文件到PicPicker.app的目录下，
+因此会造成当进行dmg打包的时候，图标文件还没有复制到目录下。日志如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs log">[100%] Linking CXX executable PicPicker.app/Contents/MacOS/PicPicker<br>Execute macdeployqt to create macOS bundle<br>Copying OS X content PicPicker.app/Contents/Resources/AppIcon.icns<br>[100%] Built target PicPicker<br></code></pre></td></tr></table></figure>
+
+<p>所以只能用此下策。使用cmake第二遍拷贝到<code>$&lt;TARGET_FILE_DIR:PicPicker&gt;/../Resources/</code>路径下。</p>
+<p>PicPicker目标文件的路径是<code>PicPicker.app/MacOS/PicPicker</code>,因此<code>$&lt;TARGET_FILE_DIR:PicPicker&gt;</code>就是
+<code>PicPicker.app/MacOS/</code>，所以<code>$&lt;TARGET_FILE_DIR:PicPicker&gt;/../Resources/</code>就是<code>PicPicker.app/Resources/</code></p>
+<h2 id="CMakeLists-txt完整内容"><a href="#CMakeLists-txt完整内容" class="headerlink" title="CMakeLists.txt完整内容"></a>CMakeLists.txt完整内容</h2><p>仅供参考</p>
+<figure class="highlight cmake"><table><tr><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">cmake_minimum_required</span>(VERSION <span class="hljs-number">3.23</span>)<br><span class="hljs-keyword">project</span>(picpicker)<br><br><span class="hljs-keyword">set</span>(CMAKE_CXX_STANDARD <span class="hljs-number">14</span>)<br><span class="hljs-keyword">set</span>(CMAKE_AUTOMOC <span class="hljs-keyword">ON</span>)<br><span class="hljs-keyword">set</span>(CMAKE_AUTORCC <span class="hljs-keyword">ON</span>)<br><span class="hljs-keyword">set</span>(CMAKE_AUTOUIC <span class="hljs-keyword">ON</span>)<br><span class="hljs-comment"># for *.ui to include current dir to find headers.</span><br><span class="hljs-keyword">set</span>(CMAKE_INCLUDE_CURRENT_DIR <span class="hljs-keyword">ON</span>)<br><br><span class="hljs-keyword">find_package</span>(Qt5 COMPONENTS<br>        Core<br>        Gui<br>        Widgets<br>        Xml<br>        REQUIRED)<br><br><span class="hljs-keyword">set</span>(SOURCES<br>        src/main.cpp<br>        src/mainwindow.cpp<br>        src/AppModel.cpp<br>        )<br><br><span class="hljs-keyword">set</span>(l10n_files<br>        )<br><br>QT5_ADD_RESOURCES(MyResources application.qrc)<br><br><span class="hljs-keyword">set</span>(MACOSX_BUNDLE_ICON_FILE AppIcon.icns)<br><span class="hljs-keyword">set</span>(app_icon_macos <span class="hljs-string">&quot;$&#123;CMAKE_SOURCE_DIR&#125;/AppIcon.icns&quot;</span>)<br><span class="hljs-keyword">set_source_files_properties</span>(<span class="hljs-variable">$&#123;app_icon_macos&#125;</span> PROPERTIES MACOSX_PACKAGE_LOCATION <span class="hljs-string">&quot;Resources&quot;</span>)<br><span class="hljs-keyword">set_source_files_properties</span>(<span class="hljs-variable">$&#123;l10n_files&#125;</span> PROPERTIES MACOSX_PACKAGE_LOCATION <span class="hljs-string">&quot;Resources/l10n&quot;</span>)<br><br><span class="hljs-keyword">add_executable</span>(PicPicker<br>        <span class="hljs-variable">$&#123;SOURCES&#125;</span><br>        <span class="hljs-variable">$&#123;MyResources&#125;</span><br>        <span class="hljs-variable">$&#123;app_icon_macos&#125;</span><br>        <span class="hljs-variable">$&#123;l10n_files&#125;</span><br>        )<br><br><span class="hljs-keyword">set_target_properties</span>(PicPicker PROPERTIES<br>        MACOSX_BUNDLE <span class="hljs-keyword">TRUE</span><br>        )<br><br><span class="hljs-keyword">target_link_libraries</span>(PicPicker<br>        Qt5::Core<br>        Qt5::Gui<br>        Qt5::Widgets<br>        Qt5::Xml<br>        )<br><br><span class="hljs-keyword">get_target_property</span>(_qmake_executable Qt5::qmake IMPORTED_LOCATION)<br><span class="hljs-keyword">get_filename_component</span>(_qt_bin_dir <span class="hljs-string">&quot;$&#123;_qmake_executable&#125;&quot;</span> DIRECTORY)<br><span class="hljs-keyword">find_program</span>(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS <span class="hljs-string">&quot;$&#123;_qt_bin_dir&#125;&quot;</span>)<br><br><span class="hljs-keyword">add_custom_command</span>(<span class="hljs-keyword">TARGET</span> PicPicker POST_BUILD<br>        <span class="hljs-keyword">COMMAND</span> <span class="hljs-variable">$&#123;CMAKE_COMMAND&#125;</span> -E copy<br>        <span class="hljs-string">&quot;$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/AppIcon.icns&quot;</span><br>        <span class="hljs-string">&quot;$&lt;TARGET_FILE_DIR:PicPicker&gt;/../Resources/&quot;</span><br>        COMMENT <span class="hljs-string">&quot;Copy AppIcon.icns to Resources/&quot;</span><br>        &amp;&amp;<br>        <span class="hljs-keyword">COMMAND</span> <span class="hljs-string">&quot;$&#123;MACDEPLOYQT_EXECUTABLE&#125;&quot;</span><br>        ARGS <span class="hljs-string">&quot;PicPicker.app&quot;</span> <span class="hljs-string">&quot;-dmg&quot;</span> <span class="hljs-string">&quot;-always-overwrite&quot;</span> <span class="hljs-string">&quot;-no-strip&quot;</span><br>        COMMENT <span class="hljs-string">&quot;Execute macdeployqt to create macOS bundle&quot;</span><br>        )<br></code></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
+<li>因为没有使用QML，所以没有考虑打包QML文件的情况。</li>
+<li>只是在Mac平台下。</li>
+<li><code>-no-strip</code>参数在发布的时候要去掉，这里添加是为了开发时方便debug。</li>
+<li><code>-always-overwrite</code>参数也是为了方便，直接覆盖已经产生的dmg文件。</li>
+</ol>
+]]></content>
+      <tags>
+        <tag>qt5</tag>
+        <tag>cmake</tag>
+        <tag>macos</tag>
+        <tag>bundle</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>玩一下LangChain</title>
     <url>/2023/06/08/2023-6-8-langchain-openai/</url>
     <content><![CDATA[<h2 id="什么是LangChain"><a href="#什么是LangChain" class="headerlink" title="什么是LangChain"></a>什么是LangChain</h2><p>自从ChatGPT出现以来，就一直在使用，那么ChatGPT毕竟是有局限性的，因为ChatGPT训练的语料是有限的。很多问题回答不了，
@@ -2982,48 +3024,6 @@ cmd/dist
       <tags>
         <tag>langchain</tag>
         <tag>openai</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>MacOS下基于CMake自动打包部署Qt5项目</title>
-    <url>/2023/06/07/2023-6-7-qt5-macos-bundle-app/</url>
-    <content><![CDATA[<h2 id="Qt5项目打包部署"><a href="#Qt5项目打包部署" class="headerlink" title="Qt5项目打包部署"></a>Qt5项目打包部署</h2><p>MacOS下打包部署Qt5项目可以参考<a href="https://doc.qt.io/qt-5/macos-deployment.html">Qt for macOS - Deployment</a>。
-这里采用cmake构建Qt5项目。</p>
-<span id="more"></span>
-
-<h2 id="CMake打包要点说明"><a href="#CMake打包要点说明" class="headerlink" title="CMake打包要点说明"></a>CMake打包要点说明</h2><p>MacOS下针对一个PicPicker的具体项目，说明CMake打包项目的要点:</p>
-<ol>
-<li>设置针对构建Qt项目的全局选项。<figure class="highlight cmake"><table><tr><td class="code"><pre><code class="hljs cmake"><span class="hljs-comment"># MOC（Meta-Object Compiler）是 Qt 框架中的一个工具，它用于在编译时生成元对象代码（meta-object code）。</span><br><span class="hljs-keyword">set</span>(CMAKE_AUTOMOC <span class="hljs-keyword">ON</span>)  <br><br><span class="hljs-comment"># RCC（Resource Compiler）是 Qt 框架中的一个工具，它用于将应用程序所需的资源文件（如图像、音频、样式表等）编译成二进制文件，并将其嵌入到可执行文件中，以便在运行时使用。</span><br><span class="hljs-keyword">set</span>(CMAKE_AUTORCC <span class="hljs-keyword">ON</span>)  <br><br><span class="hljs-comment"># UIC（User Interface Compiler）是 Qt 框架中的一个工具，它用于将 Qt Designer 设计的用户界面（UI）文件（.ui 文件）编译成 C++ 代码，以便在应用程序中使用。</span><br><span class="hljs-keyword">set</span>(CMAKE_AUTOUIC <span class="hljs-keyword">ON</span>)  <br><br><span class="hljs-comment"># 将当前目录包含到查找头文件的路径中，以便在处理 *.ui 文件时能够正确地找到相关的头文件。</span><br><span class="hljs-keyword">set</span>(CMAKE_INCLUDE_CURRENT_DIR <span class="hljs-keyword">ON</span>) <br></code></pre></td></tr></table></figure></li>
-<li>find_package 命令用于查找指定的软件包，并加载该软件包所提供的一些变量和模块。<figure class="highlight cmake"><table><tr><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">find_package</span>(Qt5 COMPONENTS<br>        Core<br>        Gui<br>        Widgets<br>        Xml<br>        REQUIRED)<br></code></pre></td></tr></table></figure></li>
-<li>QT5_ADD_RESOURCES 是 CMake 中用于将 Qt 资源文件（.qrc 文件）编译成 C++ 代码的命令。<figure class="highlight cmake"><table><tr><td class="code"><pre><code class="hljs cmake"><span class="hljs-comment"># MyResources 是生成的 C++ 代码的输出文件名，application.qrc 是要编译的 Qt 资源文件的路径和文件名</span><br>QT5_ADD_RESOURCES(MyResources application.qrc)<br></code></pre></td></tr></table></figure></li>
-<li>应用图标icns打包设置和国际化的打包路径设置<figure class="highlight cmake"><table><tr><td class="code"><pre><code class="hljs cmake"><span class="hljs-comment"># 这样会设置应用图标的文件名</span><br><span class="hljs-keyword">set</span>(MACOSX_BUNDLE_ICON_FILE AppIcon.icns)<br><span class="hljs-comment"># 把&quot;$&#123;CMAKE_SOURCE_DIR&#125;/AppIcon.icns&quot;图标打包到&quot;Resources/&quot;路径下</span><br><span class="hljs-keyword">set</span>(app_icon_macos <span class="hljs-string">&quot;$&#123;CMAKE_SOURCE_DIR&#125;/AppIcon.icns&quot;</span>)<br><span class="hljs-keyword">set_source_files_properties</span>(<span class="hljs-variable">$&#123;app_icon_macos&#125;</span> PROPERTIES MACOSX_PACKAGE_LOCATION <span class="hljs-string">&quot;Resources&quot;</span>)<br><br><span class="hljs-comment"># 把国际化的*.qm打包到&quot;Resources/l10n&quot;路径下（这里目录l10n可以修改）</span><br><span class="hljs-keyword">set_source_files_properties</span>(<span class="hljs-variable">$&#123;l10n_files&#125;</span> PROPERTIES MACOSX_PACKAGE_LOCATION <span class="hljs-string">&quot;Resources/l10n&quot;</span>)<br></code></pre></td></tr></table></figure></li>
-<li>构建可执行二进制目标为PicPicker。<figure class="highlight cmake"><table><tr><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">add_executable</span>(PicPicker<br>        <span class="hljs-variable">$&#123;SOURCES&#125;</span><br>        <span class="hljs-variable">$&#123;MyResources&#125;</span><br>        <span class="hljs-variable">$&#123;app_icon_macos&#125;</span><br>        <span class="hljs-variable">$&#123;l10n_files&#125;</span><br>        )<br><br><span class="hljs-comment"># 这里的设置会告诉cmake在生成目标文件PicPicker之后，创建PicPicker.app/Contents/目录结构，并把二进制复制到</span><br><span class="hljs-comment"># &quot;PicPicker.app/Contents/MacOS/&quot;路径下。因此PicPicker运行时读取资源文件的相对路径为&quot;../Resources/&quot;</span><br><span class="hljs-keyword">set_target_properties</span>(PicPicker PROPERTIES<br>        MACOSX_BUNDLE <span class="hljs-keyword">TRUE</span><br>        )<br><br><span class="hljs-keyword">target_link_libraries</span>(PicPicker<br>        Qt5::Core<br>        Qt5::Gui<br>        Qt5::Widgets<br>        Qt5::Xml<br>        )<br></code></pre></td></tr></table></figure></li>
-<li>使用 macdeployqt 工具自动处理Qt库的依赖关系和相关文件，将应用程序打包成一个独立的、可执行的 macOS 应用程序包（.app 文件），以便在其他机器上运行。<figure class="highlight cmake"><table><tr><td class="code"><pre><code class="hljs cmake"><span class="hljs-comment"># 找到环境macdeployqt工具</span><br><span class="hljs-keyword">get_target_property</span>(_qmake_executable Qt5::qmake IMPORTED_LOCATION)<br><span class="hljs-keyword">get_filename_component</span>(_qt_bin_dir <span class="hljs-string">&quot;$&#123;_qmake_executable&#125;&quot;</span> DIRECTORY)<br><span class="hljs-keyword">find_program</span>(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS <span class="hljs-string">&quot;$&#123;_qt_bin_dir&#125;&quot;</span>)<br><br><span class="hljs-comment"># 添加自定义命令，执行的时间为PicPicker二进制构建完成。</span><br><span class="hljs-keyword">add_custom_command</span>(<span class="hljs-keyword">TARGET</span> PicPicker POST_BUILD<br>        <span class="hljs-keyword">COMMAND</span> <span class="hljs-variable">$&#123;CMAKE_COMMAND&#125;</span> -E copy<br>        <span class="hljs-string">&quot;$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/AppIcon.icns&quot;</span><br>        <span class="hljs-string">&quot;$&lt;TARGET_FILE_DIR:PicPicker&gt;/../Resources/&quot;</span><br>        COMMENT <span class="hljs-string">&quot;Copy AppIcon.icns to Resources/&quot;</span><br>        &amp;&amp;<br>        <span class="hljs-keyword">COMMAND</span> <span class="hljs-string">&quot;$&#123;MACDEPLOYQT_EXECUTABLE&#125;&quot;</span><br>        ARGS <span class="hljs-string">&quot;PicPicker.app&quot;</span> <span class="hljs-string">&quot;-dmg&quot;</span> <span class="hljs-string">&quot;-always-overwrite&quot;</span> <span class="hljs-string">&quot;-no-strip&quot;</span><br>        COMMENT <span class="hljs-string">&quot;Execute macdeployqt to create macOS bundle&quot;</span><br>        )<br></code></pre></td></tr></table></figure></li>
-</ol>
-<p><strong>注意</strong> </p>
-<p><code>MACOSX_BUNDLE</code>设置为<code>TRUE</code>已经会把文件拷贝到相应的路径，而这里再做一遍是因为
-POST_BUILD 事件的触发是PicPicker链接完成，而不是复制文件到PicPicker.app的目录下，
-因此会造成当进行dmg打包的时候，图标文件还没有复制到目录下。日志如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs log">[100%] Linking CXX executable PicPicker.app/Contents/MacOS/PicPicker<br>Execute macdeployqt to create macOS bundle<br>Copying OS X content PicPicker.app/Contents/Resources/AppIcon.icns<br>[100%] Built target PicPicker<br></code></pre></td></tr></table></figure>
-
-<p>所以只能用此下策。使用cmake第二遍拷贝到<code>$&lt;TARGET_FILE_DIR:PicPicker&gt;/../Resources/</code>路径下。</p>
-<p>PicPicker目标文件的路径是<code>PicPicker.app/MacOS/PicPicker</code>,因此<code>$&lt;TARGET_FILE_DIR:PicPicker&gt;</code>就是
-<code>PicPicker.app/MacOS/</code>，所以<code>$&lt;TARGET_FILE_DIR:PicPicker&gt;/../Resources/</code>就是<code>PicPicker.app/Resources/</code></p>
-<h2 id="CMakeLists-txt完整内容"><a href="#CMakeLists-txt完整内容" class="headerlink" title="CMakeLists.txt完整内容"></a>CMakeLists.txt完整内容</h2><p>仅供参考</p>
-<figure class="highlight cmake"><table><tr><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">cmake_minimum_required</span>(VERSION <span class="hljs-number">3.23</span>)<br><span class="hljs-keyword">project</span>(picpicker)<br><br><span class="hljs-keyword">set</span>(CMAKE_CXX_STANDARD <span class="hljs-number">14</span>)<br><span class="hljs-keyword">set</span>(CMAKE_AUTOMOC <span class="hljs-keyword">ON</span>)<br><span class="hljs-keyword">set</span>(CMAKE_AUTORCC <span class="hljs-keyword">ON</span>)<br><span class="hljs-keyword">set</span>(CMAKE_AUTOUIC <span class="hljs-keyword">ON</span>)<br><span class="hljs-comment"># for *.ui to include current dir to find headers.</span><br><span class="hljs-keyword">set</span>(CMAKE_INCLUDE_CURRENT_DIR <span class="hljs-keyword">ON</span>)<br><br><span class="hljs-keyword">find_package</span>(Qt5 COMPONENTS<br>        Core<br>        Gui<br>        Widgets<br>        Xml<br>        REQUIRED)<br><br><span class="hljs-keyword">set</span>(SOURCES<br>        src/main.cpp<br>        src/mainwindow.cpp<br>        src/AppModel.cpp<br>        )<br><br><span class="hljs-keyword">set</span>(l10n_files<br>        )<br><br>QT5_ADD_RESOURCES(MyResources application.qrc)<br><br><span class="hljs-keyword">set</span>(MACOSX_BUNDLE_ICON_FILE AppIcon.icns)<br><span class="hljs-keyword">set</span>(app_icon_macos <span class="hljs-string">&quot;$&#123;CMAKE_SOURCE_DIR&#125;/AppIcon.icns&quot;</span>)<br><span class="hljs-keyword">set_source_files_properties</span>(<span class="hljs-variable">$&#123;app_icon_macos&#125;</span> PROPERTIES MACOSX_PACKAGE_LOCATION <span class="hljs-string">&quot;Resources&quot;</span>)<br><span class="hljs-keyword">set_source_files_properties</span>(<span class="hljs-variable">$&#123;l10n_files&#125;</span> PROPERTIES MACOSX_PACKAGE_LOCATION <span class="hljs-string">&quot;Resources/l10n&quot;</span>)<br><br><span class="hljs-keyword">add_executable</span>(PicPicker<br>        <span class="hljs-variable">$&#123;SOURCES&#125;</span><br>        <span class="hljs-variable">$&#123;MyResources&#125;</span><br>        <span class="hljs-variable">$&#123;app_icon_macos&#125;</span><br>        <span class="hljs-variable">$&#123;l10n_files&#125;</span><br>        )<br><br><span class="hljs-keyword">set_target_properties</span>(PicPicker PROPERTIES<br>        MACOSX_BUNDLE <span class="hljs-keyword">TRUE</span><br>        )<br><br><span class="hljs-keyword">target_link_libraries</span>(PicPicker<br>        Qt5::Core<br>        Qt5::Gui<br>        Qt5::Widgets<br>        Qt5::Xml<br>        )<br><br><span class="hljs-keyword">get_target_property</span>(_qmake_executable Qt5::qmake IMPORTED_LOCATION)<br><span class="hljs-keyword">get_filename_component</span>(_qt_bin_dir <span class="hljs-string">&quot;$&#123;_qmake_executable&#125;&quot;</span> DIRECTORY)<br><span class="hljs-keyword">find_program</span>(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS <span class="hljs-string">&quot;$&#123;_qt_bin_dir&#125;&quot;</span>)<br><br><span class="hljs-keyword">add_custom_command</span>(<span class="hljs-keyword">TARGET</span> PicPicker POST_BUILD<br>        <span class="hljs-keyword">COMMAND</span> <span class="hljs-variable">$&#123;CMAKE_COMMAND&#125;</span> -E copy<br>        <span class="hljs-string">&quot;$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/AppIcon.icns&quot;</span><br>        <span class="hljs-string">&quot;$&lt;TARGET_FILE_DIR:PicPicker&gt;/../Resources/&quot;</span><br>        COMMENT <span class="hljs-string">&quot;Copy AppIcon.icns to Resources/&quot;</span><br>        &amp;&amp;<br>        <span class="hljs-keyword">COMMAND</span> <span class="hljs-string">&quot;$&#123;MACDEPLOYQT_EXECUTABLE&#125;&quot;</span><br>        ARGS <span class="hljs-string">&quot;PicPicker.app&quot;</span> <span class="hljs-string">&quot;-dmg&quot;</span> <span class="hljs-string">&quot;-always-overwrite&quot;</span> <span class="hljs-string">&quot;-no-strip&quot;</span><br>        COMMENT <span class="hljs-string">&quot;Execute macdeployqt to create macOS bundle&quot;</span><br>        )<br></code></pre></td></tr></table></figure>
-
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
-<li>因为没有使用QML，所以没有考虑打包QML文件的情况。</li>
-<li>只是在Mac平台下。</li>
-<li><code>-no-strip</code>参数在发布的时候要去掉，这里添加是为了开发时方便debug。</li>
-<li><code>-always-overwrite</code>参数也是为了方便，直接覆盖已经产生的dmg文件。</li>
-</ol>
-]]></content>
-      <tags>
-        <tag>qt5</tag>
-        <tag>cmake</tag>
-        <tag>macos</tag>
-        <tag>bundle</tag>
       </tags>
   </entry>
   <entry>
