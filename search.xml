@@ -194,45 +194,6 @@ the (unevaluated) expression expr, substituting any variables bound in env.</p>
       </tags>
   </entry>
   <entry>
-    <title>使用pandas.read_csv()读取csv文件</title>
-    <url>/2016/12/22/pandas-read-csv/</url>
-    <content><![CDATA[<h2 id="问题"><a href="#问题" class="headerlink" title=" 问题"></a><a name="hh0"></a> 问题</h2><p>以下Python代码实现对<code>Excel</code>转存的csv文件进行读取。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br>df = pd.read_csv(file_path + file_name + <span class="hljs-string">&quot;.csv&quot;</span>, encoding=<span class="hljs-string">&quot;gbk&quot;</span>)<br></code></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<p>把<code>csv</code>文件入库是一件脏活。表面上看<code>csv</code>文件是一个非常简单的
-逗号分隔符文件。但是其实不然。<code>Excel</code>转存的<code>csv</code>文件并不是标准的以逗号作为分隔符，
-并且对所有的项用双引号包裹。现在我就遇到了从<code>Oracle</code>导出的<code>csv</code>文件，以上的代码
-不起作用了。</p>
-<h2 id="解决问题"><a href="#解决问题" class="headerlink" title=" 解决问题"></a><a name="hh1"></a> 解决问题</h2><p>究竟怎么回事呢，找了一圈也没有发现使用<code>pandas.read_csv()</code>读取
-这种标准csv文件的方法。还是先把问题简化一下，看看<code>Python</code>的<code>csv模块</code>是如何读取的吧。
-简单的查找就可以找到答案。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> csv<br>csv.register_dialect(<br>    <span class="hljs-string">&#x27;mydialect&#x27;</span>,<br>    delimiter = <span class="hljs-string">&#x27;,&#x27;</span>,<br>    quotechar = <span class="hljs-string">&#x27;&quot;&#x27;</span>,<br>    doublequote = <span class="hljs-literal">True</span>,<br>    skipinitialspace = <span class="hljs-literal">True</span>,<br>    lineterminator = <span class="hljs-string">&#x27;\r\n&#x27;</span>,<br>    quoting = csv.QUOTE_MINIMAL)<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;\n Output from an iterable object created from the csv file&#x27;</span>)<br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;smallsample.csv&#x27;</span>, <span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> mycsvfile:<br>    thedata = csv.reader(mycsvfile, dialect=<span class="hljs-string">&#x27;mydialect&#x27;</span>)<br>    <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> thedata:<br>        <span class="hljs-built_in">print</span>(row[<span class="hljs-number">0</span>]+<span class="hljs-string">&quot;\t \t&quot;</span>+row[<span class="hljs-number">1</span>]+<span class="hljs-string">&quot;\t \t&quot;</span>+row[<span class="hljs-number">4</span>])<br></code></pre></td></tr></table></figure>
-
-<p>好的，<code>pandas.read_csv()</code>肯定是要调用csv模块的，那么看看
-它的方法参数表吧。</p>
-<blockquote>
-<p>pandas.read_csv(filepath_or_buffer, sep&#x3D;’, ‘, delimiter&#x3D;None, header&#x3D;’infer’, names&#x3D;None, index_col&#x3D;None, usecols&#x3D;None, squeeze&#x3D;False, prefix&#x3D;None, mangle_dupe_cols&#x3D;True, dtype&#x3D;None, engine&#x3D;None, converters&#x3D;None, true_values&#x3D;None, false_values&#x3D;None, skipinitialspace&#x3D;False, skiprows&#x3D;None, nrows&#x3D;None, na_values&#x3D;None, keep_default_na&#x3D;True, na_filter&#x3D;True, verbose&#x3D;False, skip_blank_lines&#x3D;True, parse_dates&#x3D;False, infer_datetime_format&#x3D;False, keep_date_col&#x3D;False, date_parser&#x3D;None, dayfirst&#x3D;False, iterator&#x3D;False, chunksize&#x3D;None, compression&#x3D;’infer’, thousands&#x3D;None, decimal&#x3D;’.’, lineterminator&#x3D;None, quotechar&#x3D;’”‘, quoting&#x3D;0, escapechar&#x3D;None, comment&#x3D;None, encoding&#x3D;None, <strong>dialect&#x3D;None</strong>, tupleize_cols&#x3D;False, error_bad_lines&#x3D;True, warn_bad_lines&#x3D;True, skipfooter&#x3D;0, skip_footer&#x3D;0, doublequote&#x3D;True, delim_whitespace&#x3D;False, as_recarray&#x3D;False, compact_ints&#x3D;False, use_unsigned&#x3D;False, low_memory&#x3D;True, buffer_lines&#x3D;None, memory_map&#x3D;False, float_precision&#x3D;None)[source]¶</p>
-</blockquote>
-<p>真是够长的，还是搜一下有没有<code>dialect=</code>，呵呵，果然有。</p>
-<blockquote>
-<p>dialect : str or csv.Dialect instance, default None  <br/>
-         If None defaults to Excel dialect. Ignored if sep longer than 1 char See csv.Dialect documentation for more details</p>
-</blockquote>
-<p>那么问题解决了。把第一段代码改改吧。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br>df = pd.read_csv(file_path + file_name + <span class="hljs-string">&quot;.csv&quot;</span>, encoding=<span class="hljs-string">&quot;gbk&quot;</span>, dialect=<span class="hljs-string">&#x27;mydialect&#x27;</span>)<br></code></pre></td></tr></table></figure>
-
-<p>一运行还是报错，这是怎么回事呢，编码换成<code>utf8</code>，也不行。最后才发现
-需要使用<code>gb18030</code>才行。即使使用<code>chardet</code>的编码探测模块，也不一定能探测出来，因为整个文档
-只有少数字符是超出了<code>gbk</code>，所以不可能既高效又准确的解决这个问题。</p>
-]]></content>
-      <tags>
-        <tag>python</tag>
-        <tag>技巧</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[leetcode 315]Count of Smaller Numbers After Self 原创解法</title>
     <url>/2016/12/26/leetcode-315/</url>
     <content><![CDATA[<h2 id="题目概述"><a href="#题目概述" class="headerlink" title=" 题目概述"></a><a name="hh0"></a> 题目概述</h2><p><a href="https://leetcode.com/problems/count-of-smaller-numbers-after-self/">原题链接</a></p>
@@ -427,6 +388,45 @@ Answer: 3
       </tags>
   </entry>
   <entry>
+    <title>使用pandas.read_csv()读取csv文件</title>
+    <url>/2016/12/22/pandas-read-csv/</url>
+    <content><![CDATA[<h2 id="问题"><a href="#问题" class="headerlink" title=" 问题"></a><a name="hh0"></a> 问题</h2><p>以下Python代码实现对<code>Excel</code>转存的csv文件进行读取。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br>df = pd.read_csv(file_path + file_name + <span class="hljs-string">&quot;.csv&quot;</span>, encoding=<span class="hljs-string">&quot;gbk&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<p>把<code>csv</code>文件入库是一件脏活。表面上看<code>csv</code>文件是一个非常简单的
+逗号分隔符文件。但是其实不然。<code>Excel</code>转存的<code>csv</code>文件并不是标准的以逗号作为分隔符，
+并且对所有的项用双引号包裹。现在我就遇到了从<code>Oracle</code>导出的<code>csv</code>文件，以上的代码
+不起作用了。</p>
+<h2 id="解决问题"><a href="#解决问题" class="headerlink" title=" 解决问题"></a><a name="hh1"></a> 解决问题</h2><p>究竟怎么回事呢，找了一圈也没有发现使用<code>pandas.read_csv()</code>读取
+这种标准csv文件的方法。还是先把问题简化一下，看看<code>Python</code>的<code>csv模块</code>是如何读取的吧。
+简单的查找就可以找到答案。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> csv<br>csv.register_dialect(<br>    <span class="hljs-string">&#x27;mydialect&#x27;</span>,<br>    delimiter = <span class="hljs-string">&#x27;,&#x27;</span>,<br>    quotechar = <span class="hljs-string">&#x27;&quot;&#x27;</span>,<br>    doublequote = <span class="hljs-literal">True</span>,<br>    skipinitialspace = <span class="hljs-literal">True</span>,<br>    lineterminator = <span class="hljs-string">&#x27;\r\n&#x27;</span>,<br>    quoting = csv.QUOTE_MINIMAL)<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;\n Output from an iterable object created from the csv file&#x27;</span>)<br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;smallsample.csv&#x27;</span>, <span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> mycsvfile:<br>    thedata = csv.reader(mycsvfile, dialect=<span class="hljs-string">&#x27;mydialect&#x27;</span>)<br>    <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> thedata:<br>        <span class="hljs-built_in">print</span>(row[<span class="hljs-number">0</span>]+<span class="hljs-string">&quot;\t \t&quot;</span>+row[<span class="hljs-number">1</span>]+<span class="hljs-string">&quot;\t \t&quot;</span>+row[<span class="hljs-number">4</span>])<br></code></pre></td></tr></table></figure>
+
+<p>好的，<code>pandas.read_csv()</code>肯定是要调用csv模块的，那么看看
+它的方法参数表吧。</p>
+<blockquote>
+<p>pandas.read_csv(filepath_or_buffer, sep&#x3D;’, ‘, delimiter&#x3D;None, header&#x3D;’infer’, names&#x3D;None, index_col&#x3D;None, usecols&#x3D;None, squeeze&#x3D;False, prefix&#x3D;None, mangle_dupe_cols&#x3D;True, dtype&#x3D;None, engine&#x3D;None, converters&#x3D;None, true_values&#x3D;None, false_values&#x3D;None, skipinitialspace&#x3D;False, skiprows&#x3D;None, nrows&#x3D;None, na_values&#x3D;None, keep_default_na&#x3D;True, na_filter&#x3D;True, verbose&#x3D;False, skip_blank_lines&#x3D;True, parse_dates&#x3D;False, infer_datetime_format&#x3D;False, keep_date_col&#x3D;False, date_parser&#x3D;None, dayfirst&#x3D;False, iterator&#x3D;False, chunksize&#x3D;None, compression&#x3D;’infer’, thousands&#x3D;None, decimal&#x3D;’.’, lineterminator&#x3D;None, quotechar&#x3D;’”‘, quoting&#x3D;0, escapechar&#x3D;None, comment&#x3D;None, encoding&#x3D;None, <strong>dialect&#x3D;None</strong>, tupleize_cols&#x3D;False, error_bad_lines&#x3D;True, warn_bad_lines&#x3D;True, skipfooter&#x3D;0, skip_footer&#x3D;0, doublequote&#x3D;True, delim_whitespace&#x3D;False, as_recarray&#x3D;False, compact_ints&#x3D;False, use_unsigned&#x3D;False, low_memory&#x3D;True, buffer_lines&#x3D;None, memory_map&#x3D;False, float_precision&#x3D;None)[source]¶</p>
+</blockquote>
+<p>真是够长的，还是搜一下有没有<code>dialect=</code>，呵呵，果然有。</p>
+<blockquote>
+<p>dialect : str or csv.Dialect instance, default None  <br/>
+         If None defaults to Excel dialect. Ignored if sep longer than 1 char See csv.Dialect documentation for more details</p>
+</blockquote>
+<p>那么问题解决了。把第一段代码改改吧。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br>df = pd.read_csv(file_path + file_name + <span class="hljs-string">&quot;.csv&quot;</span>, encoding=<span class="hljs-string">&quot;gbk&quot;</span>, dialect=<span class="hljs-string">&#x27;mydialect&#x27;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>一运行还是报错，这是怎么回事呢，编码换成<code>utf8</code>，也不行。最后才发现
+需要使用<code>gb18030</code>才行。即使使用<code>chardet</code>的编码探测模块，也不一定能探测出来，因为整个文档
+只有少数字符是超出了<code>gbk</code>，所以不可能既高效又准确的解决这个问题。</p>
+]]></content>
+      <tags>
+        <tag>python</tag>
+        <tag>技巧</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>在WIN10下使用Cython</title>
     <url>/2017/01/12/2017-1-12-cython-on-win10/</url>
     <content><![CDATA[<h2 id="Cython"><a href="#Cython" class="headerlink" title=" Cython"></a><a name="hh0"></a> Cython</h2><p><code>Cython</code>不是<code>CPython</code>的简称，而是一种提升<code>Python</code>代码执行效率的解决方案。
@@ -578,6 +578,48 @@ setuptools 28.8.0
       </tags>
   </entry>
   <entry>
+    <title>[leetcode 312]Burst Balloons原创解法</title>
+    <url>/2017/10/07/leetcode-312/</url>
+    <content><![CDATA[<h2 id="题目概述"><a href="#题目概述" class="headerlink" title=" 题目概述"></a><a name="hh0"></a> 题目概述</h2><p><a href="https://leetcode.com/problems/burst-balloons/">312原题链接</a></p>
+<pre><code class="hljs">Given n balloons, indexed from 0 to n-1. Each balloon is painted with a number on it represented by array nums. You are asked to burst all the balloons. If the you burst balloon i you will get nums[left] * nums[i] * nums[right] coins. Here left and right are adjacent indices of i. After the burst, the left and right then becomes adjacent.
+
+Find the maximum coins you can collect by bursting the balloons wisely.
+
+examples:
+nums = [3,1,5,8] --&gt; [3,5,8] --&gt;   [3,8]   --&gt;  [8]  --&gt; []
+coins =  3*1*5      +  3*5*8    +  1*3*8      + 1*8*1   = 167
+</code></pre>
+<span id="more"></span>
+
+<h2 id="简单直接的解法"><a href="#简单直接的解法" class="headerlink" title=" 简单直接的解法"></a><a name="hh1"></a> 简单直接的解法</h2><p>遍历回溯法，建立一个集合，把遍历过的数字放在该集合里。算法的复杂度是O(n!)。解法如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution1</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">maxCoins</span>(<span class="hljs-params">self, nums</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        :type nums: List[int]</span><br><span class="hljs-string">        :rtype: int</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        path = []<br>        max_path = [path]<br>        <span class="hljs-built_in">max</span> = [<span class="hljs-number">0</span>]<br>        s = [<span class="hljs-number">0</span>]<br>        D = <span class="hljs-built_in">set</span>()<br>        <span class="hljs-variable language_">self</span>.find(nums, path, D, s, <span class="hljs-built_in">max</span>, max_path)<br>        <span class="hljs-built_in">print</span>(max_path[<span class="hljs-number">0</span>])<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">max</span>[<span class="hljs-number">0</span>]<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">find</span>(<span class="hljs-params">self, nums, path, D, s, <span class="hljs-built_in">max</span>, max_path</span>):<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(path) == <span class="hljs-built_in">len</span>(nums):<br>            <span class="hljs-keyword">if</span> s[<span class="hljs-number">0</span>] &gt; <span class="hljs-built_in">max</span>[<span class="hljs-number">0</span>]:<br>                <span class="hljs-built_in">max</span>[<span class="hljs-number">0</span>] = s[<span class="hljs-number">0</span>]<br>                max_path[<span class="hljs-number">0</span>] = path[:]<br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(nums)):<br>                <span class="hljs-keyword">if</span> i <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> D:<br>                    path.append(i)<br>                    D.add(i)<br>                    tmp = <span class="hljs-variable language_">self</span>.compute(i, nums, D)<br>                    s[<span class="hljs-number">0</span>] += tmp<br>                    <span class="hljs-variable language_">self</span>.find(nums, path, D, s, <span class="hljs-built_in">max</span>, max_path)<br>                    path.pop()<br>                    D.remove(i)<br>                    s[<span class="hljs-number">0</span>] -= tmp<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">compute</span>(<span class="hljs-params">self, i, nums, D</span>):<br>        left, right = <span class="hljs-number">1</span>, <span class="hljs-number">1</span><br>        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(i - <span class="hljs-number">1</span>, -<span class="hljs-number">1</span>, -<span class="hljs-number">1</span>):<br>            <span class="hljs-keyword">if</span> j <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> D:<br>                left = nums[j]<br>                <span class="hljs-keyword">break</span><br>        <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(i + <span class="hljs-number">1</span>, <span class="hljs-built_in">len</span>(nums)):<br>            <span class="hljs-keyword">if</span> k <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> D:<br>                right = nums[k]<br>                <span class="hljs-keyword">break</span><br>        <span class="hljs-keyword">return</span> left * right * nums[i]<br></code></pre></td></tr></table></figure>
+
+<h2 id="回顾矩阵链解法"><a href="#回顾矩阵链解法" class="headerlink" title=" 回顾矩阵链解法"></a><a name="hh2"></a> 回顾矩阵链解法</h2><p>以上的方法无疑会超时，但是它是我们理解问题，验证其它算法的基础。
+我们希望能够得到一个多项式时间的解法，按照以往的经验，我们如果能够找到一个贪心算法是最好的，
+但是如果我们能够有一个贪心算法，那么也一定能够有一个动态规划方法。<code>CRLS</code>对贪心和动态规划做了清楚的
+描述，核心都是要找到最优子结构，并且证明存在最优子结构——这其实也是最难的部分，<code>因为动态规划方法从来只是一个思想，本质上不过是 递归的一种优化而已</code>。</p>
+<p><code>CRLS</code>中在动态规划一章中用了几个例子来详细展示动态规划方法。其中第二个例子就是矩阵链问题————如果有一个
+矩阵链<code>A1*A2*A3*A4</code>，其中A1是1x5的矩阵，A2是5x1的矩阵，A3是1x5的矩阵，A4是5x1的矩阵。那么先计算<code>A1*A2</code>和<code>A3*A4</code>
+则是比较好的，代价较小都是<code>1x5x1=5</code>。而<code>A2*A3</code>则是比较糟糕的，因为<code>A2*A3</code>的计算代价是<code>5x1x5=25</code>。</p>
+<blockquote>
+<p>对给定的两个矩阵相乘<code>A_ik*A_kj</code>,
+计算的代价是<code>i*k*j</code>。</p>
+</blockquote>
+<h2 id="等价转换"><a href="#等价转换" class="headerlink" title=" 等价转换"></a><a name="hh3"></a> 等价转换</h2><p>矩阵链中计算的代价是三个数相乘，而我们这里也是三个数字相乘。对于三个气球（数字）<code>5·1·5</code>，如果戳破第一个气球（数字），则得分（代价）是1x5x1，如果戳破第二个气球（数字）
+得分（代价）是5x1x5，戳破第三个气球（数字）得分（代价）是1x5x1。对于1x5x1可以转换为1x5的矩阵和5x1的矩阵的代价。
+5x1x5，可以转换为5x1的矩阵和1x5的矩阵的代价。最终，三个数字<code>5·1·5</code>可以等价转换为求解四个矩阵
+<code>A1*A2*A3*A4</code>的最大计算代价的问题。所以第一步就是把n个数字转换为n+1个矩阵表示，第二步就是把矩阵链问题的递归求解中
+的min改成max。如果这两个问题是等价的，那么我们的解法一定可以通过测试。并且似乎也不用去证明了。（其实这是最难的部分。）</p>
+<p>以下是通过的<code>memoization</code>解法，算法的复杂度是O(n^2)，与矩阵链问题的复杂度一样：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution2</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">maxCoins</span>(<span class="hljs-params">self, nums</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        :type nums: List[int]</span><br><span class="hljs-string">        :rtype: int</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        n = <span class="hljs-built_in">len</span>(nums)<br>        <span class="hljs-built_in">list</span> = <span class="hljs-variable language_">self</span>.get(nums) <span class="hljs-comment"># 转换为n+1个矩阵的表示。每个pair tuple对应矩阵的长和宽。</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-built_in">list</span>)<br>        n += <span class="hljs-number">1</span><br>        m = [[<span class="hljs-literal">None</span>] * n <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n)] <span class="hljs-comment"># 声明一个子问题空间是n^2的记忆体</span><br>        <span class="hljs-built_in">print</span>(m)<br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n):<br>            m[i][i] = <span class="hljs-number">0</span><br><br>        <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.recursive(<span class="hljs-built_in">list</span>, m, <span class="hljs-number">0</span>, n - <span class="hljs-number">1</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get</span>(<span class="hljs-params">self, nums</span>):<br>        n = <span class="hljs-built_in">len</span>(nums)<br>        <span class="hljs-built_in">list</span> = [(<span class="hljs-number">1</span>, nums[<span class="hljs-number">0</span>])]<br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n):<br>            <span class="hljs-keyword">if</span> (i + <span class="hljs-number">1</span> &lt; n):<br>                <span class="hljs-built_in">list</span>.append((nums[i], nums[i + <span class="hljs-number">1</span>]))<br>            <span class="hljs-keyword">else</span>:<br>                <span class="hljs-built_in">list</span>.append((nums[i], <span class="hljs-number">1</span>))<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">list</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">recursive</span>(<span class="hljs-params">self, <span class="hljs-built_in">list</span>, m, i, j</span>):<br>        <span class="hljs-keyword">if</span> m[i][j] <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>            <span class="hljs-keyword">return</span> m[i][j]<br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-built_in">max</span> = -<span class="hljs-number">1</span><br>            <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(i, j):<br>                a = <span class="hljs-variable language_">self</span>.recursive(<span class="hljs-built_in">list</span>, m, i, k)<br>                b = <span class="hljs-variable language_">self</span>.recursive(<span class="hljs-built_in">list</span>, m, k + <span class="hljs-number">1</span>, j)<br>                v = a + b + <span class="hljs-built_in">list</span>[i][<span class="hljs-number">0</span>] * <span class="hljs-built_in">list</span>[k][<span class="hljs-number">1</span>] * <span class="hljs-built_in">list</span>[j][<span class="hljs-number">1</span>]<br>                <span class="hljs-keyword">if</span> v &gt; <span class="hljs-built_in">max</span> :<br>                    <span class="hljs-built_in">max</span> = v<br>            m[i][j] = <span class="hljs-built_in">max</span><br>            <span class="hljs-keyword">return</span> m[i][j]<br></code></pre></td></tr></table></figure>
+]]></content>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>算法</tag>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[leetcode 295]Find Median from Data Stream 原创解法</title>
     <url>/2017/01/31/2017-1-31-leetcode-295/</url>
     <content><![CDATA[<h2 id="题目概述"><a href="#题目概述" class="headerlink" title=" 题目概述"></a><a name="hh0"></a> 题目概述</h2><p><a href="https://leetcode.com/problems/find-median-from-data-stream/">原题链接</a></p>
@@ -643,48 +685,6 @@ python的<code>list</code>而是使用一个自己创建的链表，那么插入
 <h2 id="吐槽"><a href="#吐槽" class="headerlink" title=" 吐槽"></a><a name="hh4"></a> 吐槽</h2><p>python只默认实现了一个最小堆。想要一个最大堆，还得像第<code>23</code>行
 代码那样使用一种取负数技巧。虽然<code>heapq</code>模块里有一个构造最大堆的方法
 <code>_heapify_max()</code>但是却没有<code>_heappushpop_max</code>这样的方法。真是无语啊。</p>
-]]></content>
-      <tags>
-        <tag>leetcode</tag>
-        <tag>算法</tag>
-        <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[leetcode 312]Burst Balloons原创解法</title>
-    <url>/2017/10/07/leetcode-312/</url>
-    <content><![CDATA[<h2 id="题目概述"><a href="#题目概述" class="headerlink" title=" 题目概述"></a><a name="hh0"></a> 题目概述</h2><p><a href="https://leetcode.com/problems/burst-balloons/">312原题链接</a></p>
-<pre><code class="hljs">Given n balloons, indexed from 0 to n-1. Each balloon is painted with a number on it represented by array nums. You are asked to burst all the balloons. If the you burst balloon i you will get nums[left] * nums[i] * nums[right] coins. Here left and right are adjacent indices of i. After the burst, the left and right then becomes adjacent.
-
-Find the maximum coins you can collect by bursting the balloons wisely.
-
-examples:
-nums = [3,1,5,8] --&gt; [3,5,8] --&gt;   [3,8]   --&gt;  [8]  --&gt; []
-coins =  3*1*5      +  3*5*8    +  1*3*8      + 1*8*1   = 167
-</code></pre>
-<span id="more"></span>
-
-<h2 id="简单直接的解法"><a href="#简单直接的解法" class="headerlink" title=" 简单直接的解法"></a><a name="hh1"></a> 简单直接的解法</h2><p>遍历回溯法，建立一个集合，把遍历过的数字放在该集合里。算法的复杂度是O(n!)。解法如下</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution1</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">maxCoins</span>(<span class="hljs-params">self, nums</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        :type nums: List[int]</span><br><span class="hljs-string">        :rtype: int</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        path = []<br>        max_path = [path]<br>        <span class="hljs-built_in">max</span> = [<span class="hljs-number">0</span>]<br>        s = [<span class="hljs-number">0</span>]<br>        D = <span class="hljs-built_in">set</span>()<br>        <span class="hljs-variable language_">self</span>.find(nums, path, D, s, <span class="hljs-built_in">max</span>, max_path)<br>        <span class="hljs-built_in">print</span>(max_path[<span class="hljs-number">0</span>])<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">max</span>[<span class="hljs-number">0</span>]<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">find</span>(<span class="hljs-params">self, nums, path, D, s, <span class="hljs-built_in">max</span>, max_path</span>):<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(path) == <span class="hljs-built_in">len</span>(nums):<br>            <span class="hljs-keyword">if</span> s[<span class="hljs-number">0</span>] &gt; <span class="hljs-built_in">max</span>[<span class="hljs-number">0</span>]:<br>                <span class="hljs-built_in">max</span>[<span class="hljs-number">0</span>] = s[<span class="hljs-number">0</span>]<br>                max_path[<span class="hljs-number">0</span>] = path[:]<br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(nums)):<br>                <span class="hljs-keyword">if</span> i <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> D:<br>                    path.append(i)<br>                    D.add(i)<br>                    tmp = <span class="hljs-variable language_">self</span>.compute(i, nums, D)<br>                    s[<span class="hljs-number">0</span>] += tmp<br>                    <span class="hljs-variable language_">self</span>.find(nums, path, D, s, <span class="hljs-built_in">max</span>, max_path)<br>                    path.pop()<br>                    D.remove(i)<br>                    s[<span class="hljs-number">0</span>] -= tmp<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">compute</span>(<span class="hljs-params">self, i, nums, D</span>):<br>        left, right = <span class="hljs-number">1</span>, <span class="hljs-number">1</span><br>        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(i - <span class="hljs-number">1</span>, -<span class="hljs-number">1</span>, -<span class="hljs-number">1</span>):<br>            <span class="hljs-keyword">if</span> j <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> D:<br>                left = nums[j]<br>                <span class="hljs-keyword">break</span><br>        <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(i + <span class="hljs-number">1</span>, <span class="hljs-built_in">len</span>(nums)):<br>            <span class="hljs-keyword">if</span> k <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> D:<br>                right = nums[k]<br>                <span class="hljs-keyword">break</span><br>        <span class="hljs-keyword">return</span> left * right * nums[i]<br></code></pre></td></tr></table></figure>
-
-<h2 id="回顾矩阵链解法"><a href="#回顾矩阵链解法" class="headerlink" title=" 回顾矩阵链解法"></a><a name="hh2"></a> 回顾矩阵链解法</h2><p>以上的方法无疑会超时，但是它是我们理解问题，验证其它算法的基础。
-我们希望能够得到一个多项式时间的解法，按照以往的经验，我们如果能够找到一个贪心算法是最好的，
-但是如果我们能够有一个贪心算法，那么也一定能够有一个动态规划方法。<code>CRLS</code>对贪心和动态规划做了清楚的
-描述，核心都是要找到最优子结构，并且证明存在最优子结构——这其实也是最难的部分，<code>因为动态规划方法从来只是一个思想，本质上不过是 递归的一种优化而已</code>。</p>
-<p><code>CRLS</code>中在动态规划一章中用了几个例子来详细展示动态规划方法。其中第二个例子就是矩阵链问题————如果有一个
-矩阵链<code>A1*A2*A3*A4</code>，其中A1是1x5的矩阵，A2是5x1的矩阵，A3是1x5的矩阵，A4是5x1的矩阵。那么先计算<code>A1*A2</code>和<code>A3*A4</code>
-则是比较好的，代价较小都是<code>1x5x1=5</code>。而<code>A2*A3</code>则是比较糟糕的，因为<code>A2*A3</code>的计算代价是<code>5x1x5=25</code>。</p>
-<blockquote>
-<p>对给定的两个矩阵相乘<code>A_ik*A_kj</code>,
-计算的代价是<code>i*k*j</code>。</p>
-</blockquote>
-<h2 id="等价转换"><a href="#等价转换" class="headerlink" title=" 等价转换"></a><a name="hh3"></a> 等价转换</h2><p>矩阵链中计算的代价是三个数相乘，而我们这里也是三个数字相乘。对于三个气球（数字）<code>5·1·5</code>，如果戳破第一个气球（数字），则得分（代价）是1x5x1，如果戳破第二个气球（数字）
-得分（代价）是5x1x5，戳破第三个气球（数字）得分（代价）是1x5x1。对于1x5x1可以转换为1x5的矩阵和5x1的矩阵的代价。
-5x1x5，可以转换为5x1的矩阵和1x5的矩阵的代价。最终，三个数字<code>5·1·5</code>可以等价转换为求解四个矩阵
-<code>A1*A2*A3*A4</code>的最大计算代价的问题。所以第一步就是把n个数字转换为n+1个矩阵表示，第二步就是把矩阵链问题的递归求解中
-的min改成max。如果这两个问题是等价的，那么我们的解法一定可以通过测试。并且似乎也不用去证明了。（其实这是最难的部分。）</p>
-<p>以下是通过的<code>memoization</code>解法，算法的复杂度是O(n^2)，与矩阵链问题的复杂度一样：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution2</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">maxCoins</span>(<span class="hljs-params">self, nums</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        :type nums: List[int]</span><br><span class="hljs-string">        :rtype: int</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        n = <span class="hljs-built_in">len</span>(nums)<br>        <span class="hljs-built_in">list</span> = <span class="hljs-variable language_">self</span>.get(nums) <span class="hljs-comment"># 转换为n+1个矩阵的表示。每个pair tuple对应矩阵的长和宽。</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-built_in">list</span>)<br>        n += <span class="hljs-number">1</span><br>        m = [[<span class="hljs-literal">None</span>] * n <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n)] <span class="hljs-comment"># 声明一个子问题空间是n^2的记忆体</span><br>        <span class="hljs-built_in">print</span>(m)<br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n):<br>            m[i][i] = <span class="hljs-number">0</span><br><br>        <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.recursive(<span class="hljs-built_in">list</span>, m, <span class="hljs-number">0</span>, n - <span class="hljs-number">1</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get</span>(<span class="hljs-params">self, nums</span>):<br>        n = <span class="hljs-built_in">len</span>(nums)<br>        <span class="hljs-built_in">list</span> = [(<span class="hljs-number">1</span>, nums[<span class="hljs-number">0</span>])]<br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n):<br>            <span class="hljs-keyword">if</span> (i + <span class="hljs-number">1</span> &lt; n):<br>                <span class="hljs-built_in">list</span>.append((nums[i], nums[i + <span class="hljs-number">1</span>]))<br>            <span class="hljs-keyword">else</span>:<br>                <span class="hljs-built_in">list</span>.append((nums[i], <span class="hljs-number">1</span>))<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">list</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">recursive</span>(<span class="hljs-params">self, <span class="hljs-built_in">list</span>, m, i, j</span>):<br>        <span class="hljs-keyword">if</span> m[i][j] <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>            <span class="hljs-keyword">return</span> m[i][j]<br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-built_in">max</span> = -<span class="hljs-number">1</span><br>            <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(i, j):<br>                a = <span class="hljs-variable language_">self</span>.recursive(<span class="hljs-built_in">list</span>, m, i, k)<br>                b = <span class="hljs-variable language_">self</span>.recursive(<span class="hljs-built_in">list</span>, m, k + <span class="hljs-number">1</span>, j)<br>                v = a + b + <span class="hljs-built_in">list</span>[i][<span class="hljs-number">0</span>] * <span class="hljs-built_in">list</span>[k][<span class="hljs-number">1</span>] * <span class="hljs-built_in">list</span>[j][<span class="hljs-number">1</span>]<br>                <span class="hljs-keyword">if</span> v &gt; <span class="hljs-built_in">max</span> :<br>                    <span class="hljs-built_in">max</span> = v<br>            m[i][j] = <span class="hljs-built_in">max</span><br>            <span class="hljs-keyword">return</span> m[i][j]<br></code></pre></td></tr></table></figure>
 ]]></content>
       <tags>
         <tag>leetcode</tag>
@@ -1004,61 +1004,6 @@ gradle run
       </tags>
   </entry>
   <entry>
-    <title>How to resize VirtualBox fixed image size and keep contents unchanged ?</title>
-    <url>/2017/07/09/2017-7-9-resize-fixed-image/</url>
-    <content><![CDATA[<h2 id="问题"><a href="#问题" class="headerlink" title=" 问题"></a><a name="hh0"></a> 问题</h2><p>如何更改镜像文件的大小呢，尤其是如何把一个固定大小的镜像变大，并且之前的内容完全不改变。
-我尝试了一些方法，比如下面的几个步骤。1.查看信息，2.克隆新的vdi，3.调整大小，4.再查看信息。</p>
-<span id="more"></span>
-
-<blockquote>
-<p>VBoxManage showhdinfo mydisk.vdi<br>VBoxManage clonehd mydisk.vdi mydiskClone.vdi<br>VBoxManage modifyhd mydiskClone.vdi –resize 61440<br>VBoxManage showhdinfo mydiskClone.vdi</p>
-</blockquote>
-<p>这个方法的确是调整了大小，不过镜像文件变成了<code>dynamic size</code>而不是<code>fixed size</code>。这还好了，
-最麻烦的是，当使用新的vdi的时候，发现自己的用户已经无法登陆，只能使用root用户登陆了。
-这是无法接受的。</p>
-<h2 id="用GParted实现"><a href="#用GParted实现" class="headerlink" title=" 用GParted实现"></a><a name="hh1"></a> 用GParted实现</h2><p>幸运的是有人给出了详细的方法。</p>
-<blockquote>
-<p><img src="/images/20170710-1.jpg" alt="resize-method"></p>
-</blockquote>
-<p>我来解释一下，其中最核心的就是</p>
-<pre><code class="hljs">dd if=/dev/sda of=/dev/sdb
-</code></pre>
-<p>执行完成这个语句之后，不要进行分区等任何操作。
-（虽然看到新增加的磁盘处于未分配的状态。）直接单独挂载这个磁盘启动。
-果然可以登陆，一切照旧。但是只是这样并没有完成磁盘空间变大。只是实现了内容的复制。
-要想扩大，就需要使用GParted进行resize了。重新使用GParted Live CD进入新磁盘的分区图形界面，
-可以发现新磁盘的某些空间已经进行分区，但是还有部分空间没有进行分区。
-在我这里是这样显示的</p>
-<pre>
- ------------------------------------------------------
- |     sda            |  swap  |     unallocated      |   
- ------------------------------------------------------
-</pre>
-
-<ol>
-<li>首先删掉swap交换分区。这样&#x2F;dev&#x2F;sda分区紧接着就是未分配的空间了。</li>
-<li>接着resize sda分区。留几百兆做swap交换分区。</li>
-<li>最后创建一个交换分区。</li>
-</ol>
-<p>最后重启。应该会发现无法登陆，出现这样一个提示
-<code>a start job is running for dev-disk-by…</code>。耐心等待一下，发现还是可以正常登陆的。
-而且磁盘的空间变大了。一切似乎不错。</p>
-<h2 id="解决最后的小问题"><a href="#解决最后的小问题" class="headerlink" title=" 解决最后的小问题"></a><a name="hh2"></a> 解决最后的小问题</h2><p>重启一下看看，发现还是有<code>a start job is running for dev-disk-by…</code>这个提示，
-需要等待一两分钟，真是糟糕。别担心，这是因为重新创建了swap交换分区的缘故。有人已经给出了解决办法。</p>
-<blockquote>
-<p>To avoid the issue, in &#x2F;etc&#x2F;fstab you can either
-Replace the swap UUID with the new one (run sudo blkid to find it) after the primary partition resizing.</p>
-</blockquote>
-<p><img src="/images/20170710-2.jpg" alt="reset-swap-uuid"></p>
-<p>重启，问题解决了。</p>
-]]></content>
-      <tags>
-        <tag>image</tag>
-        <tag>resize</tag>
-        <tag>virutalbox</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>宏扩展的执行逻辑初探(一)</title>
     <url>/2018/11/09/minilisp/</url>
     <content><![CDATA[<h2 id="宏是怎么扩展的呢？"><a href="#宏是怎么扩展的呢？" class="headerlink" title="宏是怎么扩展的呢？"></a>宏是怎么扩展的呢？</h2><p>比较流行的编程语言中，<code>Java</code>,<code>Python</code>都没有定义宏的功能。<code>c</code>语言中的宏限制比较大，
@@ -1172,6 +1117,61 @@ Replace the swap UUID with the new one (run sudo blkid to find it) after the pri
         <tag>leetcode</tag>
         <tag>算法</tag>
         <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>How to resize VirtualBox fixed image size and keep contents unchanged ?</title>
+    <url>/2017/07/09/2017-7-9-resize-fixed-image/</url>
+    <content><![CDATA[<h2 id="问题"><a href="#问题" class="headerlink" title=" 问题"></a><a name="hh0"></a> 问题</h2><p>如何更改镜像文件的大小呢，尤其是如何把一个固定大小的镜像变大，并且之前的内容完全不改变。
+我尝试了一些方法，比如下面的几个步骤。1.查看信息，2.克隆新的vdi，3.调整大小，4.再查看信息。</p>
+<span id="more"></span>
+
+<blockquote>
+<p>VBoxManage showhdinfo mydisk.vdi<br>VBoxManage clonehd mydisk.vdi mydiskClone.vdi<br>VBoxManage modifyhd mydiskClone.vdi –resize 61440<br>VBoxManage showhdinfo mydiskClone.vdi</p>
+</blockquote>
+<p>这个方法的确是调整了大小，不过镜像文件变成了<code>dynamic size</code>而不是<code>fixed size</code>。这还好了，
+最麻烦的是，当使用新的vdi的时候，发现自己的用户已经无法登陆，只能使用root用户登陆了。
+这是无法接受的。</p>
+<h2 id="用GParted实现"><a href="#用GParted实现" class="headerlink" title=" 用GParted实现"></a><a name="hh1"></a> 用GParted实现</h2><p>幸运的是有人给出了详细的方法。</p>
+<blockquote>
+<p><img src="/images/20170710-1.jpg" alt="resize-method"></p>
+</blockquote>
+<p>我来解释一下，其中最核心的就是</p>
+<pre><code class="hljs">dd if=/dev/sda of=/dev/sdb
+</code></pre>
+<p>执行完成这个语句之后，不要进行分区等任何操作。
+（虽然看到新增加的磁盘处于未分配的状态。）直接单独挂载这个磁盘启动。
+果然可以登陆，一切照旧。但是只是这样并没有完成磁盘空间变大。只是实现了内容的复制。
+要想扩大，就需要使用GParted进行resize了。重新使用GParted Live CD进入新磁盘的分区图形界面，
+可以发现新磁盘的某些空间已经进行分区，但是还有部分空间没有进行分区。
+在我这里是这样显示的</p>
+<pre>
+ ------------------------------------------------------
+ |     sda            |  swap  |     unallocated      |   
+ ------------------------------------------------------
+</pre>
+
+<ol>
+<li>首先删掉swap交换分区。这样&#x2F;dev&#x2F;sda分区紧接着就是未分配的空间了。</li>
+<li>接着resize sda分区。留几百兆做swap交换分区。</li>
+<li>最后创建一个交换分区。</li>
+</ol>
+<p>最后重启。应该会发现无法登陆，出现这样一个提示
+<code>a start job is running for dev-disk-by…</code>。耐心等待一下，发现还是可以正常登陆的。
+而且磁盘的空间变大了。一切似乎不错。</p>
+<h2 id="解决最后的小问题"><a href="#解决最后的小问题" class="headerlink" title=" 解决最后的小问题"></a><a name="hh2"></a> 解决最后的小问题</h2><p>重启一下看看，发现还是有<code>a start job is running for dev-disk-by…</code>这个提示，
+需要等待一两分钟，真是糟糕。别担心，这是因为重新创建了swap交换分区的缘故。有人已经给出了解决办法。</p>
+<blockquote>
+<p>To avoid the issue, in &#x2F;etc&#x2F;fstab you can either
+Replace the swap UUID with the new one (run sudo blkid to find it) after the primary partition resizing.</p>
+</blockquote>
+<p><img src="/images/20170710-2.jpg" alt="reset-swap-uuid"></p>
+<p>重启，问题解决了。</p>
+]]></content>
+      <tags>
+        <tag>image</tag>
+        <tag>resize</tag>
+        <tag>virutalbox</tag>
       </tags>
   </entry>
   <entry>
@@ -2163,42 +2163,6 @@ Process finished with exit code 0
       </tags>
   </entry>
   <entry>
-    <title>Java语言中bytes convert to string and back not equal</title>
-    <url>/2019/04/28/2019-4-28-byte-to-string-and-back/</url>
-    <content><![CDATA[<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>用google搜索关键词”java bytes to string and back not equal”，第一个就是我说的这个问题。
-什么意思呢？就是在java中，bytes转化为string之后，再转换回bytes的时候，发现不相同了。
-<strong>但是<code>Go</code>语言就没有这个问题哦</strong>。</p>
-<span id="more"></span>
-
-<p>运行如下java代码</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-type">byte</span>[] a = <span class="hljs-keyword">new</span> <span class="hljs-title class_">byte</span>[]&#123;(<span class="hljs-type">byte</span>) <span class="hljs-number">0xc0</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0xa8</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x00</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x01</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x04</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x38</span>&#125;;<br>System.out.println(ByteBufUtil.hexDump(a));<br><span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>(a);<br>System.out.println(ByteBufUtil.hexDump(s.getBytes()));<br></code></pre></td></tr></table></figure>
-
-<p>输出的结果如下：</p>
-<figure class="highlight dns"><table><tr><td class="code"><pre><code class="hljs dns">c0a<span class="hljs-number">800010438</span><br>efbfbdefbfbd<span class="hljs-number">00010438</span><br></code></pre></td></tr></table></figure>
-
-<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>bytes转化为string类型，本质上要选择一种编码。那么选择的是什么呢？
-我们看看<code>new String()</code>执行的代码。通过跟踪，可以看到，使用了默认的编码。
-csn为<code>UTF-8</code>。</p>
-<figure class="highlight aspectj"><table><tr><td class="code"><pre><code class="hljs aspectj"><span class="hljs-keyword">static</span> <span class="hljs-keyword">char</span>[] decode(<span class="hljs-keyword">byte</span>[] ba, <span class="hljs-keyword">int</span> off, <span class="hljs-keyword">int</span> len) &#123;<br>    String csn = Charset.defaultCharset().name();<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-comment">// use charset name decode() variant which provides caching.</span><br>        <span class="hljs-function"><span class="hljs-keyword">return</span> <span class="hljs-title">decode</span><span class="hljs-params">(csn, ba, off, len)</span></span>;<br>    &#125; <span class="hljs-keyword">catch</span> (UnsupportedEncodingException x) &#123;<br>        warnUnsupportedCharset(csn);<br>    &#125;<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-function"><span class="hljs-keyword">return</span> <span class="hljs-title">decode</span><span class="hljs-params">(<span class="hljs-string">&quot;ISO-8859-1&quot;</span>, ba, off, len)</span></span>;<br>    &#125; <span class="hljs-keyword">catch</span> (UnsupportedEncodingException x) &#123;<br>        <span class="hljs-comment">// If this code is hit during VM initialization, MessageUtils is</span><br>        <span class="hljs-comment">// the only way we will be able to get any kind of error message.</span><br>        MessageUtils.err(<span class="hljs-string">&quot;ISO-8859-1 charset not available: &quot;</span><br>                         + x.toString());<br>        <span class="hljs-comment">// If we can not find ISO-8859-1 (a required encoding) then things</span><br>        <span class="hljs-comment">// are seriously wrong with the installation.</span><br>        System.exit(<span class="hljs-number">1</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>因为通常java编译的时候的默认编码是<code>UTF-8</code>。
-那么如何保证转化为字符串还能够转换回来呢？</p>
-<p>一种方法是使用<code>ISO-8859-1</code>。例如，</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-type">byte</span>[] a = <span class="hljs-keyword">new</span> <span class="hljs-title class_">byte</span>[]&#123;(<span class="hljs-type">byte</span>) <span class="hljs-number">0xC0</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0xa8</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x00</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x01</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x04</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x38</span>&#125;;<br>System.out.println(ByteBufUtil.hexDump(a));<br><span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>(a, Charset.forName(<span class="hljs-string">&quot;ISO-8859-1&quot;</span>));<br>System.out.println(ByteBufUtil.hexDump(s.getBytes(Charset.forName(<span class="hljs-string">&quot;ISO-8859-1&quot;</span>))));<br></code></pre></td></tr></table></figure>
-<p>结果是相等的。</p>
-<figure class="highlight dns"><table><tr><td class="code"><pre><code class="hljs dns">c0a<span class="hljs-number">800010438</span><br>c0a<span class="hljs-number">800010438</span><br></code></pre></td></tr></table></figure>
-
-<h2 id="Go语言没有这个问题"><a href="#Go语言没有这个问题" class="headerlink" title="Go语言没有这个问题"></a>Go语言没有这个问题</h2><p>Go语言则对这个问题解决的非常好。</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><code class="hljs go">a := []<span class="hljs-type">byte</span>&#123;<span class="hljs-number">0xc0</span>, <span class="hljs-number">0xa8</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x01</span>, <span class="hljs-number">0x04</span>, <span class="hljs-number">0x38</span>&#125;<br>fmt.Println(a)<br>s := <span class="hljs-type">string</span>(a)<br>b := []<span class="hljs-type">byte</span>(s)<br>fmt.Println(b)<br></code></pre></td></tr></table></figure>
-<p>运行结果是相等的。</p>
-<figure class="highlight tap"><table><tr><td class="code"><pre><code class="hljs tap">[192<span class="hljs-number"> 168 </span>0<span class="hljs-number"> 1 </span>4 56]<br>[192<span class="hljs-number"> 168 </span>0<span class="hljs-number"> 1 </span>4 56]<br></code></pre></td></tr></table></figure>
-]]></content>
-      <tags>
-        <tag>java</tag>
-        <tag>golang</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>docker容器内访问mac主机的kafka</title>
     <url>/2020/03/09/connect-kafka/</url>
     <content><![CDATA[<h2 id="从容器内访问主机的kafka"><a href="#从容器内访问主机的kafka" class="headerlink" title="从容器内访问主机的kafka"></a>从容器内访问主机的kafka</h2><p>我最近遇到这样一个需求，需要从容器内的ClickHouse访问安装在mac主机的kafka。这个问题似乎很简单，
@@ -2351,51 +2315,39 @@ csn为<code>UTF-8</code>。</p>
       </tags>
   </entry>
   <entry>
-    <title>基于CLion和gdbserver实现远程调试c程序</title>
-    <url>/2020/09/08/remote-debug-with-clion/</url>
-    <content><![CDATA[<h2 id="远程调试c程序"><a href="#远程调试c程序" class="headerlink" title="远程调试c程序"></a>远程调试c程序</h2><p>最近基于<a href="https://github.com/alibaba/tsar">tsar</a>（阿里开源的一个基于c语言的监控程序）做二次开发，
-因为以前从来没有在工作中写过c，所以这个简单的工作花了两周时间，期间用gdb进行调试，用valgrind检查内存泄漏。
-但是最让我不舒服的就是gdb调试了，虽然gdb很给力，但是毕竟由奢入俭难，之前写Java，Python，Go都是可以用IDE进行
-debug的。有图形化界面还是效率高很多，而对于新手，能够方便的debug源码就可以快速的理解项目。</p>
-<p>那么怎么办呢？</p>
+    <title>Java语言中bytes convert to string and back not equal</title>
+    <url>/2019/04/28/2019-4-28-byte-to-string-and-back/</url>
+    <content><![CDATA[<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>用google搜索关键词”java bytes to string and back not equal”，第一个就是我说的这个问题。
+什么意思呢？就是在java中，bytes转化为string之后，再转换回bytes的时候，发现不相同了。
+<strong>但是<code>Go</code>语言就没有这个问题哦</strong>。</p>
 <span id="more"></span>
 
+<p>运行如下java代码</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-type">byte</span>[] a = <span class="hljs-keyword">new</span> <span class="hljs-title class_">byte</span>[]&#123;(<span class="hljs-type">byte</span>) <span class="hljs-number">0xc0</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0xa8</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x00</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x01</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x04</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x38</span>&#125;;<br>System.out.println(ByteBufUtil.hexDump(a));<br><span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>(a);<br>System.out.println(ByteBufUtil.hexDump(s.getBytes()));<br></code></pre></td></tr></table></figure>
 
-<h2 id="CLion"><a href="#CLion" class="headerlink" title="CLion"></a>CLion</h2><p>我一直以为CLion可以很好的理解cmake项目，但是对于大量的基于makefile编译的项目，则不能很好的解析，所以也无法利用CLion
-进行代码调试。</p>
-<p>但是并不是这样，虽然CLion无法理解代码中各种符号之间的依赖关系，但是调试只要有debug info和源码就可以进行图形化调试。</p>
-<p>参考CLion远程开发的<a href="https://www.jetbrains.com/help/clion/remote-gdb-server.html">Remote GDB Server</a>，很简单就实现了。</p>
-<h2 id="远程调试tsar"><a href="#远程调试tsar" class="headerlink" title="远程调试tsar"></a>远程调试tsar</h2><ol>
-<li><p>mac下安装了CLion，linux下编译tsar。
-在mac下，tsar项目源码路径——<code>/Users/ym/work/operation</code>
-在linux下为,tsar项目源码路径——<code>/home/keyvalue/ym/operation</code></p>
-</li>
-<li><p>在CLion下创建一个<code>GDB remote debug</code>配置。
-参数配置：</p>
-</li>
-</ol>
-<ul>
-<li><p>target remote args<br>10.4.104.153:1234    # 这是gdbserver的ip:port</p>
-</li>
-<li><p>path mappings 
-remote path为<code>/home/keyvalue/ym/operation</code>，local path为<code>/Users/ym/work/operation</code></p>
-</li>
-</ul>
-<p><img src="/images/gdb-remote-debug.png" alt="gdb remote debug config"></p>
-<ol start="3">
-<li><p>在linux下运行命令</p>
-<figure class="highlight vhdl"><table><tr><td class="code"><pre><code class="hljs vhdl">$ sudo gdbserver :<span class="hljs-number">1234</span> src/tsar <span class="hljs-comment">--cron</span><br><span class="hljs-keyword">Process</span> src/tsar created; pid = <span class="hljs-number">10216</span><br>Listening <span class="hljs-keyword">on</span> <span class="hljs-keyword">port</span> <span class="hljs-number">1234</span><br></code></pre></td></tr></table></figure>
-</li>
-<li><p>CLion下启动之前的<code>GDB remote debug</code>配置，就可以愉快的断点调试了。</p>
-</li>
-</ol>
-<p><img src="/images/tsar-remote-debug.png" alt="tsar remote debug"></p>
+<p>输出的结果如下：</p>
+<figure class="highlight dns"><table><tr><td class="code"><pre><code class="hljs dns">c0a<span class="hljs-number">800010438</span><br>efbfbdefbfbd<span class="hljs-number">00010438</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>bytes转化为string类型，本质上要选择一种编码。那么选择的是什么呢？
+我们看看<code>new String()</code>执行的代码。通过跟踪，可以看到，使用了默认的编码。
+csn为<code>UTF-8</code>。</p>
+<figure class="highlight aspectj"><table><tr><td class="code"><pre><code class="hljs aspectj"><span class="hljs-keyword">static</span> <span class="hljs-keyword">char</span>[] decode(<span class="hljs-keyword">byte</span>[] ba, <span class="hljs-keyword">int</span> off, <span class="hljs-keyword">int</span> len) &#123;<br>    String csn = Charset.defaultCharset().name();<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-comment">// use charset name decode() variant which provides caching.</span><br>        <span class="hljs-function"><span class="hljs-keyword">return</span> <span class="hljs-title">decode</span><span class="hljs-params">(csn, ba, off, len)</span></span>;<br>    &#125; <span class="hljs-keyword">catch</span> (UnsupportedEncodingException x) &#123;<br>        warnUnsupportedCharset(csn);<br>    &#125;<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-function"><span class="hljs-keyword">return</span> <span class="hljs-title">decode</span><span class="hljs-params">(<span class="hljs-string">&quot;ISO-8859-1&quot;</span>, ba, off, len)</span></span>;<br>    &#125; <span class="hljs-keyword">catch</span> (UnsupportedEncodingException x) &#123;<br>        <span class="hljs-comment">// If this code is hit during VM initialization, MessageUtils is</span><br>        <span class="hljs-comment">// the only way we will be able to get any kind of error message.</span><br>        MessageUtils.err(<span class="hljs-string">&quot;ISO-8859-1 charset not available: &quot;</span><br>                         + x.toString());<br>        <span class="hljs-comment">// If we can not find ISO-8859-1 (a required encoding) then things</span><br>        <span class="hljs-comment">// are seriously wrong with the installation.</span><br>        System.exit(<span class="hljs-number">1</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>因为通常java编译的时候的默认编码是<code>UTF-8</code>。
+那么如何保证转化为字符串还能够转换回来呢？</p>
+<p>一种方法是使用<code>ISO-8859-1</code>。例如，</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-type">byte</span>[] a = <span class="hljs-keyword">new</span> <span class="hljs-title class_">byte</span>[]&#123;(<span class="hljs-type">byte</span>) <span class="hljs-number">0xC0</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0xa8</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x00</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x01</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x04</span>, (<span class="hljs-type">byte</span>) <span class="hljs-number">0x38</span>&#125;;<br>System.out.println(ByteBufUtil.hexDump(a));<br><span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>(a, Charset.forName(<span class="hljs-string">&quot;ISO-8859-1&quot;</span>));<br>System.out.println(ByteBufUtil.hexDump(s.getBytes(Charset.forName(<span class="hljs-string">&quot;ISO-8859-1&quot;</span>))));<br></code></pre></td></tr></table></figure>
+<p>结果是相等的。</p>
+<figure class="highlight dns"><table><tr><td class="code"><pre><code class="hljs dns">c0a<span class="hljs-number">800010438</span><br>c0a<span class="hljs-number">800010438</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="Go语言没有这个问题"><a href="#Go语言没有这个问题" class="headerlink" title="Go语言没有这个问题"></a>Go语言没有这个问题</h2><p>Go语言则对这个问题解决的非常好。</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><code class="hljs go">a := []<span class="hljs-type">byte</span>&#123;<span class="hljs-number">0xc0</span>, <span class="hljs-number">0xa8</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x01</span>, <span class="hljs-number">0x04</span>, <span class="hljs-number">0x38</span>&#125;<br>fmt.Println(a)<br>s := <span class="hljs-type">string</span>(a)<br>b := []<span class="hljs-type">byte</span>(s)<br>fmt.Println(b)<br></code></pre></td></tr></table></figure>
+<p>运行结果是相等的。</p>
+<figure class="highlight tap"><table><tr><td class="code"><pre><code class="hljs tap">[192<span class="hljs-number"> 168 </span>0<span class="hljs-number"> 1 </span>4 56]<br>[192<span class="hljs-number"> 168 </span>0<span class="hljs-number"> 1 </span>4 56]<br></code></pre></td></tr></table></figure>
 ]]></content>
       <tags>
-        <tag>debug</tag>
-        <tag>CLion</tag>
-        <tag>gdb</tag>
-        <tag>remote</tag>
+        <tag>java</tag>
+        <tag>golang</tag>
       </tags>
   </entry>
   <entry>
@@ -2450,6 +2402,54 @@ remote path为<code>/home/keyvalue/ym/operation</code>，local path为<code>/Use
         <tag>nginx</tag>
         <tag>openssl</tag>
         <tag>ssl</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>基于CLion和gdbserver实现远程调试c程序</title>
+    <url>/2020/09/08/remote-debug-with-clion/</url>
+    <content><![CDATA[<h2 id="远程调试c程序"><a href="#远程调试c程序" class="headerlink" title="远程调试c程序"></a>远程调试c程序</h2><p>最近基于<a href="https://github.com/alibaba/tsar">tsar</a>（阿里开源的一个基于c语言的监控程序）做二次开发，
+因为以前从来没有在工作中写过c，所以这个简单的工作花了两周时间，期间用gdb进行调试，用valgrind检查内存泄漏。
+但是最让我不舒服的就是gdb调试了，虽然gdb很给力，但是毕竟由奢入俭难，之前写Java，Python，Go都是可以用IDE进行
+debug的。有图形化界面还是效率高很多，而对于新手，能够方便的debug源码就可以快速的理解项目。</p>
+<p>那么怎么办呢？</p>
+<span id="more"></span>
+
+
+<h2 id="CLion"><a href="#CLion" class="headerlink" title="CLion"></a>CLion</h2><p>我一直以为CLion可以很好的理解cmake项目，但是对于大量的基于makefile编译的项目，则不能很好的解析，所以也无法利用CLion
+进行代码调试。</p>
+<p>但是并不是这样，虽然CLion无法理解代码中各种符号之间的依赖关系，但是调试只要有debug info和源码就可以进行图形化调试。</p>
+<p>参考CLion远程开发的<a href="https://www.jetbrains.com/help/clion/remote-gdb-server.html">Remote GDB Server</a>，很简单就实现了。</p>
+<h2 id="远程调试tsar"><a href="#远程调试tsar" class="headerlink" title="远程调试tsar"></a>远程调试tsar</h2><ol>
+<li><p>mac下安装了CLion，linux下编译tsar。
+在mac下，tsar项目源码路径——<code>/Users/ym/work/operation</code>
+在linux下为,tsar项目源码路径——<code>/home/keyvalue/ym/operation</code></p>
+</li>
+<li><p>在CLion下创建一个<code>GDB remote debug</code>配置。
+参数配置：</p>
+</li>
+</ol>
+<ul>
+<li><p>target remote args<br>10.4.104.153:1234    # 这是gdbserver的ip:port</p>
+</li>
+<li><p>path mappings 
+remote path为<code>/home/keyvalue/ym/operation</code>，local path为<code>/Users/ym/work/operation</code></p>
+</li>
+</ul>
+<p><img src="/images/gdb-remote-debug.png" alt="gdb remote debug config"></p>
+<ol start="3">
+<li><p>在linux下运行命令</p>
+<figure class="highlight vhdl"><table><tr><td class="code"><pre><code class="hljs vhdl">$ sudo gdbserver :<span class="hljs-number">1234</span> src/tsar <span class="hljs-comment">--cron</span><br><span class="hljs-keyword">Process</span> src/tsar created; pid = <span class="hljs-number">10216</span><br>Listening <span class="hljs-keyword">on</span> <span class="hljs-keyword">port</span> <span class="hljs-number">1234</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>CLion下启动之前的<code>GDB remote debug</code>配置，就可以愉快的断点调试了。</p>
+</li>
+</ol>
+<p><img src="/images/tsar-remote-debug.png" alt="tsar remote debug"></p>
+]]></content>
+      <tags>
+        <tag>debug</tag>
+        <tag>CLion</tag>
+        <tag>gdb</tag>
+        <tag>remote</tag>
       </tags>
   </entry>
   <entry>
@@ -2833,6 +2833,37 @@ Given the integer n, return the last number that remains in arr.
       </tags>
   </entry>
   <entry>
+    <title>通过ChatGPT实现Rust语言的八皇后算法</title>
+    <url>/2023/01/12/2023-1-12-8-queens-chatgpt/</url>
+    <content><![CDATA[<h2 id="ChatGPT是什么？"><a href="#ChatGPT是什么？" class="headerlink" title="ChatGPT是什么？"></a>ChatGPT是什么？</h2><p><a href="https://openai.com/blog/chatgpt/">ChatGPT</a>是基于<code>OpenAI</code>项目的聊天机器人。</p>
+<p><code>OpenAI</code>项目由特斯拉创建，而<code>ChatGPT</code>的母公司当前估值$29bln，据说微软准备购买$10bln。</p>
+<span id="more"></span>
+
+<p>目前ChatGPT不对中国开放，想要注册不光需要VPN，还需要手机短信验证。不过注册完成后登录不需要短信验证了。</p>
+<p>具体怎么注册登录ChatGPT可以参考其它文章。</p>
+<h2 id="八皇后问题"><a href="#八皇后问题" class="headerlink" title="八皇后问题"></a>八皇后问题</h2><p>八皇后问题（英文：Eight queens），是由国际象棋棋手马克斯·贝瑟尔于1848年提出的问题，是回溯算法的典型案例。 
+问题表述为：在8×8格的国际象棋上摆放8个皇后，使其不能互相攻击，
+即任意两个皇后都不能处于同一行、同一列或同一斜线上，问有多少种摆法。 
+高斯认为有76种方案。</p>
+<p><img src="/images/2023-1-12-8queens-problem.png" alt="2023-1-12-8queens-problem"></p>
+<h2 id="通过ChatGPT实现Rust语言的八皇后算法"><a href="#通过ChatGPT实现Rust语言的八皇后算法" class="headerlink" title="通过ChatGPT实现Rust语言的八皇后算法"></a>通过ChatGPT实现Rust语言的八皇后算法</h2><p>直接问ChatGPT, “How to write eight queens algorithm in rust?”
+如下图所示，直接就把rust代码实现显示出来，并进行了说明。</p>
+<p><img src="/images/2023-1-12-8queens-chatgpt.png" alt="2023-1-12-8queens-chatgpt"></p>
+<p>把rust代码copy出来，增加测试代码<code>test_eight_queen()</code>。</p>
+<figure class="highlight rust"><table><tr><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">fn</span> <span class="hljs-title function_">eight_queens</span>() &#123;<br>    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut </span><span class="hljs-variable">board</span> = <span class="hljs-built_in">vec!</span>[-<span class="hljs-number">1</span>; <span class="hljs-number">8</span>];<br><br>    <span class="hljs-title function_ invoke__">solve</span>(&amp;<span class="hljs-keyword">mut</span> board, <span class="hljs-number">0</span>);<br>&#125;<br><br><span class="hljs-keyword">fn</span> <span class="hljs-title function_">solve</span>(board: &amp;<span class="hljs-keyword">mut</span> <span class="hljs-type">Vec</span>&lt;<span class="hljs-type">i32</span>&gt;, target_row: <span class="hljs-type">i32</span>) &#123;<br>    <span class="hljs-keyword">if</span> target_row == <span class="hljs-number">8</span> &#123;<br>        <span class="hljs-title function_ invoke__">print_board</span>(board);<br>        <span class="hljs-keyword">return</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">for</span> <span class="hljs-variable">column</span> <span class="hljs-keyword">in</span> <span class="hljs-number">0</span>..<span class="hljs-number">8</span> &#123;<br>        <span class="hljs-keyword">if</span> <span class="hljs-title function_ invoke__">is_safe</span>(board, target_row, column) &#123;<br>            board[target_row <span class="hljs-keyword">as</span> <span class="hljs-type">usize</span>] = column <span class="hljs-keyword">as</span> <span class="hljs-type">i32</span>;<br>            <span class="hljs-title function_ invoke__">solve</span>(board, target_row + <span class="hljs-number">1</span>);<br>        &#125;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">fn</span> <span class="hljs-title function_">is_safe</span>(board: &amp;<span class="hljs-type">Vec</span>&lt;<span class="hljs-type">i32</span>&gt;, row: <span class="hljs-type">i32</span>, column: <span class="hljs-type">i32</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">bool</span> &#123;<br>    <span class="hljs-keyword">for</span> <span class="hljs-variable">r</span> <span class="hljs-keyword">in</span> <span class="hljs-number">0</span>..row &#123;<br>        <span class="hljs-keyword">let</span> <span class="hljs-variable">c</span> = board[r <span class="hljs-keyword">as</span> <span class="hljs-type">usize</span>];<br><br>        <span class="hljs-keyword">if</span> c == column ||<br>            (row - r).<span class="hljs-title function_ invoke__">abs</span>() == (column - c).<span class="hljs-title function_ invoke__">abs</span>() &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>&#125;<br><br><span class="hljs-keyword">fn</span> <span class="hljs-title function_">print_board</span>(board: &amp;<span class="hljs-type">Vec</span>&lt;<span class="hljs-type">i32</span>&gt;) &#123;<br>    <span class="hljs-keyword">for</span> <span class="hljs-variable">r</span> <span class="hljs-keyword">in</span> <span class="hljs-number">0</span>..<span class="hljs-number">8</span> &#123;<br>        <span class="hljs-keyword">for</span> <span class="hljs-variable">c</span> <span class="hljs-keyword">in</span> <span class="hljs-number">0</span>..<span class="hljs-number">8</span> &#123;<br>            <span class="hljs-keyword">if</span> board[r <span class="hljs-keyword">as</span> <span class="hljs-type">usize</span>] == c <span class="hljs-keyword">as</span> <span class="hljs-type">i32</span> &#123;<br>                <span class="hljs-built_in">print!</span>(<span class="hljs-string">&quot;Q &quot;</span>);<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                <span class="hljs-built_in">print!</span>(<span class="hljs-string">&quot;. &quot;</span>);<br>            &#125;<br>        &#125;<br><br>        <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;&quot;</span>);<br>&#125;<br><br><span class="hljs-meta">#[cfg(test)]</span><br><span class="hljs-keyword">mod</span> tests &#123;<br>    <span class="hljs-meta">#[test]</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">test_eight_queen</span>() &#123;<br>        super::<span class="hljs-title function_ invoke__">eight_queens</span>();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h2><p>直接运行，没有错误。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">hello $ cargo test --bin hello eight_queens::tests::test_eight_queen -- --show-output<br>    Finished test [unoptimized + debuginfo] target(s) in 0.11s<br>     Running unittests src/main.rs (target/debug/deps/hello-257baa7e5ed28221)<br><br>running 1 test<br>test eight_queens::tests::test_eight_queen ... ok<br><br>successes:<br><br>---- eight_queens::tests::test_eight_queen stdout ----<br>Q . . . . . . . <br>. . . . Q . . . <br>. . . . . . . Q <br>. . . . . Q . . <br>. . Q . . . . . <br>. . . . . . Q . <br>. Q . . . . . . <br>. . . Q . . . . <br><br>Q . . . . . . . <br>. . . . . Q . . <br>. . . . . . . Q <br>. . Q . . . . . <br>. . . . . . Q . <br>. . . Q . . . . <br>. Q . . . . . . <br>. . . . Q . . . <br><br>Q . . . . . . . <br>. . . . . . Q . <br>. . . Q . . . . <br>. . . . . Q . . <br>. . . . . . . Q <br>. Q . . . . . . <br>. . . . Q . . . <br>. . Q . . . . . <br><br>Q . . . . . . . <br>. . . . . . Q . <br>. . . . Q . . . <br>. . . . . . . Q <br>. Q . . . . . . <br>. . . Q . . . . <br>. . . . . Q . . <br>. . Q . . . . . <br><br>. Q . . . . . . <br>. . . Q . . . . <br>. . . . . Q . . <br>. . . . . . . Q <br>. . Q . . . . . <br>Q . . . . . . . <br>. . . . . . Q . <br>. . . . Q . . . <br><br>. Q . . . . . . <br>. . . . Q . . . <br>. . . . . . Q . <br>Q . . . . . . . <br>. . Q . . . . . <br>. . . . . . . Q <br>. . . . . Q . . <br>. . . Q . . . . <br><br>. Q . . . . . . <br>. . . . Q . . . <br>. . . . . . Q . <br>. . . Q . . . . <br>Q . . . . . . . <br>. . . . . . . Q <br>. . . . . Q . . <br>. . Q . . . . . <br><br>... ignore<br>...<br>...<br><br>successes:<br>    eight_queens::tests::test_eight_queen<br><br>test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 22 filtered out; finished in 0.00s<br></code></pre></td></tr></table></figure>
+
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>ChatGPT给人非常惊艳的感觉。我考虑以后经常使用它，如果它一直免费的话。</p>
+]]></content>
+      <tags>
+        <tag>算法</tag>
+        <tag>ChatGPT</tag>
+        <tag>rust</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>使用Iced的过程中理解Rust的关联类型</title>
     <url>/2023/02/28/2023-2-28-associated-type/</url>
     <content><![CDATA[<h2 id="关联类型-Associated-type"><a href="#关联类型-Associated-type" class="headerlink" title="关联类型(Associated type)"></a>关联类型(Associated type)</h2><p>关联类型是Rust为了解决类型参数(type parameter)之间的依赖关系而引入的。清楚的解释引入动机的文章就是
@@ -3135,37 +3166,6 @@ command source ~&#x2F;qtlldb&#x2F;QtFormatters.lldb</p>
         <tag>c++</tag>
         <tag>AST</tag>
         <tag>tree</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>通过ChatGPT实现Rust语言的八皇后算法</title>
-    <url>/2023/01/12/2023-1-12-8-queens-chatgpt/</url>
-    <content><![CDATA[<h2 id="ChatGPT是什么？"><a href="#ChatGPT是什么？" class="headerlink" title="ChatGPT是什么？"></a>ChatGPT是什么？</h2><p><a href="https://openai.com/blog/chatgpt/">ChatGPT</a>是基于<code>OpenAI</code>项目的聊天机器人。</p>
-<p><code>OpenAI</code>项目由特斯拉创建，而<code>ChatGPT</code>的母公司当前估值$29bln，据说微软准备购买$10bln。</p>
-<span id="more"></span>
-
-<p>目前ChatGPT不对中国开放，想要注册不光需要VPN，还需要手机短信验证。不过注册完成后登录不需要短信验证了。</p>
-<p>具体怎么注册登录ChatGPT可以参考其它文章。</p>
-<h2 id="八皇后问题"><a href="#八皇后问题" class="headerlink" title="八皇后问题"></a>八皇后问题</h2><p>八皇后问题（英文：Eight queens），是由国际象棋棋手马克斯·贝瑟尔于1848年提出的问题，是回溯算法的典型案例。 
-问题表述为：在8×8格的国际象棋上摆放8个皇后，使其不能互相攻击，
-即任意两个皇后都不能处于同一行、同一列或同一斜线上，问有多少种摆法。 
-高斯认为有76种方案。</p>
-<p><img src="/images/2023-1-12-8queens-problem.png" alt="2023-1-12-8queens-problem"></p>
-<h2 id="通过ChatGPT实现Rust语言的八皇后算法"><a href="#通过ChatGPT实现Rust语言的八皇后算法" class="headerlink" title="通过ChatGPT实现Rust语言的八皇后算法"></a>通过ChatGPT实现Rust语言的八皇后算法</h2><p>直接问ChatGPT, “How to write eight queens algorithm in rust?”
-如下图所示，直接就把rust代码实现显示出来，并进行了说明。</p>
-<p><img src="/images/2023-1-12-8queens-chatgpt.png" alt="2023-1-12-8queens-chatgpt"></p>
-<p>把rust代码copy出来，增加测试代码<code>test_eight_queen()</code>。</p>
-<figure class="highlight rust"><table><tr><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">fn</span> <span class="hljs-title function_">eight_queens</span>() &#123;<br>    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut </span><span class="hljs-variable">board</span> = <span class="hljs-built_in">vec!</span>[-<span class="hljs-number">1</span>; <span class="hljs-number">8</span>];<br><br>    <span class="hljs-title function_ invoke__">solve</span>(&amp;<span class="hljs-keyword">mut</span> board, <span class="hljs-number">0</span>);<br>&#125;<br><br><span class="hljs-keyword">fn</span> <span class="hljs-title function_">solve</span>(board: &amp;<span class="hljs-keyword">mut</span> <span class="hljs-type">Vec</span>&lt;<span class="hljs-type">i32</span>&gt;, target_row: <span class="hljs-type">i32</span>) &#123;<br>    <span class="hljs-keyword">if</span> target_row == <span class="hljs-number">8</span> &#123;<br>        <span class="hljs-title function_ invoke__">print_board</span>(board);<br>        <span class="hljs-keyword">return</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">for</span> <span class="hljs-variable">column</span> <span class="hljs-keyword">in</span> <span class="hljs-number">0</span>..<span class="hljs-number">8</span> &#123;<br>        <span class="hljs-keyword">if</span> <span class="hljs-title function_ invoke__">is_safe</span>(board, target_row, column) &#123;<br>            board[target_row <span class="hljs-keyword">as</span> <span class="hljs-type">usize</span>] = column <span class="hljs-keyword">as</span> <span class="hljs-type">i32</span>;<br>            <span class="hljs-title function_ invoke__">solve</span>(board, target_row + <span class="hljs-number">1</span>);<br>        &#125;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">fn</span> <span class="hljs-title function_">is_safe</span>(board: &amp;<span class="hljs-type">Vec</span>&lt;<span class="hljs-type">i32</span>&gt;, row: <span class="hljs-type">i32</span>, column: <span class="hljs-type">i32</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">bool</span> &#123;<br>    <span class="hljs-keyword">for</span> <span class="hljs-variable">r</span> <span class="hljs-keyword">in</span> <span class="hljs-number">0</span>..row &#123;<br>        <span class="hljs-keyword">let</span> <span class="hljs-variable">c</span> = board[r <span class="hljs-keyword">as</span> <span class="hljs-type">usize</span>];<br><br>        <span class="hljs-keyword">if</span> c == column ||<br>            (row - r).<span class="hljs-title function_ invoke__">abs</span>() == (column - c).<span class="hljs-title function_ invoke__">abs</span>() &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>&#125;<br><br><span class="hljs-keyword">fn</span> <span class="hljs-title function_">print_board</span>(board: &amp;<span class="hljs-type">Vec</span>&lt;<span class="hljs-type">i32</span>&gt;) &#123;<br>    <span class="hljs-keyword">for</span> <span class="hljs-variable">r</span> <span class="hljs-keyword">in</span> <span class="hljs-number">0</span>..<span class="hljs-number">8</span> &#123;<br>        <span class="hljs-keyword">for</span> <span class="hljs-variable">c</span> <span class="hljs-keyword">in</span> <span class="hljs-number">0</span>..<span class="hljs-number">8</span> &#123;<br>            <span class="hljs-keyword">if</span> board[r <span class="hljs-keyword">as</span> <span class="hljs-type">usize</span>] == c <span class="hljs-keyword">as</span> <span class="hljs-type">i32</span> &#123;<br>                <span class="hljs-built_in">print!</span>(<span class="hljs-string">&quot;Q &quot;</span>);<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                <span class="hljs-built_in">print!</span>(<span class="hljs-string">&quot;. &quot;</span>);<br>            &#125;<br>        &#125;<br><br>        <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;&quot;</span>);<br>&#125;<br><br><span class="hljs-meta">#[cfg(test)]</span><br><span class="hljs-keyword">mod</span> tests &#123;<br>    <span class="hljs-meta">#[test]</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">test_eight_queen</span>() &#123;<br>        super::<span class="hljs-title function_ invoke__">eight_queens</span>();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<h2 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h2><p>直接运行，没有错误。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">hello $ cargo test --bin hello eight_queens::tests::test_eight_queen -- --show-output<br>    Finished test [unoptimized + debuginfo] target(s) in 0.11s<br>     Running unittests src/main.rs (target/debug/deps/hello-257baa7e5ed28221)<br><br>running 1 test<br>test eight_queens::tests::test_eight_queen ... ok<br><br>successes:<br><br>---- eight_queens::tests::test_eight_queen stdout ----<br>Q . . . . . . . <br>. . . . Q . . . <br>. . . . . . . Q <br>. . . . . Q . . <br>. . Q . . . . . <br>. . . . . . Q . <br>. Q . . . . . . <br>. . . Q . . . . <br><br>Q . . . . . . . <br>. . . . . Q . . <br>. . . . . . . Q <br>. . Q . . . . . <br>. . . . . . Q . <br>. . . Q . . . . <br>. Q . . . . . . <br>. . . . Q . . . <br><br>Q . . . . . . . <br>. . . . . . Q . <br>. . . Q . . . . <br>. . . . . Q . . <br>. . . . . . . Q <br>. Q . . . . . . <br>. . . . Q . . . <br>. . Q . . . . . <br><br>Q . . . . . . . <br>. . . . . . Q . <br>. . . . Q . . . <br>. . . . . . . Q <br>. Q . . . . . . <br>. . . Q . . . . <br>. . . . . Q . . <br>. . Q . . . . . <br><br>. Q . . . . . . <br>. . . Q . . . . <br>. . . . . Q . . <br>. . . . . . . Q <br>. . Q . . . . . <br>Q . . . . . . . <br>. . . . . . Q . <br>. . . . Q . . . <br><br>. Q . . . . . . <br>. . . . Q . . . <br>. . . . . . Q . <br>Q . . . . . . . <br>. . Q . . . . . <br>. . . . . . . Q <br>. . . . . Q . . <br>. . . Q . . . . <br><br>. Q . . . . . . <br>. . . . Q . . . <br>. . . . . . Q . <br>. . . Q . . . . <br>Q . . . . . . . <br>. . . . . . . Q <br>. . . . . Q . . <br>. . Q . . . . . <br><br>... ignore<br>...<br>...<br><br>successes:<br>    eight_queens::tests::test_eight_queen<br><br>test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 22 filtered out; finished in 0.00s<br></code></pre></td></tr></table></figure>
-
-<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>ChatGPT给人非常惊艳的感觉。我考虑以后经常使用它，如果它一直免费的话。</p>
-]]></content>
-      <tags>
-        <tag>算法</tag>
-        <tag>rust</tag>
-        <tag>ChatGPT</tag>
       </tags>
   </entry>
   <entry>
