@@ -1,0 +1,726 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/images/icon-3-lambda.png">
+  <link rel="icon" href="/images/icon-3-lambda.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Ming Yang">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Sniffer（嗅探器）实现一个简单的BT种子嗅探器才算是有点实际价值的吧。这样就可以把种子的metadata信息 缓存下来，提供按照文件名进行检索。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BitTorrent协议（六）之种子嗅探器">
+<meta property="og:url" content="https://threelambda.com/2019/02/18/2019-2-18-bt-6/index.html">
+<meta property="og:site_name" content="CodeCraft">
+<meta property="og:description" content="Sniffer（嗅探器）实现一个简单的BT种子嗅探器才算是有点实际价值的吧。这样就可以把种子的metadata信息 缓存下来，提供按照文件名进行检索。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-02-17T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-07-22T07:16:58.465Z">
+<meta property="article:author" content="alenym@qq.com">
+<meta property="article:tag" content="bitTorrent">
+<meta property="article:tag" content="protocol">
+<meta property="article:tag" content="p2p">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>BitTorrent协议（六）之种子嗅探器 - CodeCraft</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"threelambda.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":"G-X6VGKB3GW8"},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=G-X6VGKB3GW8", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', 'G-X6VGKB3GW8');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>CodeCraft</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="https://threelambda.com/en/" target="_self">
+                <i class="iconfont icon-language2"></i>
+                <span>English</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="BitTorrent协议（六）之种子嗅探器"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2019-02-18 00:00" pubdate>
+          2019年2月18日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          38 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">BitTorrent协议（六）之种子嗅探器</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="Sniffer（嗅探器）"><a href="#Sniffer（嗅探器）" class="headerlink" title="Sniffer（嗅探器）"></a>Sniffer（嗅探器）</h2><p>实现一个简单的BT种子嗅探器才算是有点实际价值的吧。这样就可以把种子的metadata信息
+缓存下来，提供按照文件名进行检索。</p>
+<span id="more"></span>
+
+<p>不过这里只是实现一个demo，有兴趣的话可以看看github上的<a target="_blank" rel="noopener" href="https://github.com/shiyanhui/dht">dht</a>项目。</p>
+<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><p>简单的说，就是把嗅探节点加入到其他节点的路由表中，等待其他节点发来的announce_peer请求，然后获取种子的metadata信息。</p>
+<p>我们根据以下的代码具体说明。</p>
+<ol>
+<li><p>89行代码，向路由节点发送<code>find_node</code>请求。这些路由节点。就是25行代码的3个地址。
+这样做的意义有两个，一方面，路由节点会把我们的节点加入到他们的路由表中。另一方面，路由节点会返回一个好节点列表。</p>
+</li>
+<li><p>252行代码，启动了6个线程。</p>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th align="left">线程</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">listener</td>
+<td align="left">代码93行，监听所有接收到的udp数据，并把这些放入到队列<code>recv_q</code></td>
+</tr>
+<tr>
+<td align="left">t_dispatch</td>
+<td align="left">代码106行，从队列<code>recv_q</code>中取出数据，并进行bdecoding，根据消息类别分别放入对应的队列。一共有三种：应答，请求，错误。</td>
+</tr>
+<tr>
+<td align="left">t_hand_reply</td>
+<td align="left">代码132行，从<code>reply_q</code>中取出数据，解码节点列表。每一个节点都插入到本地的路由表（这里不太好，最好先进行ping_node，确定是好节点再加入），并向其发送<code>find_node</code>消息</td>
+</tr>
+<tr>
+<td align="left">t_hand_query</td>
+<td align="left">代码165行，从<code>query_q</code>中取出请求，分别对四种请求进行应答处理，分别是ping，find_node, get_peers, announce_peer。</td>
+</tr>
+<tr>
+<td align="left">t_hand_error</td>
+<td align="left">错误消息的处理。</td>
+</tr>
+<tr>
+<td align="left">t_handle_metadata</td>
+<td align="left">代码234行，从<code>metadata_q</code>中取出已经获取的种子的metadata，打印并把种子保存再字典表中。</td>
+</tr>
+</tbody></table>
+<ol start="3">
+<li>代码165行，t_hand_query线程执行对请求进行处理。</li>
+</ol>
+<ul>
+<li>ping: 返回本地节点id</li>
+<li>find_node: 从本地路由表中查出与请求节点id最近的8个节点，并返回。（据说把本地id进行返回，有利于本地节点加入其他路由表）</li>
+<li>get_peers: 这里进行了简单处理，仅仅返回空节点list。</li>
+<li>announce_peer: 这个请求是有节点告诉我们有新的种子文件发布了，并告诉我们info_hash。然后我们拿着info_hash取进行获取metadata的操作。
+代码207行，开启一个独立的获取metadata的线程。如果获取到metadata，则放入<code>metadata_q</code>中。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> __future__ <span class="hljs-keyword">import</span> absolute_import<br><span class="hljs-keyword">from</span> __future__ <span class="hljs-keyword">import</span> division<br><span class="hljs-keyword">from</span> __future__ <span class="hljs-keyword">import</span> print_function<br><br>__author__ = <span class="hljs-string">&#x27;ym&#x27;</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    Date        : &#x27;2019/2/3&#x27;</span><br><span class="hljs-string">    Description :</span><br><span class="hljs-string">    </span><br><span class="hljs-string">&quot;&quot;&quot;</span><br><br><span class="hljs-keyword">from</span> ym.bt.routing_table <span class="hljs-keyword">import</span> RoutingTable, BTNode<br><span class="hljs-keyword">from</span> ym.bt.util <span class="hljs-keyword">import</span> id_generator, ip_me, decode_compact_node, encode_compact_node, format_size<br><span class="hljs-keyword">from</span> ym.bt.bencoding_bin <span class="hljs-keyword">import</span> BEncode<br><span class="hljs-keyword">from</span> ym.bt.bdecoding <span class="hljs-keyword">import</span> BDecode<br><span class="hljs-keyword">from</span> ym.bt.request_metadata <span class="hljs-keyword">import</span> request_metadata_top<br><span class="hljs-keyword">from</span> queue <span class="hljs-keyword">import</span> Queue<br><span class="hljs-keyword">import</span> socket<br><span class="hljs-keyword">import</span> threading<br><span class="hljs-keyword">import</span> logging<br><br>log = logging.getLogger()<br><br>NODES = [(<span class="hljs-string">&quot;router.bittorrent.com&quot;</span>, <span class="hljs-number">6881</span>),<br>         (<span class="hljs-string">&quot;router.utorrent.com&quot;</span>, <span class="hljs-number">6881</span>),<br>         (<span class="hljs-string">&quot;dht.transmissionbt.com&quot;</span>, <span class="hljs-number">6881</span>)]<br><br>ID = id_generator()<br>SOURCE_IP = ip_me()<br>SOURCE_PORT = <span class="hljs-number">6881</span><br>TIME_OUT = <span class="hljs-number">1</span><br><br>INFO_HASH_METADATA_DIC = &#123;&#125;<br>RLOCK = threading.RLock()<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">boot_step</span>(<span class="hljs-params">sock: socket.socket, local_node: BTNode</span>):<br>    <span class="hljs-comment"># send find_node query to NODES</span><br>    <span class="hljs-keyword">try</span>:<br>        dic = &#123;<span class="hljs-string">&quot;t&quot;</span>: <span class="hljs-string">&quot;aa&quot;</span>, <span class="hljs-string">&quot;y&quot;</span>: <span class="hljs-string">&quot;q&quot;</span>, <span class="hljs-string">&quot;q&quot;</span>: <span class="hljs-string">&quot;find_node&quot;</span>,<br>               <span class="hljs-string">&quot;a&quot;</span>: &#123;<span class="hljs-string">&quot;id&quot;</span>: local_node.<span class="hljs-built_in">id</span>.<span class="hljs-built_in">hex</span>(), <span class="hljs-string">&quot;target&quot;</span>: local_node.<span class="hljs-built_in">id</span>.<span class="hljs-built_in">hex</span>()&#125;&#125;<br>        data = BEncode(dic).encode_bin()<br><br>        <span class="hljs-keyword">for</span> NODE <span class="hljs-keyword">in</span> NODES:<br>            dst_ip, dst_port = NODE<br>            sock.sendto(data, (dst_ip, dst_port))<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;boot_step|send|dst_ip=&#123;&#125;|dst_port=&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(dst_ip, dst_port))<br>    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>        log.exception(e)<br>        <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;boot_step error&quot;</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">request_metadata_thread</span>(<span class="hljs-params">peer_id: <span class="hljs-built_in">bytes</span>, info_hash, ip, port, metadata_q: Queue</span>):<br>    <span class="hljs-keyword">try</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;request_metadata_thread|info_hash=&#123;&#125;|ip=&#123;&#125;|port=&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(info_hash, ip, port))<br>        metadata_dic = request_metadata_top(peer_id, info_hash, ip, port)<br>        <span class="hljs-keyword">if</span> metadata_dic <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>            metadata_q.put((metadata_dic, info_hash, ip, port))<br>    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>        log.exception(<span class="hljs-string">&quot;request_metadata_thread error&quot;</span>)<br>        <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;request metadata error&quot;</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)<br>    sock.setblocking(<span class="hljs-literal">True</span>)<br>    sock.bind((SOURCE_IP, SOURCE_PORT))<br><br>    <span class="hljs-comment"># recv queue</span><br>    recv_q = Queue(maxsize=<span class="hljs-number">0</span>)<br>    <span class="hljs-comment"># reply queue</span><br>    reply_q = Queue(maxsize=<span class="hljs-number">0</span>)<br>    <span class="hljs-comment"># query queue</span><br>    query_q = Queue(maxsize=<span class="hljs-number">0</span>)<br>    <span class="hljs-comment"># error queue</span><br>    error_q = Queue(maxsize=<span class="hljs-number">0</span>)<br>    <span class="hljs-comment"># request metadata</span><br>    metadata_q = Queue(maxsize=<span class="hljs-number">0</span>)<br><br>    <span class="hljs-comment"># declare routing table</span><br>    rt = RoutingTable()<br><br>    local_node = BTNode(<span class="hljs-built_in">id</span>=ID, ip=SOURCE_IP, port=SOURCE_PORT)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;local_node=&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(local_node))<br>    rt.insert(local_node)<br>    <span class="hljs-comment"># 1. boot step</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;boot start.&quot;</span>)<br>    boot_step(sock, local_node)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;boot end.&quot;</span>)<br><br>    <span class="hljs-comment"># 2. listener</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">recv_listener</span>(<span class="hljs-params">sock: socket.socket, recv_q: Queue</span>):<br>        <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>            <span class="hljs-keyword">try</span>:<br>                data, addr = sock.recvfrom(<span class="hljs-number">2048</span>)<br>                <span class="hljs-comment"># print(&quot;recv_listener|recv|addr=&#123;&#125;&quot;.format(addr))</span><br>                recv_q.put((data, addr))<br>            <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>                <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;recv_listener error&quot;</span>)<br><br>    listener = threading.Thread(target=recv_listener, args=(sock, recv_q,))<br>    listener.daemon = <span class="hljs-literal">True</span><br><br>    <span class="hljs-comment"># 3. handle recv msg</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">dispatch_recv</span>(<span class="hljs-params">recv_q: Queue, reply_q: Queue, query_q: Queue, error_q: Queue</span>):<br>        <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>            data, addr = recv_q.get()<br>            <span class="hljs-keyword">try</span>:<br>                dic, i, n = BDecode(data).parse()<br>                <span class="hljs-comment"># print(&quot;dispatch_recv|dic=&#123;&#125;&quot;.format(dic))</span><br>                <span class="hljs-keyword">if</span> dic.get(<span class="hljs-string">&quot;y&quot;</span>) <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>                    v = dic[<span class="hljs-string">&#x27;y&#x27;</span>]<br>                    <span class="hljs-keyword">if</span> v == <span class="hljs-string">&#x27;r&#x27;</span>:<br>                        <span class="hljs-comment"># reply msg</span><br>                        reply_q.put((dic, addr))<br>                    <span class="hljs-keyword">elif</span> v == <span class="hljs-string">&#x27;q&#x27;</span>:<br>                        <span class="hljs-comment"># query msg</span><br>                        query_q.put((dic, addr))<br>                    <span class="hljs-keyword">elif</span> v == <span class="hljs-string">&#x27;e&#x27;</span>:<br>                        <span class="hljs-comment"># error msg</span><br>                        error_q.put((dic, addr))<br>                    <span class="hljs-keyword">else</span>:<br>                        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;unknown type msg.&quot;</span>)<br>            <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>                log.exception(<span class="hljs-string">&#x27;dispatch_recv error|data=&#123;&#125;&#x27;</span>.<span class="hljs-built_in">format</span>(data))<br><br>    t_dispatch = threading.Thread(target=dispatch_recv, args=(recv_q, reply_q, query_q, error_q,))<br>    t_dispatch.daemon = <span class="hljs-literal">True</span><br><br>    <span class="hljs-comment"># 4. handle reply</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">handle_reply</span>(<span class="hljs-params">sock: socket.socket, reply_q: Queue, rt: RoutingTable</span>):<br>        <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>            dic, addr = reply_q.get()<br>            <span class="hljs-keyword">try</span>:<br>                r = dic[<span class="hljs-string">&#x27;r&#x27;</span>]<br>                src_id = r[<span class="hljs-string">&#x27;id&#x27;</span>]<br>                src_ip, src_port = addr<br>                src_node = BTNode(<span class="hljs-built_in">id</span>=src_id, ip=src_ip, port=src_port)<br>                rt.insert(src_node)<br>                <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;rt.size=&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(rt.size()))<br>                <span class="hljs-comment"># print(&quot;handle_reply|src_ip=&#123;&#125;|src_port=&#123;&#125;&quot;.format(src_ip, src_port))</span><br>                <span class="hljs-keyword">if</span> r.get(<span class="hljs-string">&#x27;nodes&#x27;</span>) <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>                    <span class="hljs-comment"># ping every node and put good in rt.</span><br>                    nodes = decode_compact_node(r[<span class="hljs-string">&#x27;nodes&#x27;</span>])<br>                    dic = &#123;<span class="hljs-string">&quot;t&quot;</span>: <span class="hljs-string">&quot;aa&quot;</span>, <span class="hljs-string">&quot;y&quot;</span>: <span class="hljs-string">&quot;q&quot;</span>, <span class="hljs-string">&quot;q&quot;</span>: <span class="hljs-string">&quot;find_node&quot;</span>,<br>                           <span class="hljs-string">&quot;a&quot;</span>: &#123;<span class="hljs-string">&quot;id&quot;</span>: local_node.<span class="hljs-built_in">id</span>.<span class="hljs-built_in">hex</span>(), <span class="hljs-string">&quot;target&quot;</span>: local_node.<span class="hljs-built_in">id</span>.<span class="hljs-built_in">hex</span>()&#125;&#125;<br>                    data = BEncode(dic).encode_bin()<br>                    <span class="hljs-keyword">for</span> node <span class="hljs-keyword">in</span> nodes:<br>                        <span class="hljs-keyword">try</span>:<br>                            dst_ip, dst_port, <span class="hljs-built_in">id</span> = node<br>                            sock.sendto(data, (dst_ip, dst_port))<br>                        <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>                            log.exception(<span class="hljs-string">&quot;send node error|node=&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(node))<br>                <span class="hljs-keyword">elif</span> r.get(<span class="hljs-string">&#x27;peers&#x27;</span>) <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>                    <span class="hljs-comment"># ping every peer and put good in rt.</span><br>                    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;handle_reply|peers&quot;</span>)<br>            <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>                log.exception(<span class="hljs-string">&quot;handle_reply error|dic=&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(dic), e)<br><br>    t_hand_reply = threading.Thread(target=handle_reply, args=(sock, reply_q, rt,))<br>    t_hand_reply.daemon = <span class="hljs-literal">True</span><br><br>    <span class="hljs-comment"># 5. handle query</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">handle_query</span>(<span class="hljs-params">sock: socket.socket, query_q: Queue</span>):<br>        <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>            dic, addr = query_q.get()<br>            dst_ip, dst_port = addr<br>            <span class="hljs-keyword">try</span>:<br>                <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;handle_query|addr=&#123;&#125;|dic=&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(addr, dic))<br>                <span class="hljs-keyword">if</span> dic[<span class="hljs-string">&#x27;q&#x27;</span>] == <span class="hljs-string">&#x27;ping&#x27;</span>:<br>                    <span class="hljs-comment"># handle ping query</span><br>                    reply = &#123;<span class="hljs-string">&quot;t&quot;</span>: dic[<span class="hljs-string">&#x27;t&#x27;</span>], <span class="hljs-string">&quot;y&quot;</span>: <span class="hljs-string">&quot;r&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>: &#123;<span class="hljs-string">&quot;id&quot;</span>: local_node.<span class="hljs-built_in">id</span>.<span class="hljs-built_in">hex</span>()&#125;&#125;<br>                    data = BEncode(reply).encode_bin()<br>                    sock.sendto(data, (dst_ip, dst_port))<br>                    <span class="hljs-comment"># print(&quot;handle_query|ping|send_reply|dst_ip=&#123;&#125;|dst_port=&#123;&#125;|data=&#123;&#125;&quot;.format(dst_ip, dst_port, data))</span><br>                <span class="hljs-keyword">elif</span> dic[<span class="hljs-string">&#x27;q&#x27;</span>] == <span class="hljs-string">&#x27;find_node&#x27;</span>:<br>                    <span class="hljs-comment"># handle find_node query</span><br>                    nodes = rt.find_closer(<span class="hljs-built_in">bytes</span>.fromhex(dic[<span class="hljs-string">&#x27;a&#x27;</span>][<span class="hljs-string">&#x27;id&#x27;</span>]))<br>                    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;local_node.id=&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(local_node.<span class="hljs-built_in">id</span>.<span class="hljs-built_in">hex</span>()))<br>                    <span class="hljs-built_in">print</span>(nodes)<br>                    compact_node = encode_compact_node(nodes)<br>                    reply = &#123;<span class="hljs-string">&quot;t&quot;</span>: dic[<span class="hljs-string">&#x27;t&#x27;</span>], <span class="hljs-string">&quot;y&quot;</span>: <span class="hljs-string">&quot;r&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>: &#123;<span class="hljs-string">&quot;id&quot;</span>: local_node.<span class="hljs-built_in">id</span>.<span class="hljs-built_in">hex</span>(), <span class="hljs-string">&quot;nodes&quot;</span>: compact_node&#125;&#125;<br>                    data = BEncode(reply).encode_bin()<br>                    sock.sendto(data, (dst_ip, dst_port))<br>                    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;handle_query|find_node|send_reply|dst_ip=&#123;&#125;|dst_port=&#123;&#125;|data=&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(dst_ip, dst_port,<br>                                                                                                   data))<br>                <span class="hljs-keyword">elif</span> dic[<span class="hljs-string">&#x27;q&#x27;</span>] == <span class="hljs-string">&#x27;get_peers&#x27;</span>:<br>                    <span class="hljs-comment"># handle get_peers query</span><br>                    reply = &#123;<span class="hljs-string">&quot;t&quot;</span>: dic[<span class="hljs-string">&#x27;t&#x27;</span>], <span class="hljs-string">&quot;y&quot;</span>: <span class="hljs-string">&quot;r&quot;</span>,<br>                             <span class="hljs-string">&quot;r&quot;</span>: &#123;<span class="hljs-string">&quot;id&quot;</span>: local_node.<span class="hljs-built_in">id</span>.<span class="hljs-built_in">hex</span>(), <span class="hljs-string">&quot;token&quot;</span>: <span class="hljs-string">&quot;alenym&quot;</span>.encode(<span class="hljs-string">&quot;utf8&quot;</span>), <span class="hljs-string">&quot;nodes&quot;</span>: <span class="hljs-string">b&quot;&quot;</span>&#125;&#125;<br>                    data = BEncode(reply).encode_bin()<br>                    sock.sendto(data, (dst_ip, dst_port))<br>                    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;handle_query|get_peers|send_reply|dst_ip=&#123;&#125;|dst_port=&#123;&#125;|data=&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(dst_ip, dst_port,<br>                                                                                                   data))<br>                <span class="hljs-keyword">elif</span> dic[<span class="hljs-string">&#x27;q&#x27;</span>] == <span class="hljs-string">&#x27;announce_peer&#x27;</span>:<br>                    <span class="hljs-comment"># handle announce_peer</span><br>                    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;handle_query|announce_peer|dic=&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(dic))<br>                    info_hash = dic[<span class="hljs-string">&#x27;a&#x27;</span>].get(<span class="hljs-string">&#x27;info_hash&#x27;</span>)<br>                    <span class="hljs-keyword">with</span> RLOCK:<br>                        <span class="hljs-keyword">if</span> info_hash <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">or</span> info_hash <span class="hljs-keyword">in</span> INFO_HASH_METADATA_DIC:<br>                            <span class="hljs-keyword">continue</span><br><br>                    target_ip = dst_ip<br>                    target_port = dst_port<br><br>                    t_request_meta = threading.Thread(target=request_metadata_thread,<br>                                                      args=(<br>                                                          local_node.<span class="hljs-built_in">id</span>, info_hash, target_ip, target_port, metadata_q))<br>                    t_request_meta.start()<br><br><br>                <span class="hljs-keyword">else</span>:<br>                    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;handle_query|other|dic=&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(dic))<br>            <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>                log.exception(<span class="hljs-string">&quot;handle_query error|dic=&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(dic))<br><br>    t_hand_query = threading.Thread(target=handle_query, args=(sock, query_q,))<br>    t_hand_query.daemon = <span class="hljs-literal">True</span><br><br>    <span class="hljs-comment"># 6. handle error</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">handle_error</span>(<span class="hljs-params">error_q: Queue</span>):<br>        <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>            dic, addr = error_q.get()<br>            <span class="hljs-keyword">try</span>:<br>                <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;handle_error|addr=&#123;&#125;|dic=&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(addr, dic))<br>            <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>                log.exception(<span class="hljs-string">&#x27;handle_error error&#x27;</span>, e)<br><br>    t_hand_error = threading.Thread(target=handle_error, args=(error_q,))<br>    t_hand_error.daemon = <span class="hljs-literal">True</span><br><br>    <span class="hljs-comment"># 7. handle requested metadata</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">handle_metadata</span>(<span class="hljs-params">metadata_q: Queue</span>):<br>        <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>            <span class="hljs-keyword">try</span>:<br>                metadata_dic, info_hash, ip, port = metadata_q.get()<br>                format_s = <span class="hljs-string">&quot;handle_metadata|info_hash=&#123;&#125;|ip=&#123;&#125;|port=&#123;&#125;|name=&#123;&#125;|size=&#123;&#125;&quot;</span><br>                file_name = metadata_dic[<span class="hljs-string">&#x27;name&#x27;</span>]<br>                size = format_size(metadata_dic.get(<span class="hljs-string">&#x27;length&#x27;</span>))<br>                <span class="hljs-built_in">print</span>(format_s.<span class="hljs-built_in">format</span>(info_hash, ip, port, file_name, size))<br>                <span class="hljs-keyword">with</span> RLOCK:<br>                    <span class="hljs-keyword">if</span> info_hash <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> INFO_HASH_METADATA_DIC:<br>                        INFO_HASH_METADATA_DIC[info_hash] = metadata_dic<br>            <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>                log.exception(<span class="hljs-string">&quot;handle_metadata error&quot;</span>)<br><br><br>    t_handle_metadata = threading.Thread(target=handle_metadata, args=(metadata_q,))<br>    t_handle_metadata.daemon = <span class="hljs-literal">True</span><br><br>    listener.start()<br>    t_dispatch.start()<br>    t_hand_reply.start()<br>    t_hand_query.start()<br>    t_hand_error.start()<br>    t_handle_metadata.start()<br><br>    listener.join()<br>    t_dispatch.join()<br>    t_hand_reply.join()<br>    t_hand_query.join()<br>    t_hand_error.join()<br>    t_handle_metadata.join()<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    main()<br></code></pre></td></tr></table></figure>
+<h2 id="运行日志"><a href="#运行日志" class="headerlink" title="运行日志"></a>运行日志</h2><p>我们在一台有公网ip的电脑上运行十几分钟，过滤日志，查看接收到的种子信息如下，</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs coq">root@ubuntu:~# cat log.txt | <span class="hljs-type">grep</span> <span class="hljs-string">&quot;handle_metadata&quot;</span><br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">5553330</span>daa12bde6a2f71ab26f7b26688219f276|<span class="hljs-type">ip</span>=<span class="hljs-number">69.80</span><span class="hljs-number">.12</span><span class="hljs-number">.126</span>|<span class="hljs-type">port</span>=<span class="hljs-number">11715</span>|<span class="hljs-type">name</span>=War <span class="hljs-keyword">for</span> the Planet of the Apes <span class="hljs-number">2017</span> <span class="hljs-number">1080</span>p BluRay x264 DTS <span class="hljs-number">5.1</span> MSubS-Hon3y|<span class="hljs-type">size</span>=None<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">5556</span>f3a9c605dd009f92fddb91848f565439e4f4|<span class="hljs-type">ip</span>=<span class="hljs-number">59.169</span><span class="hljs-number">.228</span><span class="hljs-number">.207</span>|<span class="hljs-type">port</span>=<span class="hljs-number">62215</span>|<span class="hljs-type">name</span>=(C94) [くろすこスイッチ (くろすこ)] 冷泉さんといちゃいちゃする本 (ガールズ&amp;パンツァー).zip|<span class="hljs-type">size</span>=<span class="hljs-number">7.80</span>M<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">555333</span>edb2519c3aa93db4a150f6e021f5a138ff|<span class="hljs-type">ip</span>=<span class="hljs-number">96.40</span><span class="hljs-number">.42</span><span class="hljs-number">.32</span>|<span class="hljs-type">port</span>=<span class="hljs-number">32796</span>|<span class="hljs-type">name</span>=Princess Go Round|<span class="hljs-type">size</span>=None<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">572</span>d4df79a7151d9466d371b960cfece91289bf4|<span class="hljs-type">ip</span>=<span class="hljs-number">1.175</span><span class="hljs-number">.76</span><span class="hljs-number">.59</span>|<span class="hljs-type">port</span>=<span class="hljs-number">13283</span>|<span class="hljs-type">name</span>=(同人ゲーム) [<span class="hljs-number">181102</span>][RJ237312][ピンポイント／キングピン] 妻が隠していたビデオ…～元カレ寝取らせ観察記～ DL版 (files).rar|<span class="hljs-type">size</span>=<span class="hljs-number">1.08</span>G<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">572</span>edd8670066945538e4fe823294b45f2c2e3a3|<span class="hljs-type">ip</span>=<span class="hljs-number">14.199</span><span class="hljs-number">.224</span><span class="hljs-number">.142</span>|<span class="hljs-type">port</span>=<span class="hljs-number">22979</span>|<span class="hljs-type">name</span>=<span class="hljs-number">0407</span>raw021|<span class="hljs-type">size</span>=None<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">574</span>b27358fc1604e65babf32abe839267d36ba4b|<span class="hljs-type">ip</span>=<span class="hljs-number">14.199</span><span class="hljs-number">.224</span><span class="hljs-number">.142</span>|<span class="hljs-type">port</span>=<span class="hljs-number">22979</span>|<span class="hljs-type">name</span>=o0Akrios0o@www.sexinsex.com@假裝租屋 事實上在陽台勾引住宅區人妻|<span class="hljs-type">size</span>=None<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">54730</span>eeeb5d74a58f49c6da72eb90be922556f0a|<span class="hljs-type">ip</span>=<span class="hljs-number">219.98</span><span class="hljs-number">.7</span><span class="hljs-number">.166</span>|<span class="hljs-type">port</span>=<span class="hljs-number">18586</span>|<span class="hljs-type">name</span>=DSAM<span class="hljs-number">-29</span>-DVD|<span class="hljs-type">size</span>=None<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">57039</span>c3ef3343c5b288c5ff219c66f837a88e808|<span class="hljs-type">ip</span>=<span class="hljs-number">14.199</span><span class="hljs-number">.224</span><span class="hljs-number">.142</span>|<span class="hljs-type">port</span>=<span class="hljs-number">22979</span>|<span class="hljs-type">name</span>=tmem|<span class="hljs-type">size</span>=None<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">5687578</span>db92c7df4ae3ab7e33c895f04b1e27d37|<span class="hljs-type">ip</span>=<span class="hljs-number">14.199</span><span class="hljs-number">.224</span><span class="hljs-number">.142</span>|<span class="hljs-type">port</span>=<span class="hljs-number">22979</span>|<span class="hljs-type">name</span>=GNE<span class="hljs-number">-148</span>|<span class="hljs-type">size</span>=None<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">57</span>b832066b2103e29f3a4af256e25175da6dbdc2|<span class="hljs-type">ip</span>=<span class="hljs-number">14.199</span><span class="hljs-number">.224</span><span class="hljs-number">.142</span>|<span class="hljs-type">port</span>=<span class="hljs-number">22979</span>|<span class="hljs-type">name</span>=[Thz.la]supa<span class="hljs-number">-154</span>|<span class="hljs-type">size</span>=None<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">56936</span>a12cdb3a1a837c8faa206a2dea189dadf66|<span class="hljs-type">ip</span>=<span class="hljs-number">14.199</span><span class="hljs-number">.224</span><span class="hljs-number">.142</span>|<span class="hljs-type">port</span>=<span class="hljs-number">22979</span>|<span class="hljs-type">name</span>=club<span class="hljs-number">-022</span>_1.wmv|<span class="hljs-type">size</span>=<span class="hljs-number">2.96</span>G<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">570e89058161385</span>b1d7dfadfcdc2d9f276ab829b|<span class="hljs-type">ip</span>=<span class="hljs-number">14.199</span><span class="hljs-number">.224</span><span class="hljs-number">.142</span>|<span class="hljs-type">port</span>=<span class="hljs-number">22979</span>|<span class="hljs-type">name</span>=avidol.us-PTBI<span class="hljs-number">-026.</span>wmv|<span class="hljs-type">size</span>=<span class="hljs-number">2.71</span>G<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">57</span>c30a1ddecac71142208425c610837b961f4de6|<span class="hljs-type">ip</span>=<span class="hljs-number">14.199</span><span class="hljs-number">.224</span><span class="hljs-number">.142</span>|<span class="hljs-type">port</span>=<span class="hljs-number">22979</span>|<span class="hljs-type">name</span>=[HD]sad<span class="hljs-number">-039.</span>wmv|<span class="hljs-type">size</span>=<span class="hljs-number">3.52</span>G<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">56794273</span>cf092e0b4f671885a16cf2dbe484f559|<span class="hljs-type">ip</span>=<span class="hljs-number">14.199</span><span class="hljs-number">.224</span><span class="hljs-number">.142</span>|<span class="hljs-type">port</span>=<span class="hljs-number">22979</span>|<span class="hljs-type">name</span>=KRE<span class="hljs-number">-002.</span>wmv|<span class="hljs-type">size</span>=<span class="hljs-number">1.20</span>G<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">5710</span>c35d85a9a0ed8cadc10bdcd09db5bb0c46fd|<span class="hljs-type">ip</span>=<span class="hljs-number">14.199</span><span class="hljs-number">.224</span><span class="hljs-number">.142</span>|<span class="hljs-type">port</span>=<span class="hljs-number">22979</span>|<span class="hljs-type">name</span>=<span class="hljs-number">0111</span>-xv1088|<span class="hljs-type">size</span>=None<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">561</span>b55ec9a956f208f58b798d781bd5577a47b9e|<span class="hljs-type">ip</span>=<span class="hljs-number">14.199</span><span class="hljs-number">.224</span><span class="hljs-number">.142</span>|<span class="hljs-type">port</span>=<span class="hljs-number">22979</span>|<span class="hljs-type">name</span>=<span class="hljs-number">52.</span>R18<span class="hljs-number">-099</span>|<span class="hljs-type">size</span>=None<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">57</span>c262437e7cf0ca5f24bff947757026f9cef9a8|<span class="hljs-type">ip</span>=<span class="hljs-number">14.199</span><span class="hljs-number">.224</span><span class="hljs-number">.142</span>|<span class="hljs-type">port</span>=<span class="hljs-number">22979</span>|<span class="hljs-type">name</span>=DF<span class="hljs-number">-35976</span>|<span class="hljs-type">size</span>=None<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">565</span>bedb7fc17d20f017a668e2931cb1d30b53556|<span class="hljs-type">ip</span>=<span class="hljs-number">14.199</span><span class="hljs-number">.224</span><span class="hljs-number">.142</span>|<span class="hljs-type">port</span>=<span class="hljs-number">22979</span>|<span class="hljs-type">name</span>=judexkwok@片瀬まこ合集<span class="hljs-number">06</span>|<span class="hljs-type">size</span>=None<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">57e93</span>ca1527cd35045f0ca75d0c96579dcf96d2a|<span class="hljs-type">ip</span>=<span class="hljs-number">14.199</span><span class="hljs-number">.224</span><span class="hljs-number">.142</span>|<span class="hljs-type">port</span>=<span class="hljs-number">22979</span>|<span class="hljs-type">name</span>=SMDV<span class="hljs-number">-10</span>-DVD|<span class="hljs-type">size</span>=None<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">56747025</span>a196cb78db9f94d8ca933677f57e54b0|<span class="hljs-type">ip</span>=<span class="hljs-number">14.199</span><span class="hljs-number">.224</span><span class="hljs-number">.142</span>|<span class="hljs-type">port</span>=<span class="hljs-number">22979</span>|<span class="hljs-type">name</span>=HUNT<span class="hljs-number">-759.</span>mp4|<span class="hljs-type">size</span>=<span class="hljs-number">2.01</span>G<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">56e45</span>f76194dadb2c799c7f2c9b34bc2fff07cee|<span class="hljs-type">ip</span>=<span class="hljs-number">14.199</span><span class="hljs-number">.224</span><span class="hljs-number">.142</span>|<span class="hljs-type">port</span>=<span class="hljs-number">22979</span>|<span class="hljs-type">name</span>=<span class="hljs-number">0510</span>-sama538|<span class="hljs-type">size</span>=None<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">57</span>fae1a68ee9241a593c1623f64feb7927b40469|<span class="hljs-type">ip</span>=<span class="hljs-number">14.199</span><span class="hljs-number">.224</span><span class="hljs-number">.142</span>|<span class="hljs-type">port</span>=<span class="hljs-number">22979</span>|<span class="hljs-type">name</span>=[thz.la]chunta<span class="hljs-number">-219</span>|<span class="hljs-type">size</span>=None<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">56</span>b89964da08b923b20722b89ccfc6ae4928aca3|<span class="hljs-type">ip</span>=<span class="hljs-number">14.199</span><span class="hljs-number">.224</span><span class="hljs-number">.142</span>|<span class="hljs-type">port</span>=<span class="hljs-number">22979</span>|<span class="hljs-type">name</span>=HUNT<span class="hljs-number">-665</span>_2.mp4|<span class="hljs-type">size</span>=<span class="hljs-number">1.60</span>G<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">57528</span>d8633ee8b823aea17e47def172082072dd5|<span class="hljs-type">ip</span>=<span class="hljs-number">14.199</span><span class="hljs-number">.224</span><span class="hljs-number">.142</span>|<span class="hljs-type">port</span>=<span class="hljs-number">22979</span>|<span class="hljs-type">name</span>=HUNT|<span class="hljs-type">size</span>=None<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">57</span>b14ca4cf260763e170e515b1f235ae5dca487f|<span class="hljs-type">ip</span>=<span class="hljs-number">14.199</span><span class="hljs-number">.224</span><span class="hljs-number">.142</span>|<span class="hljs-type">port</span>=<span class="hljs-number">22979</span>|<span class="hljs-type">name</span>=SAMA<span class="hljs-number">-477</span>|<span class="hljs-type">size</span>=None<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">57</span>bc38a6f182dbd6be5b42371d645cc43cfa12e1|<span class="hljs-type">ip</span>=<span class="hljs-number">14.199</span><span class="hljs-number">.224</span><span class="hljs-number">.142</span>|<span class="hljs-type">port</span>=<span class="hljs-number">22979</span>|<span class="hljs-type">name</span>=HUNT<span class="hljs-number">-710.</span>mp4|<span class="hljs-type">size</span>=<span class="hljs-number">1.82</span>G<br>handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">57</span>f2b65672462ff81834a928cf8e9863687dc220|<span class="hljs-type">ip</span>=<span class="hljs-number">14.199</span><span class="hljs-number">.224</span><span class="hljs-number">.142</span>|<span class="hljs-type">port</span>=<span class="hljs-number">22979</span>|<span class="hljs-type">name</span>=<span class="hljs-number">3208</span>|<span class="hljs-type">size</span>=None<br>...<br></code></pre></td></tr></table></figure>
+
+<p>有些种子文件为什么没有文件大小呢？例如<code>size=None</code>,</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs coq">handle_metadata|<span class="hljs-type">info_hash</span>=<span class="hljs-number">54730</span>eeeb5d74a58f49c6da72eb90be922556f0a|<span class="hljs-type">ip</span>=<span class="hljs-number">219.98</span><span class="hljs-number">.7</span><span class="hljs-number">.166</span>|<span class="hljs-type">port</span>=<span class="hljs-number">18586</span>|<span class="hljs-type">name</span>=DSAM<span class="hljs-number">-29</span>-DVD|<span class="hljs-type">size</span>=None<br></code></pre></td></tr></table></figure>
+
+<p>用info_hash过滤日志，可以看到metadata包含了一个<code>files</code>项，该项包含了多个文件。</p>
+<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs prolog">root@ubuntu:~# cat log.txt | grep <span class="hljs-string">&quot;54730eeeb5d74a58f49c6da72eb90be922556f0a&quot;</span>| grep <span class="hljs-string">&quot;metadata_dic&quot;</span> <br>request_metadata|info_hash=<span class="hljs-number">54730</span>eeeb5d74a58f49c6da72eb90be922556f0a|metadata_dic=&#123;<span class="hljs-string">&#x27;files&#x27;</span>: [&#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;\xc4&quot;%lT\xa14s\xd86\xd7a\xb1:\x8bC&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;788c531731917e92334c03423df5433b4d3d941d&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">228076</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;C9~Fang Ping Bi Cheng Xu防屏蔽程序.rar&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;C9~Fang Ping Bi Cheng Xu防屏蔽程序.rar&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;\xff,5\xb4W\x1b\xf1\xb0\x16\x13=\x0c\xc1\xc5\xb56&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;b760813c2b6690123eb174b5561ce6b4a0b6e000&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">1966849</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;HOTAVXXX,Free Adult Movie, Fastest &amp; Newest Porn Movie Site.jpg&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;HOTAVXXX,Free Adult Movie, Fastest &amp; Newest Porn Movie Site.jpg&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;\xfaggnH\xf8e&#125;O\x97\x04\xbb\x86\x9e\x92\xf5&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;9a8b43c663ecc46d3a29196cf527d8431fef842b&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">180</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;HOTAVXXX~最新最快的AV影片每日更新.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;HOTAVXXX~最新最快的AV影片每日更新.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;\xff,5\xb4W\x1b\xf1\xb0\x16\x13=\x0c\xc1\xc5\xb56&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;b760813c2b6690123eb174b5561ce6b4a0b6e000&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">1966849</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;HOTAVXXX、自由な成人映画、最も速く&amp;最新ポルノ映画サイト.jpg&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;HOTAVXXX、自由な成人映画、最も速く&amp;最新ポルノ映画サイト.jpg&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;$\x13\xfd\\\x8b\xa5\xee=\xc0\xfb\x88\xff~\x03/\x18&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;dddbfe3e917739e1da7afcdd8a78e1a6677b6648&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">235</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;QQ愛真人視頻交友聊天室.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;QQ愛真人視頻交友聊天室.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;/\xe2\xcf\x1b\xc06\xea[\xda\x93\xb9\xd0\\\xc1\x14\x98&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;715c4e653db4bb74bb7e40073d55113f512299e9&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">628211</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;SIS001全面封殺.jpg&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;SIS001全面封殺.jpg&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;\xf3\x19\x893\x8b\r\xc4\r\x99|W)\xf4\xce\x00J&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;c4eadc74cdbf36df8a66710f62932a60b1a0949a&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">267</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;[城風 - C9]~成人精品長篇區 最新http一手資源.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;[城風 - C9]~成人精品長篇區 最新http一手資源.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;r\xbab\x10i\xc4\x10&lt;f$\x10+p\x84\xd2Z&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;c6a1cb245511e4013c7510220ce3a6d912f8290f&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">217</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23(第六天魔王)@草榴社區.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23(第六天魔王)@草榴社區.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;\xe4z.\xa4\xfa\x88h\xfe\x07\xedy\xc3\x13D\xe8\x7f&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;dddd22e1c4027a8e5c6cec98a4ef3dd29b951682&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">229</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23@ HD1080.org.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23@ HD1080.org.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;\xf9\xee!X\xb3\x9d\xd9\x104\xc52\xc4\x872&amp;a&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;7191792635319be376c5ff3edd251e7bda81d069&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">267</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23@AV 天空.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23@AV 天空.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;\xba\x18f&amp;*y&amp;\xf5H\xe8\x1f;8x\x1eA&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;d774c64c18ec44e607ba6825675e841332a0d4f4&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">188</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23@D.C.資訊交流網.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23@D.C.資訊交流網.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;\x91\x97\x15O\rxh\x7fa\xbf^\xbf \x187K&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;f06835576489512e2c4a3ff58a5c4a2fed3131a3&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">174</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23@KTzone.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23@KTzone.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&quot;\xf7\xf1\x9c\xa0+\x15\xc5_\xdb2u&#x27;\x81\xcb\xefU&quot;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;25a54a9fdab494a60fdbd206089ee75c08913f24&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">235</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23@SexInSex! Board.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23@SexInSex! Board.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;\x10k\x08\xafU\xcb\x05\x8b\x0f\xf9\xaf\xcb\r\xdd\xf3\xc4&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;a9bb602e06bb33483a1960db95bc65b535831c5d&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">1086</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23@公仔箱論壇.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23@公仔箱論壇.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;6-*X\x12\xf3f\xbe\xd8q\x15\xbe\x91[\xee4&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;d19dd08e932c7db940491e5ac259c6ad0ff225c3&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">188</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23@痴漢俱樂部.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23@痴漢俱樂部.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;\x89\xe1CN\xef\xd1\x83\xc2\x8c?,|;\xdb\t\x10&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;47255a6ce6a43dc9af1de780fcffd210de793bfd&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">190</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23@香港廣場.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23@香港廣場.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;\xaaJh&amp;\x1f\x88\x93\xda\x9bL\xca\xd9\x9c+V\xa9&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;168c3faa1f01a31b31c8d5a1bb7e699333e0bfe4&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">226</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23_Plus28 討論區.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23_Plus28 討論區.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&quot;\x04k`&#123;\x0b&#x27;\xee\x80\xb4\x8e\x91=\xa92\xaf\x95&quot;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;c7181e934379905222bf363317d8ae8ddfb12eb4&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">220</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23_Touch99.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23_Touch99.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;\xaf\xbe+\xd5\xde\x96\xdc\xe0\xa8a\x18\x87b\x8d\xf6\x0c&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;a92caa360c647d14ae05655c6e43e9f28d7edcf5&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">208</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23_WK綜合論壇.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23_WK綜合論壇.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;\x05&gt;\x9b.\nS\xb2\x9c&amp;L\xbc5H\x82\xcc\xcb&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;6fa079db3cafb196163e9a6b126f60a5d4aa85b1&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">156</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23_mimip2p.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23_mimip2p.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;\xc3|\x1fKA\xb7\xdd\xb9\x87\xd3&#125;\x04\x8f&#125;\xb3m&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;1a709fb06ff75ced80995ab8fcdefa69744d7aa0&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">229</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23_※=色界论坛=※ (开放注册） 色界论坛.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23_※=色界论坛=※ (开放注册） 色界论坛.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;&gt;\x13\x98U3q\xf6u\xe6\x06\xc4\xa4\x91\xb24\xc5&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;350cdfa69ce763f8c2fad85e1f0f4323c3fb5dfa&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">208</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23_九九情色帝国.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23_九九情色帝国.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;E\x0c\x8a\xed5&#123;\x00\xe6\xdb\xfc\x9b\xb1|U%\xf5&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;384d925cb1da6605d49014622ed9f0b455efe343&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">261</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23_性吧春暖花开,春暖花开性吧有你.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23_性吧春暖花开,春暖花开性吧有你.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;\xefE\xbe\xc2\xcf(\xf5\xe3\x18\x04\xdan\x8f\x08j\xcf&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;2509953b0831793667a904ee08229da3114835cf&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">214</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23_找樂子論壇.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23_找樂子論壇.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&quot;QuDc&#x27;zc]\xcb\xeb\xc0\x86-\xfe\xa5\xf4&quot;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;2e92574d6c46add45048b08aa15b4eae132c2cc1&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">235</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23_無限討論區.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;dioguitar23_無限討論區.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;tf\xe0\xda\x8c&amp;\x96A\x9d\x9e~P\xe9\xd6\x83\xdb&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;6b2a83a72df99bd7f2a197cb6fd423a41e061b70&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">138</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;hav.tv-新幹線ONLINE~慶祝開站包月對折優惠~免費影片天看到爽!!.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;hav.tv-新幹線ONLINE~慶祝開站包月對折優惠~免費影片天看到爽!!.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;\&#x27;\xf0\x08\xf1 &#123;\xa9&quot;\x13//(\xc7o\x9d`&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;226f0d140af4689833613f0f21a95608fff324ef&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">4324384768</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;hotavxxx.com_DSAM-29.ISO&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;hotavxxx.com_DSAM-29.ISO&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;\x92]\xef\x0b\xa5\xee\xff\xd9\xb9\xd2\xd2\xc2J\x9e\x1a\xdc&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;eb8316fc354049e3bc1fb251bf6928dc55ed157a&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">131523</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;hotavxxx.com_DSAM-29.jpg&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;hotavxxx.com_DSAM-29.jpg&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;0\xaf\xc8Q\xc9\xa3\xfb\xacn\xf4\xde\xc1\r\x9c\xda\xbd&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;aa6975d6341d2a079661c066eb5244ee0fd1aaff&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">2254263</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;hotavxxx.com_DSAM-29A.jpg&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;hotavxxx.com_DSAM-29A.jpg&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;\xa1\xaf\x1b\xd7\x84\xd2g\x87\x99&gt;\x82\xec\x94j\xb1U&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;7254c5e02a0119f38e9c0e7576a1d8ac04b59f67&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">214</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;❤dioguitar23❤18P2P-2013年04月2日 18p2p開放註冊3天.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;❤dioguitar23❤18P2P-2013年04月2日 18p2p開放註冊3天.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;\xe0\x82]\xe7\xe2\xc3\xe0\x9bn\x81\x1d\xa4\x0fr\x9f+&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;cad3021392437e48d35faa57861e8ce0a89a6a0d&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">233</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;アジア表動画公開板 [城風 - C9].url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;アジア表動画公開板 [城風 - C9].url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;\x9a\xdeh5D\x1e&#125;5`FeM\xf3\xcf\x1dt&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;37402d4e9e9fedb26ff5c833fbc399fb5462a4af&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">168</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;京色屋~即日起大降價.一片只要30元起.藍光片只要150元.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;京色屋~即日起大降價.一片只要30元起.藍光片只要150元.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;W\x9a\xf4E\x1d\xb0b(\x05_v\x00\xef\xe5\xe4\xe6&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;6d6df82810c4aa00152c3912d28bc13b6589a780&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">223</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;堂本屋 TW DMM~即日起大降價.一片只要30元起.藍光片只要150元.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;堂本屋 TW DMM~即日起大降價.一片只要30元起.藍光片只要150元.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;\x83\x05t=\xda\x85\x84\xbc\x1c\xb3J\xac\x04\x94\xfea&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;52dcc77f3f2aad3ffd1cf4af73157deb1aeb8f4c&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">2994</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;更多精彩.rar&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;更多精彩.rar&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;&lt;\xf8Y\xfd\x08\x99.\xc5\xec\x0e\x03V\r\xb4%\x06&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;ab91ce91df44509574450c875435f3c2a7bf18cf&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">226</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;金花娱乐城-澳门网上真人赌博，90后性感荷官24小时在线存提款（5分钟到账）.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;金花娱乐城-澳门网上真人赌博，90后性感荷官24小时在线存提款（5分钟到账）.url&#x27;</span>]&#125;, &#123;<span class="hljs-string">&#x27;ed2k&#x27;</span>: b<span class="hljs-string">&#x27;\xfc*&quot;\xad\xdbva\xdf\xbf\x92\x0e\x83.\x08/\x84&#x27;</span>, <span class="hljs-string">&#x27;filehash&#x27;</span>: <span class="hljs-string">&#x27;b60f8d54f1756a04753905be9a9dc7982f33ad14&#x27;</span>, <span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">235</span>, <span class="hljs-string">&#x27;path&#x27;</span>: [<span class="hljs-string">&#x27;魔王の家-情慾視界~最新最快的成人資訊平台 魔王の家,http--bbs.hotavxxx.com.url&#x27;</span>], <span class="hljs-string">&#x27;path.utf-8&#x27;</span>: [<span class="hljs-string">&#x27;魔王の家-情慾視界~最新最快的成人資訊平台 魔王の家,http--bbs.hotavxxx.com.url&#x27;</span>]&#125;], <span class="hljs-string">&#x27;name&#x27;</span>: <span class="hljs-string">&#x27;DSAM-29-DVD&#x27;</span>, <span class="hljs-string">&#x27;name.utf-8&#x27;</span>: <span class="hljs-string">&#x27;DSAM-29-DVD&#x27;</span>, <span class="hljs-string">&#x27;piece length&#x27;</span>: <span class="hljs-number">1048576</span>, <span class="hljs-string">&#x27;pieces&#x27;</span>: [<span class="hljs-string">&#x27;557c428f62f38fe8ac8d11411bc9796abb28254d&#x27;</span>, <span class="hljs-string">&#x27;53effb4976edd7d32c9be7a0315bfd40ff93875e&#x27;</span>, <span class="hljs-string">&#x27;c38ea041059367193bc3e9cc6fac40f67cfb377f&#x27;</span>, <span class="hljs-string">&#x27;63d640ba1942f834e4ec0340f84d8c0703a1f992&#x27;</span>, <span class="hljs-string">&#x27;8b783f6a2dc8ec649ad78acc8c49f892a8bf7663&#x27;</span>, <span class="hljs-string">&#x27;961a8f0b0cdfe010c979061082982c3548173948&#x27;</span>, <span class="hljs-string">&#x27;57dd2532983cf4d30bd442281d007ce0189b6eac&#x27;</span>, <span class="hljs-string">&#x27;d858de50e2a5d5dd60945ac687baa159697d88cd&#x27;</span>, <span class="hljs-string">&#x27;f7a262965c87d1c4d3cc10660176c4d063d16807&#x27;</span>, <span class="hljs-string">&#x27;43f7e4f982c4a47d94757071e8b280798d5fbfa9&#x27;</span>, ...<br></code></pre></td></tr></table></figure>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/bitTorrent/" class="print-no-link">#bitTorrent</a>
+      
+        <a href="/tags/protocol/" class="print-no-link">#protocol</a>
+      
+        <a href="/tags/p2p/" class="print-no-link">#p2p</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>BitTorrent协议（六）之种子嗅探器</div>
+      <div>https://threelambda.com/2019/02/18/2019-2-18-bt-6/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Ming Yang</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2019年2月18日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2019/04/28/2019-4-28-byte-to-string-and-back/" title="Java语言中bytes convert to string and back not equal">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Java语言中bytes convert to string and back not equal</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2019/01/25/2019-1-25-bt-5/" title="BitTorrent协议（五）之下载文件">
+                        <span class="hidden-mobile">BitTorrent协议（五）之下载文件</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

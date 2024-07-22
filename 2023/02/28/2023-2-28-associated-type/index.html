@@ -1,0 +1,727 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/images/icon-3-lambda.png">
+  <link rel="icon" href="/images/icon-3-lambda.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Ming Yang">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="关联类型(Associated type)关联类型是Rust为了解决类型参数(type parameter)之间的依赖关系而引入的。清楚的解释引入动机的文章就是 RFC095 。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Iced的过程中理解Rust的关联类型">
+<meta property="og:url" content="https://threelambda.com/2023/02/28/2023-2-28-associated-type/index.html">
+<meta property="og:site_name" content="CodeCraft">
+<meta property="og:description" content="关联类型(Associated type)关联类型是Rust为了解决类型参数(type parameter)之间的依赖关系而引入的。清楚的解释引入动机的文章就是 RFC095 。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://threelambda.com/images/20230228-button_style_for_theme.png">
+<meta property="og:image" content="https://threelambda.com/images/20230228-calculator.png">
+<meta property="article:published_time" content="2023-02-27T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-07-22T07:16:58.471Z">
+<meta property="article:author" content="alenym@qq.com">
+<meta property="article:tag" content="rust">
+<meta property="article:tag" content="iced">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://threelambda.com/images/20230228-button_style_for_theme.png">
+  
+  
+  
+  <title>使用Iced的过程中理解Rust的关联类型 - CodeCraft</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"threelambda.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":"G-X6VGKB3GW8"},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=G-X6VGKB3GW8", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', 'G-X6VGKB3GW8');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>CodeCraft</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="https://threelambda.com/en/" target="_self">
+                <i class="iconfont icon-language2"></i>
+                <span>English</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="使用Iced的过程中理解Rust的关联类型"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-02-28 00:00" pubdate>
+          2023年2月28日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          10 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">使用Iced的过程中理解Rust的关联类型</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="关联类型-Associated-type"><a href="#关联类型-Associated-type" class="headerlink" title="关联类型(Associated type)"></a>关联类型(Associated type)</h2><p>关联类型是Rust为了解决类型参数(type parameter)之间的依赖关系而引入的。清楚的解释引入动机的文章就是
+<a target="_blank" rel="noopener" href="https://github.com/rust-lang/rfcs/blob/master/text/0195-associated-items.md#motivation">RFC095</a>
+。</p>
+<span id="more"></span>
+
+<p>同时，这篇文章详细说明了如何<a target="_blank" rel="noopener" href="https://github.com/rust-lang/rfcs/blob/master/text/0195-associated-items.md#motivation">引用关联类型</a>。</p>
+<h2 id="一个实际的例子"><a href="#一个实际的例子" class="headerlink" title="一个实际的例子"></a>一个实际的例子</h2><p>我们在使用<a target="_blank" rel="noopener" href="https://github.com/iced-rs/iced">Iced</a>（一个跨平台的GUI库）开发一个自定义样式的button的时候，
+遇到了关联类型。</p>
+<p>以下代码创建一个button对象，宽度80，高50，样式怎么输入呢？</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-title function_ invoke__">button</span>(<br>    <span class="hljs-title function_ invoke__">text</span>(input).<span class="hljs-title function_ invoke__">size</span>(<span class="hljs-number">24</span>)<br>        .<span class="hljs-title function_ invoke__">vertical_alignment</span>(Vertical::Center)<br>        .<span class="hljs-title function_ invoke__">horizontal_alignment</span>(Horizontal::Center)<br>)<br>    .<span class="hljs-title function_ invoke__">padding</span>(<span class="hljs-number">10</span>)<br>    .<span class="hljs-title function_ invoke__">width</span>(<span class="hljs-number">80</span>)<br>    .<span class="hljs-title function_ invoke__">height</span>(<span class="hljs-number">50</span>)<br>    .<span class="hljs-title function_ invoke__">style</span>( ?? )    <span class="hljs-comment">/// &lt;-- 这里该写什么呢？</span><br>    .<span class="hljs-title function_ invoke__">on_press</span>(msg)<br></code></pre></td></tr></table></figure>
+<p>看看这个style方法的签名。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs text">iced_native::widget::button <br>impl&lt;&#x27;a, Message, Renderer&gt; Button&lt;&#x27;a, Message, Renderer&gt; <br>where     <br>    Renderer: crate::Renderer,     <br>    Renderer::Theme: StyleSheet,<br>pub fn style(mut self, style: &lt;Renderer::Theme as StyleSheet&gt;::Style) -&gt; Self<br>-------------------------------------------------------------<br>Sets the style variant of this Button.<br></code></pre></td></tr></table></figure>
+<p>style方法是Button结构体的一个关联方法。</p>
+<p>Button结构体是一个组件，它有两个类型参数，Message和Renderer。
+其中<code>Renderer</code>类型参数的Bound在where中明确</p>
+<ul>
+<li>Renderer: crate::Renderer   需要实现<code>crate::Renderer</code> trait.</li>
+<li>Renderer::Theme: StyleSheet 并且该<code>crate::Renderer</code> trait的<code>Theme</code>关联类型需要实现 <code>StyleSheet</code> trait.</li>
+</ul>
+<p><code>crate::Renderer</code> trait如下，有一个<code>Theme</code>关联类型</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-comment">/// A component that can be used by widgets to draw themselves on a screen.</span><br><span class="hljs-keyword">pub</span> <span class="hljs-keyword">trait</span> <span class="hljs-title class_">Renderer</span>: <span class="hljs-built_in">Sized</span> &#123;<br>    <span class="hljs-comment">/// The supported theme of the [`Renderer`].</span><br>    <span class="hljs-keyword">type</span> <span class="hljs-title class_">Theme</span>;<br>    ...<br>    ...<br></code></pre></td></tr></table></figure>
+
+<p>还是回到这个style方法<code>pub fn style(mut self, style: &lt;Renderer::Theme as StyleSheet&gt;::Style) -&gt; Self</code>。</p>
+<p>这个方法的入参style的类型是<code>&lt;Renderer::Theme as StyleSheet&gt;::Style</code>，这个PATH的前缀是
+<code>&lt;Renderer::Theme as StyleSheet&gt;</code> 表示实现了Renderer trait的类型的<code>Theme</code>关联类型 
+需要实现<code>StyleSheet</code> trait。</p>
+<p>因此<code>&lt;Renderer::Theme as StyleSheet&gt;::Style</code>完整的含义就是 </p>
+<ol>
+<li>某个渲染类型 SomeRenderer 实现了<code>crate::Renderer</code> trait. </li>
+<li>某个样式板类型 SomeThemeType 实现了<code>button::StyleSheet</code>。</li>
+<li>且 SomeRenderer::Theme &#x3D; SomeThemeType</li>
+<li><code>&lt;Renderer::Theme as StyleSheet&gt;::Style</code>就是 SomeThemeType::Style &#x3D; &lt; ?? &gt;.</li>
+</ol>
+<p>因此style方法的入参的实际类型就是SomeStyleSheet::Style的实际类型。所以我们要找到SomeRenderer和SomeThemeType。</p>
+<ol>
+<li>先看<code>crate::Renderer</code> trait的实现类型有那些，可以看到<code>Renderer&lt;B, T&gt;</code><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">impl</span>&lt;B, T&gt; iced_native::Renderer <span class="hljs-keyword">for</span> <span class="hljs-title class_">Renderer</span>&lt;B, T&gt;<br><span class="hljs-keyword">where</span><br>    B: Backend,<br>&#123;<br>    <span class="hljs-keyword">type</span> <span class="hljs-title class_">Theme</span> = T;<br>    ...<br>    ...<br></code></pre></td></tr></table></figure></li>
+</ol>
+<p>这个结构体如下，</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-comment">/// A backend-agnostic renderer that supports all the built-in widgets.</span><br><span class="hljs-meta">#[derive(Debug)]</span><br><span class="hljs-keyword">pub</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">Renderer</span>&lt;B: Backend, Theme&gt; &#123;<br>    backend: B,<br>    primitives: <span class="hljs-type">Vec</span>&lt;Primitive&gt;,<br>    theme: PhantomData&lt;Theme&gt;,<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这个似乎就是我们要找的 SomeRenderer。但是这个<code>Renderer&lt;B, T&gt;</code>有两个类型参数，第二个就是Theme类型参数。还是没有看到
+这个类型参数具体的类型是什么。继续看哪里使用了这个带有类型参数的结构体<code>Renderer&lt;B, T&gt;</code>。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-comment">/// A [`wgpu`] graphics renderer for [`iced`].</span><br><span class="hljs-comment">///</span><br><span class="hljs-comment">/// [`wgpu`]: https://github.com/gfx-rs/wgpu-rs</span><br><span class="hljs-comment">/// [`iced`]: https://github.com/iced-rs/iced</span><br><span class="hljs-keyword">pub</span> <span class="hljs-keyword">type</span> <span class="hljs-title class_">Renderer</span>&lt;Theme = iced_native::Theme&gt; =<br>    iced_graphics::Renderer&lt;Backend, Theme&gt;;<br></code></pre></td></tr></table></figure>
+<p>这里看到声明了一个新的类型<code>iced_wgpu::Renderer</code>，并且指定了<code>Theme = iced_style::theme::Theme</code>。
+这个新的类型在哪里使用了呢？</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">impl</span>&lt;Theme&gt; iced_graphics::window::Compositor <span class="hljs-keyword">for</span> <span class="hljs-title class_">Compositor</span>&lt;Theme&gt; &#123;<br>    <span class="hljs-keyword">type</span> <span class="hljs-title class_">Settings</span> = Settings;<br>    <span class="hljs-keyword">type</span> <span class="hljs-title class_">Renderer</span> = Renderer&lt;Theme&gt;;<br>    <span class="hljs-keyword">type</span> <span class="hljs-title class_">Surface</span> = wgpu::Surface;<br><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">new</span>&lt;W: HasRawWindowHandle + HasRawDisplayHandle&gt;(<br>        settings: <span class="hljs-keyword">Self</span>::Settings,<br>        compatible_window: <span class="hljs-type">Option</span>&lt;&amp;W&gt;,<br>    ) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">Result</span>&lt;(<span class="hljs-keyword">Self</span>, <span class="hljs-keyword">Self</span>::Renderer), Error&gt; &#123;<br>        <span class="hljs-keyword">let</span> <span class="hljs-variable">compositor</span> = futures::executor::<span class="hljs-title function_ invoke__">block_on</span>(<span class="hljs-keyword">Self</span>::<span class="hljs-title function_ invoke__">request</span>(<br>            settings,<br>            compatible_window,<br>        ))<br>        .<span class="hljs-title function_ invoke__">ok_or</span>(Error::GraphicsAdapterNotFound)?;<br><br>        <span class="hljs-keyword">let</span> <span class="hljs-variable">backend</span> = compositor.<span class="hljs-title function_ invoke__">create_backend</span>();<br><br>        <span class="hljs-title function_ invoke__">Ok</span>((compositor, Renderer::<span class="hljs-title function_ invoke__">new</span>(backend)))  <span class="hljs-comment">/// &lt;--- 这里的Renderer就是指定了Theme的Renderer&lt;B,T&gt;</span><br>    &#125;<br></code></pre></td></tr></table></figure>
+<p>因此这个<code>iced_wgpu::Renderer</code>就是我们要找的SomeRenderer，而SomeRenderer::Theme就是
+<code>iced_style::theme::Theme</code>就是我们要找的SomeThemeType。</p>
+<ol start="2">
+<li>接着看<code>iced_style::theme::Theme</code>类型如何实现<code>button::StyleSheet</code> trait
+<img src="/./images/20230228-button_style_for_theme.png" srcset="/img/loading.gif" lazyload alt="button_stylesheet_for_theme">
+从这里可以看到 <code>SomeThemeType::Style = iced_style::theme::Button</code>
+因此style方法的入参是iced_style::theme::Button, 是一个枚举类型。</li>
+</ol>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-comment">/// The style of a button.</span><br><span class="hljs-meta">#[derive(Default)]</span><br><span class="hljs-keyword">pub</span> <span class="hljs-keyword">enum</span> <span class="hljs-title class_">Button</span> &#123;<br>    <span class="hljs-comment">/// The primary style.</span><br>    <span class="hljs-meta">#[default]</span><br>    Primary,<br>    <span class="hljs-comment">/// The secondary style.</span><br>    Secondary,<br>    <span class="hljs-comment">/// The positive style.</span><br>    Positive,<br>    <span class="hljs-comment">/// The destructive style.</span><br>    Destructive,<br>    <span class="hljs-comment">/// The text style.</span><br>    <span class="hljs-comment">///</span><br>    <span class="hljs-comment">/// Useful for links!</span><br>    Text,<br>    <span class="hljs-comment">/// A custom style.</span><br>    <span class="hljs-title function_ invoke__">Custom</span>(<span class="hljs-type">Box</span>&lt;<span class="hljs-keyword">dyn</span> button::StyleSheet&lt;Style = Theme&gt;&gt;),<br>&#125; <br></code></pre></td></tr></table></figure>
+<p>从定义可以看出，如果我们要实现自定义的样式就需要使用Button::Custom(Box::new(??)).</p>
+<p>而<code>button::StyleSheet&lt;Style = Theme&gt;</code>类型意思是某类型实现了<code>button::StyleSheet</code> trait,
+并且关联类型Style &#x3D; iced_style::theme::Theme. </p>
+<p>所以我们可以写一个自定义的button样式了。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">ButtonStyle</span>;<br><br><span class="hljs-keyword">impl</span> <span class="hljs-title class_">StyleSheet</span> <span class="hljs-keyword">for</span> <span class="hljs-title class_">ButtonStyle</span> &#123;<br>    <span class="hljs-keyword">type</span> <span class="hljs-title class_">Style</span> = iced_style::theme::Theme; <span class="hljs-comment">///&lt;-- 这里可以简写为 type Style = Theme;</span><br><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">active</span>(&amp;<span class="hljs-keyword">self</span>, style: &amp;<span class="hljs-keyword">Self</span>::Style) <span class="hljs-punctuation">-&gt;</span> Appearance &#123;<br>        Appearance &#123;<br>            shadow_offset: <span class="hljs-built_in">Default</span>::<span class="hljs-title function_ invoke__">default</span>(),<br>            background: <span class="hljs-title function_ invoke__">Some</span>(Background::<span class="hljs-title function_ invoke__">Color</span>(Color::<span class="hljs-title function_ invoke__">from_rgb8</span>(<span class="hljs-number">204</span>, <span class="hljs-number">204</span>, <span class="hljs-number">204</span>))),<br>            border_radius: <span class="hljs-number">5.0</span>,<br>            border_width: <span class="hljs-number">0.0</span>,<br>            border_color: <span class="hljs-built_in">Default</span>::<span class="hljs-title function_ invoke__">default</span>(),<br>            text_color: Color::<span class="hljs-title function_ invoke__">from_rgb8</span>(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>),<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>style方法的入参就是<code>Button::Custom(Box::new(ButtonStyle&#123;&#125;))</code>。</p>
+<p>最后style方法的使用如下</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-title function_ invoke__">button</span>(<br>    <span class="hljs-title function_ invoke__">text</span>(input).<span class="hljs-title function_ invoke__">size</span>(<span class="hljs-number">24</span>)<br>        .<span class="hljs-title function_ invoke__">vertical_alignment</span>(Vertical::Center)<br>        .<span class="hljs-title function_ invoke__">horizontal_alignment</span>(Horizontal::Center)<br>)<br>    .<span class="hljs-title function_ invoke__">padding</span>(<span class="hljs-number">10</span>)<br>    .<span class="hljs-title function_ invoke__">width</span>(<span class="hljs-number">80</span>)<br>    .<span class="hljs-title function_ invoke__">height</span>(<span class="hljs-number">50</span>)<br>    .<span class="hljs-title function_ invoke__">style</span>( Button::<span class="hljs-title function_ invoke__">Custom</span>(<span class="hljs-type">Box</span>::<span class="hljs-title function_ invoke__">new</span>(ButtonStyle&#123;&#125;)) ) <span class="hljs-comment">/// 这里该写什么呢？</span><br>    .<span class="hljs-title function_ invoke__">on_press</span>(msg)<br></code></pre></td></tr></table></figure>
+
+<h2 id="关于Iced"><a href="#关于Iced" class="headerlink" title="关于Iced"></a>关于Iced</h2><p><code>Iced</code>使用的Elm模型非常容易使用。我用它实现一个简单的计算器。
+<img src="/./images/20230228-calculator.png" srcset="/img/loading.gif" lazyload alt="calculator"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>关联类型是Rust非常重要的特性。如果不深入理解的话，编译的错误信息都看不明白。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/rust/" class="print-no-link">#rust</a>
+      
+        <a href="/tags/iced/" class="print-no-link">#iced</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>使用Iced的过程中理解Rust的关联类型</div>
+      <div>https://threelambda.com/2023/02/28/2023-2-28-associated-type/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Ming Yang</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年2月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/06/07/2023-6-7-qt5-macos-bundle-app/" title="MacOS下基于CMake自动打包部署Qt5项目">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">MacOS下基于CMake自动打包部署Qt5项目</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/01/12/2023-1-12-8-queens-chatgpt/" title="通过ChatGPT实现Rust语言的八皇后算法">
+                        <span class="hidden-mobile">通过ChatGPT实现Rust语言的八皇后算法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

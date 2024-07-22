@@ -1,0 +1,722 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/en/images/icon-3-lambda.png">
+  <link rel="icon" href="/en/images/icon-3-lambda.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Ming Yang">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="什么是语法树语法树（Syntax Tree），是一种树状数据结构， 用于表示源代码的语法结构。每个节点都表示源代码中的一种语法结构。 语法树在编译器和解释器中被广泛使用，以帮助分析和处理编程语言的源代码。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何更好的打印语法树结构">
+<meta property="og:url" content="https://threelambda.com/2024/07/18/2024-7-18-slang-ast-hier-tree/index.html">
+<meta property="og:site_name" content="CodeCraft">
+<meta property="og:description" content="什么是语法树语法树（Syntax Tree），是一种树状数据结构， 用于表示源代码的语法结构。每个节点都表示源代码中的一种语法结构。 语法树在编译器和解释器中被广泛使用，以帮助分析和处理编程语言的源代码。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://threelambda.com/en/images/2024-adder-ast.jpg">
+<meta property="og:image" content="https://threelambda.com/en/images/2024-adder-cst.png">
+<meta property="article:published_time" content="2024-07-17T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-07-22T07:16:58.351Z">
+<meta property="article:author" content="Ming Yang">
+<meta property="article:tag" content="c++">
+<meta property="article:tag" content="AST">
+<meta property="article:tag" content="tree">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://threelambda.com/en/images/2024-adder-ast.jpg">
+  
+  
+  
+  <title>如何更好的打印语法树结构 - CodeCraft</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/en/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/en/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/en/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"threelambda.com","root":"/en/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":"G-X6VGKB3GW8"},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/en/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/en/js/utils.js" ></script>
+  <script  src="/en/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=G-X6VGKB3GW8", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', 'G-X6VGKB3GW8');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/en/">
+      <strong>CodeCraft</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/en/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>Home</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/en/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>Archives</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/en/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>Tags</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/en/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>About</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="https://threelambda.com/" target="_self">
+                <i class="iconfont icon-language2"></i>
+                <span>简体中文</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/en/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="如何更好的打印语法树结构"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-07-18 00:00" pubdate>
+          July 18, 2024 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          17 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">如何更好的打印语法树结构</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="什么是语法树"><a href="#什么是语法树" class="headerlink" title="什么是语法树"></a>什么是语法树</h2><p>语法树（Syntax Tree），是一种树状数据结构，
+用于表示源代码的语法结构。每个节点都表示源代码中的一种语法结构。
+语法树在编译器和解释器中被广泛使用，以帮助分析和处理编程语言的源代码。</p>
+<span id="more"></span>
+
+<p>语法树可以进一步分成具体语法树（<strong>C</strong>oncrete <strong>S</strong>yntax <strong>T</strong>ree）和抽象语法树（<strong>A</strong>bstract <strong>S</strong>yntax <strong>T</strong>ree）。
+编译器前端通常会根据BNF语法生成CST，然后再根据语义构建AST。</p>
+<p>为了方便用户使用语法树，通常会支持Visitor设计模式，这样自定义的Visitor就可以针对感兴趣的节点类型进行遍历。</p>
+<p><strong>所以这样就引出一个问题，节点类型那么多，如何能直观的看到这个树形结构呢？尤其对于不支持反射的C++，无法Debug查看类型</strong></p>
+<p>下面是作者在基于<a target="_blank" rel="noopener" href="https://sv-lang.com/">slang</a>项目开发Lint规则的时候，作出的一些尝试。</p>
+<p>slang是一个Modern C++项目，使用了很多C++17和C++20新特性。</p>
+<blockquote>
+<p>slang is a software library that provides various components for lexing, parsing, type checking, and elaborating SystemVerilog code. It comes with an executable tool that can compile and lint any SystemVerilog project, but it is also intended to be usable as a front end for synthesis tools, simulators, linters, code editors, and refactoring tools.</p>
+<p>slang is the fastest and most compliant SystemVerilog frontend</p>
+</blockquote>
+<p>那么在说明这个问题之前，还是要对<code>SystemVerilog</code>进行简单的介绍。然后给出序列化为json格式的语法树，最后给出作者方案作为比较。</p>
+<h2 id="SystemVerilog简介"><a href="#SystemVerilog简介" class="headerlink" title="SystemVerilog简介"></a>SystemVerilog简介</h2><p><code>SystemVerilog</code> 是一种硬件描述和验证语言（HDVL），是<code>Verilog</code>硬件描述语言的扩展。它结合了硬件描述语言（HDL）和硬件验证语言（HVL）的特性，旨在提供一种更强大和灵活的工具来设计和验证数字系统。SystemVerilog 由 Accellera 标准组织开发，并已被 IEEE 标准协会标准化为 IEEE 1800。</p>
+<h3 id="SystemVerilog-的主要特点"><a href="#SystemVerilog-的主要特点" class="headerlink" title="SystemVerilog 的主要特点"></a>SystemVerilog 的主要特点</h3><ol>
+<li><strong>综合和仿真</strong>：支持设计综合（synthesis）和仿真（simulation），可以用来描述硬件电路并验证其行为。</li>
+<li><strong>面向对象编程</strong>：引入了面向对象编程（OOP）概念，如类（class）、继承（inheritance）、多态（polymorphism）等，用于更复杂的测试平台开发。</li>
+<li><strong>高级验证功能</strong>：包含了许多高级验证功能，如断言（assertions）、约束随机化（constraint randomization）、覆盖率（coverage）等。</li>
+<li><strong>接口和模块化</strong>：支持接口（interface）和模块化编程，促进设计的可重用性和模块化。</li>
+<li><strong>并行处理</strong>：具有并行处理能力，可以描述并行硬件行为。</li>
+<li><strong>组合逻辑和时序逻辑</strong>：支持组合逻辑和时序逻辑的建模。</li>
+</ol>
+<h3 id="SystemVerilog-的基本构造"><a href="#SystemVerilog-的基本构造" class="headerlink" title="SystemVerilog 的基本构造"></a>SystemVerilog 的基本构造</h3><h4 id="模块"><a href="#模块" class="headerlink" title="模块"></a>模块</h4><p>模块（module）是 <code>SystemVerilog</code> 的基本构造，用于定义电路的结构和行为。例如：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs verilog"><span class="hljs-keyword">module</span> adder (<br>    <span class="hljs-keyword">input</span> <span class="hljs-keyword">logic</span> [<span class="hljs-number">3</span>:<span class="hljs-number">0</span>] a,<br>    <span class="hljs-keyword">input</span> <span class="hljs-keyword">logic</span> [<span class="hljs-number">3</span>:<span class="hljs-number">0</span>] b,<br>    <span class="hljs-keyword">output</span> <span class="hljs-keyword">logic</span> [<span class="hljs-number">3</span>:<span class="hljs-number">0</span>] sum<br>);<br>    <span class="hljs-keyword">assign</span> sum = a + b;<br><span class="hljs-keyword">endmodule</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h4><p>接口（interface）用于定义模块之间的通信信号。例如：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs verilog"><span class="hljs-keyword">interface</span> simple_bus (<br>    <span class="hljs-keyword">input</span> <span class="hljs-keyword">logic</span> clk,<br>    <span class="hljs-keyword">input</span> <span class="hljs-keyword">logic</span> reset<br>);<br>    <span class="hljs-keyword">logic</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] data;<br>    <span class="hljs-keyword">logic</span> valid;<br><span class="hljs-keyword">endinterface</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="类"><a href="#类" class="headerlink" title="类"></a>类</h4><p>类（class）用于验证环境中的面向对象编程。例如：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs verilog"><span class="hljs-keyword">class</span> Packet;<br>    <span class="hljs-keyword">rand</span> <span class="hljs-keyword">bit</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] addr;<br>    <span class="hljs-keyword">rand</span> <span class="hljs-keyword">bit</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] data;<br><br>    <span class="hljs-keyword">function</span> <span class="hljs-keyword">void</span> display();<br>        <span class="hljs-built_in">$display</span>(<span class="hljs-string">&quot;Address: %0h, Data: %0h&quot;</span>, addr, data);<br>    <span class="hljs-keyword">endfunction</span><br><span class="hljs-keyword">endclass</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="SystemVerilog-的应用"><a href="#SystemVerilog-的应用" class="headerlink" title="SystemVerilog 的应用"></a>SystemVerilog 的应用</h3><ol>
+<li><strong>硬件设计</strong>：用于描述数字电路的结构和行为，可以综合成实际的硬件电路。</li>
+<li><strong>硬件验证</strong>：提供了丰富的验证功能，用于验证数字设计的正确性和性能，包括功能验证和形式验证。</li>
+<li><strong>测试平台开发</strong>：可以用来开发复杂的测试平台，进行全面的硬件设计验证。</li>
+</ol>
+<h3 id="SystemVerilog-的优势"><a href="#SystemVerilog-的优势" class="headerlink" title="SystemVerilog 的优势"></a>SystemVerilog 的优势</h3><ol>
+<li><strong>增强的表达能力</strong>：相比于 Verilog，SystemVerilog 提供了更强大的语法和语义，可以更高效地描述复杂的硬件和验证环境。</li>
+<li><strong>高效的验证方法</strong>：引入了约束随机化、覆盖率驱动验证和断言等先进验证技术，大大提高了验证效率。</li>
+<li><strong>面向对象编程</strong>：支持面向对象编程，使得验证代码更具结构性和可维护性。</li>
+</ol>
+<p>总的来说，<code>SystemVerilog</code> 是一种强大且灵活的硬件描述和验证语言，广泛应用于现代数字电路设计和验证领域。</p>
+<h2 id="slang给出的json格式的AST"><a href="#slang给出的json格式的AST" class="headerlink" title="slang给出的json格式的AST"></a>slang给出的json格式的AST</h2><p>slang项目提供了一个命令行工具，并提供了<code>--ast-json</code>来序列化AST为json格式。还是以这个加法器模块为例，</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs verilog"><span class="hljs-keyword">module</span> adder (<br>    <span class="hljs-keyword">input</span> <span class="hljs-keyword">logic</span> [<span class="hljs-number">3</span>:<span class="hljs-number">0</span>] a,<br>    <span class="hljs-keyword">input</span> <span class="hljs-keyword">logic</span> [<span class="hljs-number">3</span>:<span class="hljs-number">0</span>] b,<br>    <span class="hljs-keyword">output</span> <span class="hljs-keyword">logic</span> [<span class="hljs-number">3</span>:<span class="hljs-number">0</span>] sum<br>);<br>    <span class="hljs-keyword">assign</span> sum = a + b;<br><span class="hljs-keyword">endmodule</span><br></code></pre></td></tr></table></figure>
+<p>序列化的json结构如下</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;design&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;$root&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;kind&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Root&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;addr&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2199025570624</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;members&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>      <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;kind&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;CompilationUnit&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;addr&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2199025963792</span><br>      <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;adder&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;kind&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Instance&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;addr&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2199025964560</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;body&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>          <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;adder&quot;</span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;kind&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;InstanceBody&quot;</span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;addr&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2199025964184</span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;members&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>            <span class="hljs-punctuation">&#123;</span><br>              <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;a&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;kind&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Port&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;addr&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2199025964704</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;logic[3:0]&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;direction&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;In&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;internalSymbol&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2199025964880 a&quot;</span><br>            <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-punctuation">&#123;</span><br>              <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;a&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;kind&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Variable&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;addr&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2199025964880</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;logic[3:0]&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;lifetime&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Static&quot;</span><br>            <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-punctuation">&#123;</span><br>              <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;b&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;kind&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Port&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;addr&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2199025965256</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;logic[3:0]&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;direction&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;In&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;internalSymbol&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2199025965432 b&quot;</span><br>            <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-punctuation">&#123;</span><br>              <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;b&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;kind&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Variable&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;addr&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2199025965432</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;logic[3:0]&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;lifetime&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Static&quot;</span><br>            <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-punctuation">&#123;</span><br>              <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;sum&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;kind&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Port&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;addr&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2199025965808</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;logic[3:0]&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;direction&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Out&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;internalSymbol&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2199025965984 sum&quot;</span><br>            <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-punctuation">&#123;</span><br>              <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;sum&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;kind&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Variable&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;addr&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2199025965984</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;logic[3:0]&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;lifetime&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Static&quot;</span><br>            <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-punctuation">&#123;</span><br>              <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;kind&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;ContinuousAssign&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;addr&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2199025966384</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;assignment&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>                <span class="hljs-attr">&quot;kind&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Assignment&quot;</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;logic[3:0]&quot;</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-attr">&quot;left&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>                  <span class="hljs-attr">&quot;kind&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;NamedValue&quot;</span><span class="hljs-punctuation">,</span><br>                  <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;logic[3:0]&quot;</span><span class="hljs-punctuation">,</span><br>                  <span class="hljs-attr">&quot;symbol&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2199025965984 sum&quot;</span><br>                <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-attr">&quot;right&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>                  <span class="hljs-attr">&quot;kind&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;BinaryOp&quot;</span><span class="hljs-punctuation">,</span><br>                  <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;logic[3:0]&quot;</span><span class="hljs-punctuation">,</span><br>                  <span class="hljs-attr">&quot;op&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Add&quot;</span><span class="hljs-punctuation">,</span><br>                  <span class="hljs-attr">&quot;left&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>                    <span class="hljs-attr">&quot;kind&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;NamedValue&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;logic[3:0]&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;symbol&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2199025964880 a&quot;</span><br>                  <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>                  <span class="hljs-attr">&quot;right&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>                    <span class="hljs-attr">&quot;kind&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;NamedValue&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;logic[3:0]&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;symbol&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2199025965432 b&quot;</span><br>                  <span class="hljs-punctuation">&#125;</span><br>                <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-attr">&quot;isNonBlocking&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><br>              <span class="hljs-punctuation">&#125;</span><br>            <span class="hljs-punctuation">&#125;</span><br>          <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;definition&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2199025746816 adder&quot;</span><br>        <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;connections&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>        <span class="hljs-punctuation">]</span><br>      <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">]</span><br>  <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;definitions&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>    <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;adder&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;kind&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Definition&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;addr&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2199025746816</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;defaultNetType&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2199025567936 wire&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;definitionKind&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Module&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;defaultLifetime&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Static&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;unconnectedDrive&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;None&quot;</span><br>    <span class="hljs-punctuation">&#125;</span><br>  <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span>        <br></code></pre></td></tr></table></figure>
+
+<p>是不是首先感到，这个json格式有点太长了，因为一个节点会有很多属性。而且通过缩进也很难看出来节点的父子关系。</p>
+<h2 id="tree命令行的启发"><a href="#tree命令行的启发" class="headerlink" title="tree命令行的启发"></a>tree命令行的启发</h2><p>树状结构是一个二维结构，很难展示。不过命令工具tree打印的树状结构非常清晰。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">tree .</span><br>.<br>├── dir1<br>│    └── a.txt<br>└── dir2<br>     ├── b.txt<br>     └── c.txt<br></code></pre></td></tr></table></figure>
+<p>可以看到这种展示方式很好的把父子关系展示了出来，清楚的看到一个目录下所包含的文件。</p>
+<p>这种具体的层次树<code>hierarchical tree</code>称之为目录树。</p>
+<h2 id="解决方案展示"><a href="#解决方案展示" class="headerlink" title="解决方案展示"></a>解决方案展示</h2><p>还是这个sv代码</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs verilog"><span class="hljs-keyword">module</span> adder (<br>    <span class="hljs-keyword">input</span> <span class="hljs-keyword">logic</span> [<span class="hljs-number">3</span>:<span class="hljs-number">0</span>] a,<br>    <span class="hljs-keyword">input</span> <span class="hljs-keyword">logic</span> [<span class="hljs-number">3</span>:<span class="hljs-number">0</span>] b,<br>    <span class="hljs-keyword">output</span> <span class="hljs-keyword">logic</span> [<span class="hljs-number">3</span>:<span class="hljs-number">0</span>] sum<br>);<br>    <span class="hljs-keyword">assign</span> sum = a + b;<br><span class="hljs-keyword">endmodule</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="AST的优化展示"><a href="#AST的优化展示" class="headerlink" title="AST的优化展示"></a>AST的优化展示</h3><p>我们展示一下用目录树的方式，展现AST</p>
+<p><img src="/en/./images/2024-adder-ast.jpg" srcset="/en/img/loading.gif" lazyload alt="adder-ast">
+可以看到每一行都是一个key-value键值对，用冒号分隔。同时加上term颜色区分。</p>
+<p>绿色的key是节点的class类型，value部分则是节点的属性信息，以空格分隔。</p>
+<p>这样就可以以紧凑的方式展示AST。</p>
+<h3 id="CST的优化展示"><a href="#CST的优化展示" class="headerlink" title="CST的优化展示"></a>CST的优化展示</h3><p><code>slang</code>并没有给出命令行的方式展现CST，但是用户可能需要直接访问CST进行一些处理，
+例如：格式化sv代码。</p>
+<p>下面是用相似的方式展现<code>adder</code>的CST数据结构。可以看出来，叶子节点的value就是该节点的原始文本。</p>
+<p><img src="/en/./images/2024-adder-cst.png" srcset="/en/img/loading.gif" lazyload alt="adder-cst"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>参考目录树的展示方式，结合key-value和term color给出了更加紧凑和清晰的语法树展现方式。这种方式更加方便用户基于AST和CST进行开发。 </p>
+<p>但是这种方式的缺点也是明确的，
+就是不适合作为文本方式保存。也不适合展示大的代码。当然json方式也不适合（但是都可以通过hierarchical path的约束，只展示部分语法树结构。）。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/en/tags/c/" class="print-no-link">#c++</a>
+      
+        <a href="/en/tags/AST/" class="print-no-link">#AST</a>
+      
+        <a href="/en/tags/tree/" class="print-no-link">#tree</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>如何更好的打印语法树结构</div>
+      <div>https://threelambda.com/2024/07/18/2024-7-18-slang-ast-hier-tree/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>Ming Yang</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>July 18, 2024</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Licensed under</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>Table of Contents</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/en/js/events.js" ></script>
+<script  src="/en/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/en/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/en/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/en/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>

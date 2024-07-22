@@ -1,0 +1,697 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/images/icon-3-lambda.png">
+  <link rel="icon" href="/images/icon-3-lambda.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Ming Yang">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="题目概述原题链接 Given an integer matrix, find the length of the longest increasing path  From each cell, you can either move to four directions: left, right, up or down. You may NOT move diagonally or move">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[leetcode 329]Longest Increasing Path in a Matrix 原创解法">
+<meta property="og:url" content="https://threelambda.com/2017/03/12/2017-3-12-leetcode-329/index.html">
+<meta property="og:site_name" content="CodeCraft">
+<meta property="og:description" content="题目概述原题链接 Given an integer matrix, find the length of the longest increasing path  From each cell, you can either move to four directions: left, right, up or down. You may NOT move diagonally or move">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-03-11T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-07-22T07:16:58.453Z">
+<meta property="article:author" content="alenym@qq.com">
+<meta property="article:tag" content="leetcode">
+<meta property="article:tag" content="算法">
+<meta property="article:tag" content="python">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>[leetcode 329]Longest Increasing Path in a Matrix 原创解法 - CodeCraft</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"threelambda.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":"G-X6VGKB3GW8"},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=G-X6VGKB3GW8", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', 'G-X6VGKB3GW8');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>CodeCraft</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="https://threelambda.com/en/" target="_self">
+                <i class="iconfont icon-language2"></i>
+                <span>English</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="[leetcode 329]Longest Increasing Path in a Matrix 原创解法"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2017-03-12 00:00" pubdate>
+          2017年3月12日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          860 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          8 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">[leetcode 329]Longest Increasing Path in a Matrix 原创解法</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="题目概述"><a href="#题目概述" class="headerlink" title=" 题目概述"></a><a name="hh0"></a> 题目概述</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/longest-increasing-path-in-a-matrix/">原题链接</a></p>
+<pre><code class="hljs">Given an integer matrix, find the length of the longest increasing path 
+From each cell, you can either move to four directions: left, right, up or down. You may NOT move diagonally or move outside of the boundary (i.e. wrap-around is not allowed).
+
+example:
+nums = [
+  [9,9,4],
+  [6,6,8],
+  [2,1,1]
+]
+return 4
+</code></pre>
+<span id="more"></span>
+
+<h2 id="回溯法"><a href="#回溯法" class="headerlink" title=" 回溯法"></a><a name="hh1"></a> 回溯法</h2><p>首先想到的就是回溯法(backtracking)。思路也很简单，就是遍历每个位置，
+并以此位置的数字作为开始，向四个方向进行回溯遍历。最终找到最长的序列。
+以下代码的36行和38行进行回溯。不过毫无疑问超时了。在这个基础上还可以
+进一步优化，比如只对in-degree为0的位置的数字进行考察。但是还是不行。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">longestIncreasingPath</span>(<span class="hljs-params">self, matrix</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        回溯法解法。</span><br><span class="hljs-string">        :type matrix: List[List[int]]</span><br><span class="hljs-string">        :rtype: int</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br><br>        <span class="hljs-keyword">if</span> matrix:<br>            hight = <span class="hljs-built_in">len</span>(matrix)<br>            width = <span class="hljs-built_in">len</span>(matrix[<span class="hljs-number">0</span>])<br><br>            s = <span class="hljs-built_in">set</span>((u, v) <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(hight) <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(width))<br><br>            result = [<span class="hljs-number">0</span>]<br>            <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> s:<br>                p = [item]<br>                <span class="hljs-variable language_">self</span>.find(matrix, item, p, result, s)<br><br>            <span class="hljs-keyword">return</span> result[<span class="hljs-number">0</span>]<br><br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">0</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">find</span>(<span class="hljs-params">self, matrix, item, p, result, s</span>):<br>        <span class="hljs-keyword">if</span> <span class="hljs-variable language_">self</span>.has_no_choice(matrix, item, p, s):<br>            <span class="hljs-keyword">if</span> (<span class="hljs-built_in">len</span>(p) &gt; result[<span class="hljs-number">0</span>]):<br>                result[<span class="hljs-number">0</span>] = <span class="hljs-built_in">len</span>(p)<br>        <span class="hljs-keyword">else</span>:<br>            u, v = item<br>            four = [(u + <span class="hljs-number">1</span>, v), (u - <span class="hljs-number">1</span>, v), (u, v + <span class="hljs-number">1</span>), (u, v - <span class="hljs-number">1</span>)]<br>            <span class="hljs-keyword">for</span> one <span class="hljs-keyword">in</span> four:<br>                x, y = one<br>                <span class="hljs-keyword">if</span> (x, y) <span class="hljs-keyword">in</span> s <span class="hljs-keyword">and</span> (x, y) <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> p <span class="hljs-keyword">and</span> matrix[x][y] &lt; matrix[u][v]:<br>                    p.append((x, y))<br>                    <span class="hljs-variable language_">self</span>.find(matrix, (x, y), p, result, s)<br>                    p.pop()<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">has_no_choice</span>(<span class="hljs-params">self, matrix, item, p, s</span>):<br>        u, v = item<br>        four = [(u + <span class="hljs-number">1</span>, v), (u - <span class="hljs-number">1</span>, v), (u, v + <span class="hljs-number">1</span>), (u, v - <span class="hljs-number">1</span>)]<br><br>        <span class="hljs-keyword">for</span> one <span class="hljs-keyword">in</span> four:<br>            x, y = one<br>            <span class="hljs-keyword">if</span> one <span class="hljs-keyword">in</span> s <span class="hljs-keyword">and</span> one <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> p <span class="hljs-keyword">and</span> matrix[x][y] &lt; matrix[u][v]:<br>                <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span><br><br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="拓扑排序和记忆体"><a href="#拓扑排序和记忆体" class="headerlink" title=" 拓扑排序和记忆体"></a><a name="hh2"></a> 拓扑排序和记忆体</h2><p>看看leetcode会给我们什么提示呢？点开<code>show tags</code>可以看到这个问题的标签，
+<code>Topological Sort</code>和<code>Memoization</code>。既然使用topsort那么肯定要把这个问题
+转化为DAG问题了。如此一来，令人想到，可以先把矩阵数字使用topsort排成
+一排，然后再利用曾经遇到的求解最长递增子序列的动态规划算法进行求解。
+以下是实现的代码，拓扑排序加动态规划。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">longestIncreasingPath</span>(<span class="hljs-params">self, matrix</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        :type matrix: List[List[int]]</span><br><span class="hljs-string">        :rtype: int</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br><br>        <span class="hljs-keyword">if</span> matrix:<br>            hight = <span class="hljs-built_in">len</span>(matrix)<br>            width = <span class="hljs-built_in">len</span>(matrix[<span class="hljs-number">0</span>])<br><br>            s = <span class="hljs-built_in">set</span>((u, v) <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(hight) <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(width))<br>            G = <span class="hljs-variable language_">self</span>.create_graph(matrix, s)<br>            topsort_list = <span class="hljs-variable language_">self</span>.topsort(G)<br>            result = <span class="hljs-variable language_">self</span>.find_longest_path(G, topsort_list)<br>            <span class="hljs-keyword">return</span> result<br><br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">0</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">create_graph</span>(<span class="hljs-params">self, matrix, s</span>):<br>        G = &#123;&#125;<br>        <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> s:<br>            u, v = item<br>            G[item] = <span class="hljs-built_in">set</span>()<br>            center = matrix[u][v]<br>            four = [(u + <span class="hljs-number">1</span>, v), (u - <span class="hljs-number">1</span>, v), (u, v + <span class="hljs-number">1</span>), (u, v - <span class="hljs-number">1</span>)]<br>            <span class="hljs-keyword">for</span> one <span class="hljs-keyword">in</span> four:<br>                <span class="hljs-keyword">if</span> one <span class="hljs-keyword">in</span> s:<br>                    x, y = one<br>                    adjacent = matrix[x][y]<br>                    <span class="hljs-keyword">if</span> center &gt; adjacent:<br>                        G[item].add(one)<br>        <span class="hljs-keyword">return</span> G<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">tr</span>(<span class="hljs-params">self, G</span>):<br>        H = &#123;&#125;<br>        <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> G:<br>            H[u] = <span class="hljs-number">0</span><br><br>        <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> G:<br>            <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> G[u]:<br>                H[v] += <span class="hljs-number">1</span><br>        <span class="hljs-keyword">return</span> H<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">topsort</span>(<span class="hljs-params">self, G</span>):<br><br>        H = <span class="hljs-variable language_">self</span>.tr(G)<br>        q = deque()<br>        sorted_list = []<br>        <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> H :<br>            <span class="hljs-keyword">if</span> H[u] == <span class="hljs-number">0</span> :<br>                q.append(u)<br>        <span class="hljs-keyword">while</span> q:<br>            u = q.popleft()<br>            sorted_list.append(u)<br>            <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> G[u]:<br>                H[v] -= <span class="hljs-number">1</span><br>                <span class="hljs-keyword">if</span> H[v] == <span class="hljs-number">0</span> :<br>                    q.append(v)<br><br>        <span class="hljs-keyword">return</span> sorted_list<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">find_longest_path</span>(<span class="hljs-params">self, G, topsort_list</span>):<br>        n = <span class="hljs-built_in">len</span>(topsort_list)<br><br>        memo = [<span class="hljs-number">1</span>] * n<br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n):<br>            node = topsort_list[i]<br>            value = <span class="hljs-number">0</span><br>            <span class="hljs-keyword">for</span> pre <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, i):<br>                pre_node = topsort_list[pre]<br>                <span class="hljs-keyword">if</span> node <span class="hljs-keyword">in</span> G[pre_node]:<br>                    value = <span class="hljs-built_in">max</span>(value, memo[pre] + <span class="hljs-number">1</span>)<br>                <span class="hljs-keyword">else</span>:<br>                    value = <span class="hljs-built_in">max</span>(value, memo[pre])<br>            memo[i] = value<br><br>        result = <span class="hljs-built_in">max</span>(memo)<br>        <span class="hljs-comment">#print(memo)</span><br>        <span class="hljs-keyword">return</span> result<br></code></pre></td></tr></table></figure>
+
+<h2 id="进一步优化"><a href="#进一步优化" class="headerlink" title=" 进一步优化"></a><a name="hh3"></a> 进一步优化</h2><p>上边的解法还是超时了，时间不会消耗在topsort上，因为这个方法是<code>O(|V|+|E|)</code>的。
+主要的时间花在了动态规划上，因为这是一个<code>O(N^2)</code>的算法。
+我们仔细看看第72到76行这个内循环，发现遍历所有当前节点之前的节点是无效的。
+因为可以进入当前节点的节点不会超过４个。所以我们可以修改一下这个内循环。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">tr2</span>(<span class="hljs-params">self, G</span>):<br>    H = &#123;&#125;<br>    <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> G:<br>        H[u] = <span class="hljs-built_in">set</span>()<br><br>    <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> G:<br>        <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> G[u]:<br>            H[v].add(u)<br>    <span class="hljs-keyword">return</span> H<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">find_longest_path</span>(<span class="hljs-params">self, G, topsort_list</span>):<br>    n = <span class="hljs-built_in">len</span>(topsort_list)<br><br>    dic = &#123; node : <span class="hljs-number">1</span> <span class="hljs-keyword">for</span> node <span class="hljs-keyword">in</span> topsort_list &#125;<br>    H = <span class="hljs-variable language_">self</span>.tr2(G)<br><br>    s = &#123;topsort_list[<span class="hljs-number">0</span>]&#125;<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n):<br>        node = topsort_list[i]<br>        s.add(node)<br>        value = <span class="hljs-number">1</span><br>        <span class="hljs-keyword">for</span> pre_node <span class="hljs-keyword">in</span> H[node] :<br>            <span class="hljs-keyword">if</span> pre_node <span class="hljs-keyword">in</span> s :<br>                value = <span class="hljs-built_in">max</span>(value, dic[pre_node] + <span class="hljs-number">1</span>)<br>        dic[node] = value<br><br>    result = <span class="hljs-built_in">max</span>(dic.values())<br>    <span class="hljs-keyword">return</span> result<br></code></pre></td></tr></table></figure>
+
+<p>这里我们在１６行使用一个dict来代替之前的memo，
+这样就可以把一个<code>O(N^2)</code>改成一个<code>O(N)</code>的了。
+测试一下，幸运的通过了。不过只打败了<code>1.7%</code>。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/leetcode/" class="print-no-link">#leetcode</a>
+      
+        <a href="/tags/%E7%AE%97%E6%B3%95/" class="print-no-link">#算法</a>
+      
+        <a href="/tags/python/" class="print-no-link">#python</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>[leetcode 329]Longest Increasing Path in a Matrix 原创解法</div>
+      <div>https://threelambda.com/2017/03/12/2017-3-12-leetcode-329/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Ming Yang</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2017年3月12日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2017/03/23/2017-3-23-compile-and-run-clojure/" title="编译和运行Clojure分支20081217源码">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">编译和运行Clojure分支20081217源码</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2017/03/06/2017-3-6-grails-call-java/" title="How to call java code in Grails 3.2.6">
+                        <span class="hidden-mobile">How to call java code in Grails 3.2.6</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

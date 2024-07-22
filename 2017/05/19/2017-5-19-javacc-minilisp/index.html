@@ -1,0 +1,713 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/images/icon-3-lambda.png">
+  <link rel="icon" href="/images/icon-3-lambda.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Ming Yang">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="MiniLisp是什么？MiniLisp是一个只用几百行代码实现的Lisp。以下是实现的 基本特性。  integers, symbols, cons cells, global variables, lexically-scoped local variables, closures, if conditional, primitive functions, such as +, &#x3D;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Write a simple parser for MiniLisp by using JavaCC">
+<meta property="og:url" content="https://threelambda.com/2017/05/19/2017-5-19-javacc-minilisp/index.html">
+<meta property="og:site_name" content="CodeCraft">
+<meta property="og:description" content="MiniLisp是什么？MiniLisp是一个只用几百行代码实现的Lisp。以下是实现的 基本特性。  integers, symbols, cons cells, global variables, lexically-scoped local variables, closures, if conditional, primitive functions, such as +, &#x3D;">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-05-18T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-07-22T07:16:58.454Z">
+<meta property="article:author" content="alenym@qq.com">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="javacc">
+<meta property="article:tag" content="lisp">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Write a simple parser for MiniLisp by using JavaCC - CodeCraft</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"threelambda.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":"G-X6VGKB3GW8"},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=G-X6VGKB3GW8", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', 'G-X6VGKB3GW8');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>CodeCraft</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="https://threelambda.com/en/" target="_self">
+                <i class="iconfont icon-language2"></i>
+                <span>English</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Write a simple parser for MiniLisp by using JavaCC"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2017-05-19 00:00" pubdate>
+          2017年5月19日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          26 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Write a simple parser for MiniLisp by using JavaCC</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="MiniLisp是什么？"><a href="#MiniLisp是什么？" class="headerlink" title=" MiniLisp是什么？"></a><a name="hh0"></a> MiniLisp是什么？</h2><p><a target="_blank" rel="noopener" href="https://github.com/rui314/minilisp">MiniLisp</a>是一个只用几百行代码实现的Lisp。以下是实现的
+基本特性。</p>
+<ul>
+<li>integers, symbols, cons cells,</li>
+<li>global variables,</li>
+<li>lexically-scoped local variables,</li>
+<li>closures,</li>
+<li>if conditional,</li>
+<li>primitive functions, such as +, &#x3D;, &lt;, or list,</li>
+<li>user-defined functions,</li>
+<li>a macro system,</li>
+<li>and a copying garbage collector.</li>
+</ul>
+<span id="more"></span>
+
+
+<p>在笔者看来真是麻雀虽小五脏俱全啊。这是一个非常值得研究的项目。</p>
+<h2 id="JavaCC是什么？"><a href="#JavaCC是什么？" class="headerlink" title=" JavaCC是什么？"></a><a name="hh1"></a> JavaCC是什么？</h2><p><a target="_blank" rel="noopener" href="https://javacc.org/">JavaCC</a>据说是一个非常易用好理解的<code>LL(k)</code>的Parser生成工具。
+说它好理解是指它生成的Java代码要比<code>LR</code>类型的容易理解。毕竟<code>LL</code>是<code>Top-Down Parser</code>呀。
+笔者以前只用过<code>LR(1)</code>类型的工具，<code>JavaCC</code>则从来没用过。</p>
+<h2 id="MiniLisp的BNF语法描述没有怎么办？"><a href="#MiniLisp的BNF语法描述没有怎么办？" class="headerlink" title=" MiniLisp的BNF语法描述没有怎么办？"></a><a name="hh2"></a> MiniLisp的BNF语法描述没有怎么办？</h2><p><code>MiniLisp</code>的作者并没有使用<code>yacc</code>等工具，而是自己手写的<code>Top-Down Parser</code>。所以无法得到
+<code>MiniLisp</code>的BNF描述。</p>
+<p>没关系，既然是Lisp方言，那么先看看传统的Lisp的BNF语法是什么。这里有一个简单的BNF版本
+<a target="_blank" rel="noopener" href="http://cui.unige.ch/isi/bnf/LISP/BNFlisp.html">BNF rules of LISP</a></p>
+<pre><code class="hljs">s_expression = atomic_symbol \
+              / &quot;(&quot; s_expression &quot;.&quot;s_expression &quot;)&quot; \
+              / list 
+
+list = &quot;(&quot; s_expression &lt; s_expression &gt; &quot;)&quot;
+
+atomic_symbol = letter atom_part
+
+atom_part = empty / letter atom_part / number atom_part
+
+letter = &quot;a&quot; / &quot;b&quot; / &quot; ...&quot; / &quot;z&quot;
+
+number = &quot;1&quot; / &quot;2&quot; / &quot; ...&quot; / &quot;9&quot;
+
+empty = &quot; &quot;
+</code></pre>
+<p>想要实现MiniLisp的Parser，首先要理解这个BNF规则。</p>
+<h2 id="MiniLisp的jj文件"><a href="#MiniLisp的jj文件" class="headerlink" title=" MiniLisp的jj文件"></a><a name="hh3"></a> MiniLisp的jj文件</h2><p>以下是用JavaCC生成MiniLisp
+ Parser的jj文件。用javacc编译之后，会报一个警告<code>117行和118行发生conflict</code>。但是笔者已经加上<code>LOOKAHEAD(2)</code>了。
+不知道为什么还警告，而且也单独对这部分进行了测试，完全没有问题。另外，这个生成的Parser并没有构造AST。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br></pre></td><td class="code"><pre><code class="hljs java">options &#123;<br>  STATIC = <span class="hljs-literal">false</span>;<br>  DEBUG_PARSER = <span class="hljs-literal">true</span>;<br>  DEBUG_LOOKAHEAD = <span class="hljs-literal">true</span>;<br>  DEBUG_TOKEN_MANAGER = <span class="hljs-literal">false</span>;<br>  ERROR_REPORTING = <span class="hljs-literal">true</span>;<br>  JAVA_UNICODE_ESCAPE = <span class="hljs-literal">false</span>;<br>  UNICODE_INPUT = <span class="hljs-literal">false</span>;<br>  IGNORE_CASE = <span class="hljs-literal">false</span>;<br>  USER_TOKEN_MANAGER = <span class="hljs-literal">false</span>;<br>  USER_CHAR_STREAM = <span class="hljs-literal">false</span>;<br>  BUILD_PARSER = <span class="hljs-literal">true</span>;<br>  BUILD_TOKEN_MANAGER = <span class="hljs-literal">true</span>;<br>  SANITY_CHECK = <span class="hljs-literal">true</span>;<br>  FORCE_LA_CHECK = <span class="hljs-literal">true</span>;<br>&#125;<br><br>PARSER_BEGIN(MiniLisp)<br><br><span class="hljs-keyword">package</span> ym.minilisp;<br><br><span class="hljs-keyword">import</span> ym.minilisp.node.*;<br><span class="hljs-keyword">import</span> java.util.*;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MiniLisp</span> &#123;<br><br>  <span class="hljs-comment">/** Main entry point. */</span><br>  <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String args[])</span> <span class="hljs-keyword">throws</span> ParseException &#123;<br>    <span class="hljs-type">MiniLisp</span> <span class="hljs-variable">parser</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MiniLisp</span>(System.in);<br>    parser.Input();<br>  &#125;<br><br>&#125;<br>PARSER_END(MiniLisp)<br><br><br>TOKEN :<br>&#123;<br>      &lt;EMPTY: [<span class="hljs-string">&quot; &quot;</span>,<span class="hljs-string">&quot;\t&quot;</span>,<span class="hljs-string">&quot;\n&quot;</span>,<span class="hljs-string">&quot;\r&quot;</span>] ([<span class="hljs-string">&quot; &quot;</span>,<span class="hljs-string">&quot;\t&quot;</span>,<span class="hljs-string">&quot;\n&quot;</span>,<span class="hljs-string">&quot;\r&quot;</span>])*&gt;<br>    | &lt;LP: <span class="hljs-string">&quot;(&quot;</span>&gt;<br>    | &lt;RP: <span class="hljs-string">&quot;)&quot;</span>&gt;<br>    | &lt;DOT: <span class="hljs-string">&quot;.&quot;</span>&gt;<br>    | &lt;MINUS: <span class="hljs-string">&quot;-&quot;</span>&gt;<br>    | &lt;PLUS: <span class="hljs-string">&quot;+&quot;</span>&gt;<br>    | &lt;EQ: <span class="hljs-string">&quot;=&quot;</span>&gt;<br>    | &lt;AND: <span class="hljs-string">&quot;and&quot;</span>&gt;<br>    | &lt;NOT: <span class="hljs-string">&quot;not&quot;</span>&gt;<br>    | &lt;OR: <span class="hljs-string">&quot;or&quot;</span>&gt;<br>    | &lt;GT: <span class="hljs-string">&quot;&gt;&quot;</span>&gt;<br>    | &lt;LT: <span class="hljs-string">&quot;&lt;&quot;</span>&gt;<br>    | &lt;LE: <span class="hljs-string">&quot;&lt;=&quot;</span>&gt;<br>    | &lt;GE: <span class="hljs-string">&quot;&gt;=&quot;</span>&gt;<br>    | &lt;SQUOTE: <span class="hljs-string">&quot;&#x27;&quot;</span>&gt;<br>    | &lt;QUOTE: <span class="hljs-string">&quot;quote&quot;</span>&gt;<br>    | &lt;NUM: [<span class="hljs-string">&quot;1&quot;</span>-<span class="hljs-string">&quot;9&quot;</span>] ( [<span class="hljs-string">&quot;0&quot;</span>-<span class="hljs-string">&quot;9&quot;</span>] )* | <span class="hljs-string">&quot;0&quot;</span>&gt;<br>    | &lt;ID: ([<span class="hljs-string">&quot;a&quot;</span>-<span class="hljs-string">&quot;z&quot;</span>,<span class="hljs-string">&quot;A&quot;</span>-<span class="hljs-string">&quot;Z&quot;</span>,<span class="hljs-string">&quot;_&quot;</span>,<span class="hljs-string">&quot;@&quot;</span>,<span class="hljs-string">&quot;?&quot;</span>,<span class="hljs-string">&quot;$&quot;</span>,<span class="hljs-string">&quot;%&quot;</span>,<span class="hljs-string">&quot;*&quot;</span>]) (~[<span class="hljs-string">&quot;\n&quot;</span>,<span class="hljs-string">&quot;\r&quot;</span>,<span class="hljs-string">&quot; &quot;</span>,<span class="hljs-string">&quot;(&quot;</span>,<span class="hljs-string">&quot;)&quot;</span>,<span class="hljs-string">&quot;\t&quot;</span>,<span class="hljs-string">&quot;#&quot;</span>,<span class="hljs-string">&quot;;&quot;</span>,<span class="hljs-string">&quot;&#123;&quot;</span>,<span class="hljs-string">&quot;&#125;&quot;</span>,<span class="hljs-string">&quot;[&quot;</span>,<span class="hljs-string">&quot;]&quot;</span>])* &gt;<br>    | &lt;COMMENT: ([<span class="hljs-string">&quot;;&quot;</span>])(~[<span class="hljs-string">&quot;\n&quot;</span>,<span class="hljs-string">&quot;\r&quot;</span>])* [<span class="hljs-string">&quot;\n&quot;</span>,<span class="hljs-string">&quot;\r&quot;</span>]&gt;<br>&#125;<br><br><br><span class="hljs-comment">/** Root production. */</span><br><span class="hljs-keyword">void</span> <span class="hljs-title function_">Input</span><span class="hljs-params">()</span> :<br>&#123;&#125;<br>&#123;<br>    ( Expr() )*  &lt;EOF&gt;<br>&#125;<br><br><span class="hljs-keyword">void</span> <span class="hljs-title function_">Expr</span><span class="hljs-params">()</span>:<br>&#123;&#125;<br>&#123;<br>      NonSExpr()<br>    | SExpr()<br>&#125;<br><br><br><span class="hljs-keyword">void</span> <span class="hljs-title function_">NonSExpr</span><span class="hljs-params">()</span>:<br>&#123;&#125;<br>&#123;<br>    &lt;EMPTY&gt;<br>   |&lt;COMMENT&gt;<br>&#125;<br><br><br><span class="hljs-keyword">void</span> <span class="hljs-title function_">SExpr</span><span class="hljs-params">()</span> :<br>&#123;&#125;<br>&#123;<br>      SymbolExpr()<br>    | &lt;LP&gt; (NonSExpr())* (SExpr() (NonSExpr())* )*  [&lt;DOT&gt; (NonSExpr())*  (SExpr() (NonSExpr())* )*] &lt;RP&gt;<br>    | SQuoteExpr()<br>&#125;<br><br><span class="hljs-keyword">void</span> <span class="hljs-title function_">SQuoteExpr</span><span class="hljs-params">()</span>:<br>&#123;&#125;<br>&#123;<br>    &lt;SQUOTE&gt; SExpr()<br>&#125;<br><br><br><span class="hljs-keyword">void</span> <span class="hljs-title function_">SymbolExpr</span><span class="hljs-params">()</span>:<br>&#123;&#125;<br>&#123;<br>    Symbol() LOOKAHEAD(&#123; getToken(<span class="hljs-number">1</span>).kind == LP || getToken(<span class="hljs-number">1</span>).kind == RP|| getToken(<span class="hljs-number">1</span>).kind == DOT || getToken(<span class="hljs-number">1</span>).kind == COMMENT || getToken(<span class="hljs-number">1</span>).kind == EMPTY &#125;)<br>&#125;<br><br><span class="hljs-keyword">void</span> <span class="hljs-title function_">Symbol</span><span class="hljs-params">()</span>:<br>&#123;&#125;<br>&#123;<br>       &lt;PLUS&gt;<br>    |  &lt;EQ&gt;<br>    |  &lt;AND&gt;<br>    |  &lt;NOT&gt;<br>    |  &lt;OR&gt;<br>    |  &lt;GT&gt;<br>    |  &lt;LT&gt;<br>    |  &lt;LE&gt;<br>    |  &lt;GE&gt;<br>    |  LOOKAHEAD(<span class="hljs-number">2</span>) &lt;MINUS&gt; &lt;NUM&gt;<br>    |  &lt;MINUS&gt;<br>    |  &lt;NUM&gt;<br>    |  &lt;ID&gt;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+<h2 id="测试代码"><a href="#测试代码" class="headerlink" title=" 测试代码"></a><a name="hh4"></a> 测试代码</h2><p>以下是对生成的MiniLisp.java文件进行测试的类。其中<code>test14</code>和<code>test15</code>是对
+MiniLisp项目下的life.lisp和nqueens.lisp文件内容完整解析测试。
+没有报错，说明jj中的规则可以解析MiniLisp。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br><span class="line">345</span><br><span class="line">346</span><br><span class="line">347</span><br><span class="line">348</span><br><span class="line">349</span><br><span class="line">350</span><br><span class="line">351</span><br><span class="line">352</span><br><span class="line">353</span><br><span class="line">354</span><br><span class="line">355</span><br><span class="line">356</span><br><span class="line">357</span><br><span class="line">358</span><br><span class="line">359</span><br><span class="line">360</span><br><span class="line">361</span><br><span class="line">362</span><br><span class="line">363</span><br><span class="line">364</span><br><span class="line">365</span><br><span class="line">366</span><br><span class="line">367</span><br><span class="line">368</span><br><span class="line">369</span><br><span class="line">370</span><br><span class="line">371</span><br><span class="line">372</span><br><span class="line">373</span><br><span class="line">374</span><br><span class="line">375</span><br><span class="line">376</span><br><span class="line">377</span><br><span class="line">378</span><br><span class="line">379</span><br><span class="line">380</span><br><span class="line">381</span><br><span class="line">382</span><br><span class="line">383</span><br><span class="line">384</span><br><span class="line">385</span><br><span class="line">386</span><br><span class="line">387</span><br><span class="line">388</span><br><span class="line">389</span><br><span class="line">390</span><br><span class="line">391</span><br><span class="line">392</span><br><span class="line">393</span><br><span class="line">394</span><br><span class="line">395</span><br><span class="line">396</span><br><span class="line">397</span><br><span class="line">398</span><br><span class="line">399</span><br><span class="line">400</span><br><span class="line">401</span><br><span class="line">402</span><br><span class="line">403</span><br><span class="line">404</span><br><span class="line">405</span><br><span class="line">406</span><br><span class="line">407</span><br><span class="line">408</span><br><span class="line">409</span><br><span class="line">410</span><br><span class="line">411</span><br><span class="line">412</span><br><span class="line">413</span><br><span class="line">414</span><br><span class="line">415</span><br><span class="line">416</span><br><span class="line">417</span><br><span class="line">418</span><br><span class="line">419</span><br><span class="line">420</span><br><span class="line">421</span><br><span class="line">422</span><br><span class="line">423</span><br><span class="line">424</span><br><span class="line">425</span><br><span class="line">426</span><br><span class="line">427</span><br><span class="line">428</span><br><span class="line">429</span><br><span class="line">430</span><br><span class="line">431</span><br><span class="line">432</span><br><span class="line">433</span><br><span class="line">434</span><br><span class="line">435</span><br><span class="line">436</span><br><span class="line">437</span><br><span class="line">438</span><br><span class="line">439</span><br><span class="line">440</span><br><span class="line">441</span><br><span class="line">442</span><br><span class="line">443</span><br><span class="line">444</span><br><span class="line">445</span><br><span class="line">446</span><br><span class="line">447</span><br><span class="line">448</span><br><span class="line">449</span><br><span class="line">450</span><br><span class="line">451</span><br><span class="line">452</span><br><span class="line">453</span><br><span class="line">454</span><br><span class="line">455</span><br><span class="line">456</span><br><span class="line">457</span><br><span class="line">458</span><br><span class="line">459</span><br><span class="line">460</span><br><span class="line">461</span><br><span class="line">462</span><br><span class="line">463</span><br><span class="line">464</span><br><span class="line">465</span><br><span class="line">466</span><br><span class="line">467</span><br><span class="line">468</span><br><span class="line">469</span><br><span class="line">470</span><br><span class="line">471</span><br><span class="line">472</span><br><span class="line">473</span><br><span class="line">474</span><br><span class="line">475</span><br><span class="line">476</span><br><span class="line">477</span><br><span class="line">478</span><br><span class="line">479</span><br><span class="line">480</span><br><span class="line">481</span><br><span class="line">482</span><br><span class="line">483</span><br><span class="line">484</span><br><span class="line">485</span><br><span class="line">486</span><br><span class="line">487</span><br><span class="line">488</span><br><span class="line">489</span><br><span class="line">490</span><br><span class="line">491</span><br><span class="line">492</span><br><span class="line">493</span><br><span class="line">494</span><br><span class="line">495</span><br><span class="line">496</span><br><span class="line">497</span><br><span class="line">498</span><br><span class="line">499</span><br><span class="line">500</span><br><span class="line">501</span><br><span class="line">502</span><br><span class="line">503</span><br><span class="line">504</span><br><span class="line">505</span><br><span class="line">506</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> ym.minilisp;<br><br><span class="hljs-keyword">import</span> java.io.StringReader;<br><span class="hljs-keyword">import</span> junit.framework.TestCase;<br><span class="hljs-keyword">import</span> org.junit.Test;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TestParser</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">TestCase</span> &#123;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test1</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> ParseException &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;((a.b).(b.(c)))&quot;</span>;<br>        call(s);<br>    &#125;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test2</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> ParseException &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;(a b c)&quot;</span>;<br>        call(s);<br>        s = <span class="hljs-string">&quot;(a b . c)&quot;</span>;<br>        call(s);<br>    &#125;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test3</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> ParseException &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;(a .(b c))&quot;</span>;<br>        call(s);<br>    &#125;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test4</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> ParseException &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot; ( ( a b ) . ( b c ) ) &quot;</span>;<br>        call(s);<br>    &#125;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test5</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> ParseException &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;( a ( a b )  ( b c ) ) &quot;</span>;<br>        call(s);<br>    &#125;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test6</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> ParseException &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;(define a 1) (define b -1) &quot;</span>;<br>        call(s);<br>    &#125;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test7</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> ParseException &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot; (+ 1 -2 a b (- 1 2)) &quot;</span>;<br>        call(s);<br>    &#125;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test8</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> ParseException &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot; (defun next (board x y)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (let c (count board x y)\n&quot;</span><br>                + <span class="hljs-string">&quot;       (if (alive? board x y)\n&quot;</span><br>                + <span class="hljs-string">&quot;           (or (= c 2) (= c 3))\n&quot;</span><br>                + <span class="hljs-string">&quot;         (= c 3))))&quot;</span>;<br>        System.out.println(s);<br>        call(s);<br>    &#125;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test9</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> ParseException &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;(defun count (board x y)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (let at (lambda (x y)\n&quot;</span><br>                + <span class="hljs-string">&quot;            (if (alive? board x y) 1 0))\n&quot;</span><br>                + <span class="hljs-string">&quot;       (+ (at (- x 1) (- y 1))\n&quot;</span><br>                + <span class="hljs-string">&quot;          (at (- x 1) y)\n&quot;</span><br>                + <span class="hljs-string">&quot;          (at (- x 1) (+ y 1))\n&quot;</span><br>                + <span class="hljs-string">&quot;          (at x (- y 1))\n&quot;</span><br>                + <span class="hljs-string">&quot;          (at x (+ y 1))\n&quot;</span><br>                + <span class="hljs-string">&quot;          (at (+ x 1) (- y 1))\n&quot;</span><br>                + <span class="hljs-string">&quot;          (at (+ x 1) y)\n&quot;</span><br>                + <span class="hljs-string">&quot;          (at (+ x 1) (+ y 1)))))&quot;</span>;<br>        System.out.println(s);<br>        call(s);<br>    &#125;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test10</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> ParseException &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot; &#x27;(+ 1 2) &quot;</span>;<br>        call(s);<br>    &#125;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test11</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> ParseException &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;(cons &#x27;1 &#x27;2)&quot;</span>;<br>        call(s);<br>    &#125;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test12</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> ParseException &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;(defmacro progn (expr . rest)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (list (cons &#x27;lambda (cons () (cons expr rest)))))&quot;</span>;<br>        call(s);<br>    &#125;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test13</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> ParseException &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;;;fadfsdfasdfasdfasdfa\n&quot;</span><br>                + <span class="hljs-string">&quot;(cons &#x27;1 &#x27;2)&quot;</span>;<br>        call(s);<br>    &#125;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test131</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> ParseException &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;(cons ;;fadfsdfasdfasdfasdfa\n&quot;</span><br>                + <span class="hljs-string">&quot;  &#x27;1 &#x27;2)&quot;</span>;<br>        call(s);<br>    &#125;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test132</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> ParseException &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;;;fadfsdfasdfasdfasdfa\n&quot;</span><br>                + <span class="hljs-string">&quot;  \n&quot;</span><br>                + <span class="hljs-string">&quot;;;fadfsdfasdfasdfasdf\n&quot;</span>;<br><br>        call(s);<br>    &#125;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test133</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> ParseException &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;(list ;;fadfsdfasdfasdfasdfa\n&quot;</span><br>                + <span class="hljs-string">&quot;  a  ;;fadfsdfasdfasdfasdfa\n &quot;</span><br>                + <span class="hljs-string">&quot;b)&quot;</span>;<br>        call(s);<br>    &#125;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test14</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> ParseException &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;;;; Conway&#x27;s game of life\n&quot;</span><br>                + <span class="hljs-string">&quot;;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; (progn expr ...)\n&quot;</span><br>                + <span class="hljs-string">&quot;;; =&gt; ((lambda () expr ...))\n&quot;</span><br>                + <span class="hljs-string">&quot;(defmacro progn (expr . rest)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (list (cons &#x27;lambda (cons () (cons expr rest)))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun list (x . y)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (cons x y))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun not (x)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (if x () t))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; (let var val body ...)\n&quot;</span><br>                + <span class="hljs-string">&quot;;; =&gt; ((lambda (var) body ...) val)\n&quot;</span><br>                + <span class="hljs-string">&quot;(defmacro let (var val . body)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (cons (cons &#x27;lambda (cons (list var) body))\n&quot;</span><br>                + <span class="hljs-string">&quot;\t(list val)))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; (and e1 e2 ...)\n&quot;</span><br>                + <span class="hljs-string">&quot;;; =&gt; (if e1 (and e2 ...))\n&quot;</span><br>                + <span class="hljs-string">&quot;;; (and e1)\n&quot;</span><br>                + <span class="hljs-string">&quot;;; =&gt; e1\n&quot;</span><br>                + <span class="hljs-string">&quot;(defmacro and (expr . rest)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (if rest\n&quot;</span><br>                + <span class="hljs-string">&quot;      (list &#x27;if expr (cons &#x27;and rest))\n&quot;</span><br>                + <span class="hljs-string">&quot;    expr))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; (or e1 e2 ...)\n&quot;</span><br>                + <span class="hljs-string">&quot;;; =&gt; (let &lt;tmp&gt; e1\n&quot;</span><br>                + <span class="hljs-string">&quot;;;      (if &lt;tmp&gt; &lt;tmp&gt; (or e2 ...)))\n&quot;</span><br>                + <span class="hljs-string">&quot;;; (or e1)\n&quot;</span><br>                + <span class="hljs-string">&quot;;; =&gt; e1\n&quot;</span><br>                + <span class="hljs-string">&quot;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; The reason to use the temporary variables is to avoid evaluating the\n&quot;</span><br>                + <span class="hljs-string">&quot;;; arguments more than once.\n&quot;</span><br>                + <span class="hljs-string">&quot;(defmacro or (expr . rest)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (if rest\n&quot;</span><br>                + <span class="hljs-string">&quot;      (let var (gensym)\n&quot;</span><br>                + <span class="hljs-string">&quot;           (list &#x27;let var expr\n&quot;</span><br>                + <span class="hljs-string">&quot;                 (list &#x27;if var var (cons &#x27;or rest))))\n&quot;</span><br>                + <span class="hljs-string">&quot;    expr))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; (when expr body ...)\n&quot;</span><br>                + <span class="hljs-string">&quot;;; =&gt; (if expr (progn body ...))\n&quot;</span><br>                + <span class="hljs-string">&quot;(defmacro when (expr . body)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (cons &#x27;if (cons expr (list (cons &#x27;progn body)))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; (unless expr body ...)\n&quot;</span><br>                + <span class="hljs-string">&quot;;; =&gt; (if expr () body ...)\n&quot;</span><br>                + <span class="hljs-string">&quot;(defmacro unless (expr . body)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (cons &#x27;if (cons expr (cons () body))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;;;; Numeric operators\n&quot;</span><br>                + <span class="hljs-string">&quot;;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun &lt;= (e1 e2)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (or (&lt; e1 e2)\n&quot;</span><br>                + <span class="hljs-string">&quot;      (= e1 e2)))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;;;; List operators\n&quot;</span><br>                + <span class="hljs-string">&quot;;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;;; Applies each element of lis to fn, and returns their return values as a list.\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun map (lis fn)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (when lis\n&quot;</span><br>                + <span class="hljs-string">&quot;    (cons (fn (car lis))\n&quot;</span><br>                + <span class="hljs-string">&quot;\t  (map (cdr lis) fn))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; Returns nth element of lis.\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun nth (lis n)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (if (= n 0)\n&quot;</span><br>                + <span class="hljs-string">&quot;      (car lis)\n&quot;</span><br>                + <span class="hljs-string">&quot;    (nth (cdr lis) (- n 1))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; Returns the nth tail of lis.\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun nth-tail (lis n)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (if (= n 0)\n&quot;</span><br>                + <span class="hljs-string">&quot;      lis\n&quot;</span><br>                + <span class="hljs-string">&quot;    (nth-tail (cdr lis) (- n 1))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; Returns a list consists of m .. n-1 integers.\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun %iota (m n)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (unless (&lt;= n m)\n&quot;</span><br>                + <span class="hljs-string">&quot;    (cons m (%iota (+ m 1) n))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; Returns a list consists of 0 ... n-1 integers.\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun iota (n)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (%iota 0 n))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;;;; Main\n&quot;</span><br>                + <span class="hljs-string">&quot;;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;(define width 10)\n&quot;</span><br>                + <span class="hljs-string">&quot;(define height 10)\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; Returns location (x, y)&#x27;s element.\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun get (board x y)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (nth (nth board y) x))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; Returns true if location (x, y)&#x27;s value is \&quot;@\&quot;.\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun alive? (board x y)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (and (&lt;= 0 x)\n&quot;</span><br>                + <span class="hljs-string">&quot;       (&lt; x height)\n&quot;</span><br>                + <span class="hljs-string">&quot;       (&lt;= 0 y)\n&quot;</span><br>                + <span class="hljs-string">&quot;       (&lt; y width)\n&quot;</span><br>                + <span class="hljs-string">&quot;       (eq (get board x y) &#x27;@)))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; Print out the given board.\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun print (board)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (if (not board)\n&quot;</span><br>                + <span class="hljs-string">&quot;      &#x27;$\n&quot;</span><br>                + <span class="hljs-string">&quot;    (println (car board))\n&quot;</span><br>                + <span class="hljs-string">&quot;    (print (cdr board))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun count (board x y)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (let at (lambda (x y)\n&quot;</span><br>                + <span class="hljs-string">&quot;            (if (alive? board x y) 1 0))\n&quot;</span><br>                + <span class="hljs-string">&quot;       (+ (at (- x 1) (- y 1))\n&quot;</span><br>                + <span class="hljs-string">&quot;          (at (- x 1) y)\n&quot;</span><br>                + <span class="hljs-string">&quot;          (at (- x 1) (+ y 1))\n&quot;</span><br>                + <span class="hljs-string">&quot;          (at x (- y 1))\n&quot;</span><br>                + <span class="hljs-string">&quot;          (at x (+ y 1))\n&quot;</span><br>                + <span class="hljs-string">&quot;          (at (+ x 1) (- y 1))\n&quot;</span><br>                + <span class="hljs-string">&quot;          (at (+ x 1) y)\n&quot;</span><br>                + <span class="hljs-string">&quot;          (at (+ x 1) (+ y 1)))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun next (board x y)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (let c (count board x y)\n&quot;</span><br>                + <span class="hljs-string">&quot;       (if (alive? board x y)\n&quot;</span><br>                + <span class="hljs-string">&quot;           (or (= c 2) (= c 3))\n&quot;</span><br>                + <span class="hljs-string">&quot;         (= c 3))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun run (board)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (while t\n&quot;</span><br>                + <span class="hljs-string">&quot;    (print board)\n&quot;</span><br>                + <span class="hljs-string">&quot;    (println &#x27;*)\n&quot;</span><br>                + <span class="hljs-string">&quot;    (let newboard (map (iota height)\n&quot;</span><br>                + <span class="hljs-string">&quot;                       (lambda (y)\n&quot;</span><br>                + <span class="hljs-string">&quot;                         (map (iota width)\n&quot;</span><br>                + <span class="hljs-string">&quot;                              (lambda (x)\n&quot;</span><br>                + <span class="hljs-string">&quot;                                (if (next board x y) &#x27;@ &#x27;_)))))\n&quot;</span><br>                + <span class="hljs-string">&quot;         (setq board newboard))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;(run &#x27;((_ _ _ _ _ _ _ _ _ _)\n&quot;</span><br>                + <span class="hljs-string">&quot;       (_ _ _ _ _ _ _ _ _ _)\n&quot;</span><br>                + <span class="hljs-string">&quot;       (_ _ _ _ _ _ _ _ _ _)\n&quot;</span><br>                + <span class="hljs-string">&quot;       (_ _ _ _ _ _ _ _ _ _)\n&quot;</span><br>                + <span class="hljs-string">&quot;       (_ _ _ _ _ _ _ _ _ _)\n&quot;</span><br>                + <span class="hljs-string">&quot;       (_ _ _ _ _ _ _ _ _ _)\n&quot;</span><br>                + <span class="hljs-string">&quot;       (_ _ _ _ _ _ _ _ _ _)\n&quot;</span><br>                + <span class="hljs-string">&quot;       (_ @ @ @ _ _ _ _ _ _)\n&quot;</span><br>                + <span class="hljs-string">&quot;       (_ _ _ @ _ _ _ _ _ _)\n&quot;</span><br>                + <span class="hljs-string">&quot;       (_ _ @ _ _ _ _ _ _ _)))\n&quot;</span>;<br>        call(s);<br>    &#125;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test15</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> ParseException &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;;;; N-queens puzzle solver.\n&quot;</span><br>                + <span class="hljs-string">&quot;;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;;;; The N queens puzzle is the problem of placing N chess queens on an N x N\n&quot;</span><br>                + <span class="hljs-string">&quot;;;; chessboard so that no two queens attack each\n&quot;</span><br>                + <span class="hljs-string">&quot;;;; other. http://en.wikipedia.org/wiki/Eight_queens_puzzle\n&quot;</span><br>                + <span class="hljs-string">&quot;;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;;;; This program solves N-queens puzzle by depth-first backtracking.\n&quot;</span><br>                + <span class="hljs-string">&quot;;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;;;; Basic macros\n&quot;</span><br>                + <span class="hljs-string">&quot;;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;;;; Because the language does not have quasiquote, we need to construct an\n&quot;</span><br>                + <span class="hljs-string">&quot;;;; expanded form using cons and list.\n&quot;</span><br>                + <span class="hljs-string">&quot;;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; (progn expr ...)\n&quot;</span><br>                + <span class="hljs-string">&quot;;; =&gt; ((lambda () expr ...))\n&quot;</span><br>                + <span class="hljs-string">&quot;(defmacro progn (expr . rest)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (list (cons &#x27;lambda (cons () (cons expr rest)))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun list (x . y)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (cons x y))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun not (x)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (if x () t))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; (let1 var val body ...)\n&quot;</span><br>                + <span class="hljs-string">&quot;;; =&gt; ((lambda (var) body ...) val)\n&quot;</span><br>                + <span class="hljs-string">&quot;(defmacro let1 (var val . body)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (cons (cons &#x27;lambda (cons (list var) body))\n&quot;</span><br>                + <span class="hljs-string">&quot;\t(list val)))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; (and e1 e2 ...)\n&quot;</span><br>                + <span class="hljs-string">&quot;;; =&gt; (if e1 (and e2 ...))\n&quot;</span><br>                + <span class="hljs-string">&quot;;; (and e1)\n&quot;</span><br>                + <span class="hljs-string">&quot;;; =&gt; e1\n&quot;</span><br>                + <span class="hljs-string">&quot;(defmacro and (expr . rest)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (if rest\n&quot;</span><br>                + <span class="hljs-string">&quot;      (list &#x27;if expr (cons &#x27;and rest))\n&quot;</span><br>                + <span class="hljs-string">&quot;    expr))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; (or e1 e2 ...)\n&quot;</span><br>                + <span class="hljs-string">&quot;;; =&gt; (let1 &lt;tmp&gt; e1\n&quot;</span><br>                + <span class="hljs-string">&quot;;;      (if &lt;tmp&gt; &lt;tmp&gt; (or e2 ...)))\n&quot;</span><br>                + <span class="hljs-string">&quot;;; (or e1)\n&quot;</span><br>                + <span class="hljs-string">&quot;;; =&gt; e1\n&quot;</span><br>                + <span class="hljs-string">&quot;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; The reason to use the temporary variables is to avoid evaluating the\n&quot;</span><br>                + <span class="hljs-string">&quot;;; arguments more than once.\n&quot;</span><br>                + <span class="hljs-string">&quot;(defmacro or (expr . rest)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (if rest\n&quot;</span><br>                + <span class="hljs-string">&quot;      (let1 var (gensym)\n&quot;</span><br>                + <span class="hljs-string">&quot;\t    (list &#x27;let1 var expr\n&quot;</span><br>                + <span class="hljs-string">&quot;\t\t  (list &#x27;if var var (cons &#x27;or rest))))\n&quot;</span><br>                + <span class="hljs-string">&quot;    expr))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; (when expr body ...)\n&quot;</span><br>                + <span class="hljs-string">&quot;;; =&gt; (if expr (progn body ...))\n&quot;</span><br>                + <span class="hljs-string">&quot;(defmacro when (expr . body)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (cons &#x27;if (cons expr (list (cons &#x27;progn body)))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; (unless expr body ...)\n&quot;</span><br>                + <span class="hljs-string">&quot;;; =&gt; (if expr () body ...)\n&quot;</span><br>                + <span class="hljs-string">&quot;(defmacro unless (expr . body)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (cons &#x27;if (cons expr (cons () body))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;;;; Numeric operators\n&quot;</span><br>                + <span class="hljs-string">&quot;;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun &lt;= (e1 e2)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (or (&lt; e1 e2)\n&quot;</span><br>                + <span class="hljs-string">&quot;      (= e1 e2)))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;;;; List operators\n&quot;</span><br>                + <span class="hljs-string">&quot;;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; Applies each element of lis to pred. If pred returns a true value, terminate\n&quot;</span><br>                + <span class="hljs-string">&quot;;; the evaluation and returns pred&#x27;s return value. If all of them return (),\n&quot;</span><br>                + <span class="hljs-string">&quot;;; returns ().\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun any (lis pred)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (when lis\n&quot;</span><br>                + <span class="hljs-string">&quot;    (or (pred (car lis))\n&quot;</span><br>                + <span class="hljs-string">&quot;\t(any (cdr lis) pred))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;;; Applies each element of lis to fn, and returns their return values as a list.\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun map (lis fn)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (when lis\n&quot;</span><br>                + <span class="hljs-string">&quot;    (cons (fn (car lis))\n&quot;</span><br>                + <span class="hljs-string">&quot;\t  (map (cdr lis) fn))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; Returns nth element of lis.\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun nth (lis n)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (if (= n 0)\n&quot;</span><br>                + <span class="hljs-string">&quot;      (car lis)\n&quot;</span><br>                + <span class="hljs-string">&quot;    (nth (cdr lis) (- n 1))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; Returns the nth tail of lis.\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun nth-tail (lis n)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (if (= n 0)\n&quot;</span><br>                + <span class="hljs-string">&quot;      lis\n&quot;</span><br>                + <span class="hljs-string">&quot;    (nth-tail (cdr lis) (- n 1))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; Returns a list consists of m .. n-1 integers.\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun %iota (m n)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (unless (&lt;= n m)\n&quot;</span><br>                + <span class="hljs-string">&quot;    (cons m (%iota (+ m 1) n))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; Returns a list consists of 0 ... n-1 integers.\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun iota (n)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (%iota 0 n))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; Returns a new list whose length is len and all members are init.\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun make-list (len init)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (unless (= len 0)\n&quot;</span><br>                + <span class="hljs-string">&quot;    (cons init (make-list (- len 1) init))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; Applies fn to each element of lis.\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun for-each (lis fn)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (or (not lis)\n&quot;</span><br>                + <span class="hljs-string">&quot;      (progn (fn (car lis))\n&quot;</span><br>                + <span class="hljs-string">&quot;\t     (for-each (cdr lis) fn))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;;;; N-queens solver\n&quot;</span><br>                + <span class="hljs-string">&quot;;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; Creates size x size list filled with symbol \&quot;x\&quot;.\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun make-board (size)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (map (iota size)\n&quot;</span><br>                + <span class="hljs-string">&quot;       (lambda (_)\n&quot;</span><br>                + <span class="hljs-string">&quot;\t (make-list size &#x27;x))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; Returns location (x, y)&#x27;s element.\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun get (board x y)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (nth (nth board x) y))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; Set symbol \&quot;@\&quot; to location (x, y).\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun set (board x y)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (setcar (nth-tail (nth board x) y) &#x27;@))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; Set symbol \&quot;x\&quot; to location (x, y).\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun clear (board x y)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (setcar (nth-tail (nth board x) y) &#x27;x))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; Returns true if location (x, y)&#x27;s value is \&quot;@\&quot;.\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun set? (board x y)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (eq (get board x y) &#x27;@))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; Print out the given board.\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun print (board)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (if (not board)\n&quot;</span><br>                + <span class="hljs-string">&quot;      &#x27;$\n&quot;</span><br>                + <span class="hljs-string">&quot;    (println (car board))\n&quot;</span><br>                + <span class="hljs-string">&quot;    (print (cdr board))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; Returns true if we cannot place a queen at position (x, y), assuming that\n&quot;</span><br>                + <span class="hljs-string">&quot;;; queens have already been placed on each row from 0 to x-1.\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun conflict? (board x y)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (any (iota x)\n&quot;</span><br>                + <span class="hljs-string">&quot;       (lambda (n)\n&quot;</span><br>                + <span class="hljs-string">&quot;\t (or\n&quot;</span><br>                + <span class="hljs-string">&quot;\t  ;; Check if there&#x27;s no conflicting queen upward\n&quot;</span><br>                + <span class="hljs-string">&quot;\t  (set? board n y)\n&quot;</span><br>                + <span class="hljs-string">&quot;\t  ;; Upper left\n&quot;</span><br>                + <span class="hljs-string">&quot;\t  (let1 z (+ y (- n x))\n&quot;</span><br>                + <span class="hljs-string">&quot;\t\t(and (&lt;= 0 z)\n&quot;</span><br>                + <span class="hljs-string">&quot;\t\t     (set? board n z)))\n&quot;</span><br>                + <span class="hljs-string">&quot;\t  ;; Upper right\n&quot;</span><br>                + <span class="hljs-string">&quot;\t  (let1 z (+ y (- x n))\n&quot;</span><br>                + <span class="hljs-string">&quot;\t\t(and (&lt; z board-size)\n&quot;</span><br>                + <span class="hljs-string">&quot;\t\t     (set? board n z)))))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;; Find positions where we can place queens at row x, and continue searching for\n&quot;</span><br>                + <span class="hljs-string">&quot;;; the next row.\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun %solve (board x)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (if (= x board-size)\n&quot;</span><br>                + <span class="hljs-string">&quot;      ;; Problem solved\n&quot;</span><br>                + <span class="hljs-string">&quot;      (progn (print board)\n&quot;</span><br>                + <span class="hljs-string">&quot;\t     (println &#x27;$))\n&quot;</span><br>                + <span class="hljs-string">&quot;    (for-each (iota board-size)\n&quot;</span><br>                + <span class="hljs-string">&quot;\t      (lambda (y)\n&quot;</span><br>                + <span class="hljs-string">&quot;\t\t(unless (conflict? board x y)\n&quot;</span><br>                + <span class="hljs-string">&quot;\t\t  (set board x y)\n&quot;</span><br>                + <span class="hljs-string">&quot;\t\t  (%solve board (+ x 1))\n&quot;</span><br>                + <span class="hljs-string">&quot;\t\t  (clear board x y))))))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;(defun solve (board)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (println &#x27;start)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (%solve board 0)\n&quot;</span><br>                + <span class="hljs-string">&quot;  (println &#x27;done))\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;;;; Main\n&quot;</span><br>                + <span class="hljs-string">&quot;;;;\n&quot;</span><br>                + <span class="hljs-string">&quot;\n&quot;</span><br>                + <span class="hljs-string">&quot;(define board-size 8)\n&quot;</span><br>                + <span class="hljs-string">&quot;(define board (make-board board-size))\n&quot;</span><br>                + <span class="hljs-string">&quot;(solve board)\n&quot;</span>;<br>        call(s);<br>    &#125;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">call</span><span class="hljs-params">(String s)</span> <span class="hljs-keyword">throws</span> ParseException &#123;<br>        <span class="hljs-type">MiniLisp</span> <span class="hljs-variable">parser</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MiniLisp</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">StringReader</span>(s));<br>        parser.Input();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/java/" class="print-no-link">#java</a>
+      
+        <a href="/tags/javacc/" class="print-no-link">#javacc</a>
+      
+        <a href="/tags/lisp/" class="print-no-link">#lisp</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Write a simple parser for MiniLisp by using JavaCC</div>
+      <div>https://threelambda.com/2017/05/19/2017-5-19-javacc-minilisp/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Ming Yang</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2017年5月19日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2017/05/24/2017-5-24-gradle-build-project/" title="Gradle脚本实现web开发框架的一键构建">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Gradle脚本实现web开发框架的一键构建</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2017/03/23/2017-3-23-compile-and-run-clojure/" title="编译和运行Clojure分支20081217源码">
+                        <span class="hidden-mobile">编译和运行Clojure分支20081217源码</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

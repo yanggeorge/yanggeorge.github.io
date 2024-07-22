@@ -1,0 +1,1240 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/images/icon-3-lambda.png">
+  <link rel="icon" href="/images/icon-3-lambda.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Ming Yang">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="单节点下载小文件从多个peer进行下载的算法显然是复杂的，更不用说下载一个很大的文件。这里只是简单验证一下， 从单个peer下载文件。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BitTorrent协议（五）之下载文件">
+<meta property="og:url" content="https://threelambda.com/2019/01/25/2019-1-25-bt-5/index.html">
+<meta property="og:site_name" content="CodeCraft">
+<meta property="og:description" content="单节点下载小文件从多个peer进行下载的算法显然是复杂的，更不用说下载一个很大的文件。这里只是简单验证一下， 从单个peer下载文件。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-01-24T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-07-22T07:16:58.464Z">
+<meta property="article:author" content="alenym@qq.com">
+<meta property="article:tag" content="bitTorrent">
+<meta property="article:tag" content="protocol">
+<meta property="article:tag" content="p2p">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>BitTorrent协议（五）之下载文件 - CodeCraft</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"threelambda.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":"G-X6VGKB3GW8"},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=G-X6VGKB3GW8", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', 'G-X6VGKB3GW8');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>CodeCraft</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="https://threelambda.com/en/" target="_self">
+                <i class="iconfont icon-language2"></i>
+                <span>English</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="BitTorrent协议（五）之下载文件"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2019-01-25 00:00" pubdate>
+          2019年1月25日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          35 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">BitTorrent协议（五）之下载文件</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="单节点下载小文件"><a href="#单节点下载小文件" class="headerlink" title="单节点下载小文件"></a>单节点下载小文件</h2><p>从多个peer进行下载的算法显然是复杂的，更不用说下载一个很大的文件。这里只是简单验证一下，
+从单个peer下载文件。</p>
+<span id="more"></span>
+
+<p>还是利用<code>uTorrent</code>软件来进行验证。</p>
+<p>可以用之前介绍的方法来下载metadata。 获取到的info信息如下，</p>
+<pre><code class="hljs">&#123;&#39;length&#39;: 1799542, &#39;name&#39;: &#39;show.gif&#39;, &#39;piece length&#39;: 16384, &#39;pieces&#39;: [&#39;32bd6b1b19914363f3c4d6ac4aca3f8acc1fc9be&#39;, &#39;189f81db5c5c12f21483fb24ee709ff6c08a0517&#39;, &#39;a3133d83aabfa6793418d3cb325012b0d4bfae46&#39;, &#39;0e3d60244fabc21b723b8cd88f5f987d87743e89&#39;, &#39;132157b55b0c5b7ee9a20243846eb3f1c5ac80dc&#39;, &#39;92c37804b00d5430c67747ec5fee0868445ecd69&#39;, &#39;5f1bb90f1ae670f7cbc3daa49d219d7d1b45acbf&#39;, &#39;0fb09e567a1370f7903f55dff250503482de8b3e&#39;, &#39;6dd7073806b41b4ed27d45f8dbccc0a0c10be50d&#39;, &#39;1fcaa683cb850fce41395576c798a61e6cf905b5&#39;, &#39;b61629bf5a6bf0e40e67e1cbdf91bb739a02d518&#39;, &#39;f63a3fa985c3debb543bbcf75adeda9ab67ac9c9&#39;, &#39;e90e01fb4ceb645ee449ae0956cfb9308beeccb5&#39;, &#39;cbfa039f843f7243fb2074e465741eda474e3977&#39;, &#39;943840bcfff18968113222d932298f813e5cc179&#39;, &#39;c209625e0ddf0facb53b30f4480537deadae6793&#39;, &#39;f71e53fb153ad59e73eeb527bb72156e747f9275&#39;, &#39;c5beef4d546249e731f67307904cfc78c74f1bca&#39;, &#39;565f7f1f15a0eb25c53ca93dfb064806788b48ec&#39;, &#39;8fef5d00ba48a62546dd2a17e8710a0cc8d2d1f9&#39;, &#39;f668e1c8053cc48660106013fb2b6f985e96ae2f&#39;, &#39;c6f2b38f8ec06b52988b2a440bdc1e113db1bf56&#39;, &#39;d9b628b10d349deb67e318969697311c8108c111&#39;, &#39;b822aecd7d71a4182e47c7c33ed507b7ba98a9ff&#39;, &#39;8b43bb5a107942f21af0dfe93551c24ec7ed01e7&#39;, &#39;fbed560ff746b870aa9a341fdeeb3b2a84437b1d&#39;, &#39;34026cdef61fe05668cb1ae45f8ca46a47539993&#39;, &#39;1d68c176d5a8c019840d9013652c03d7118335c1&#39;, &#39;5476b766cab277119970254a595fd69029553d09&#39;, &#39;f01dcc57eaf647ff9a7884e0c2ce6ce616a50e7d&#39;, &#39;54972dab56f5e7df31dce81d44354a39c2952da7&#39;, &#39;858184b28005ea4f11cae7b280cf964bd63c5036&#39;, &#39;cdc80e8a3fbd0d258dd2557aea6fdf0b778a9740&#39;, &#39;126862f9026fae3348f19d7d285658713f545d52&#39;, &#39;2cbd85f935a8a14de068e8284a449f3ab3345db9&#39;, &#39;f37dadec918d6a4295fb3ced2e5e3c06680dc138&#39;, &#39;b69389c850cf159cbbc50b67cce7304e48cd2fc8&#39;, &#39;520922981a1f4752742c6b680956ea62ce98f008&#39;, &#39;8e28d442dd20d82a88f9a17983fa2f7e704c958d&#39;, &#39;1e3363ae14e1c0e03060a99a4f18163b1ffb07c5&#39;, &#39;f3237eeb35b900c3b6c7aa7e3ad33096d1717cb1&#39;, &#39;f287d5e00c33e65fc5c73fd0e152dfcc4c75b643&#39;, &#39;8499d07f2fdaeebaab73c008725de0f8c7f3156f&#39;, &#39;8e3936cf42625dfc4dd71a5128aedd051581a933&#39;, &#39;fe9db13341c3f7378c0cc0fe69895bd1a1635546&#39;, &#39;86a383614a32021187439e662a0d9981d3266dac&#39;, &#39;e8fe2fbd7bc75f212188f30129ff2b5fbc326fc8&#39;, &#39;c535c7d03b83d0cee8b56c380d839de86450259d&#39;, &#39;09317f2958a7ce16af570417dc2f4ff56b74739a&#39;, &#39;597198e18e4fd6df0598e55ad6ac41ddd9fbfe4c&#39;, &#39;9289b6999a360314dc5c4b5a09aec9b20aec1f13&#39;, &#39;6611f3a373aeecfd23bbce43f3993e8b770ba550&#39;, &#39;81fb04659a20bb00edba72c456f8ef7809dc87f3&#39;, &#39;59496e456e24d27871fcb8127934df33925888af&#39;, &#39;308db6c4eff529d1caa2e436cb53ad5f0ff3ed19&#39;, &#39;f0bb16a3f35928b6c3fcbd45227e732211e422bb&#39;, &#39;e0bd3d3533f9ef6051bcfe4617b45920fd42a11b&#39;, &#39;79909209aa840c77043a2d9b2dddad042924b57e&#39;, &#39;899e90841a27a0c2cf691e3319ddfd6b139dd28f&#39;, &#39;ff46286f5f16cfbc9d2d5d4d9574d842adf88d12&#39;, &#39;5968efcadb0fa8b62702918e2bc6d109169b1688&#39;, &#39;2a1bb615d4cb43d08f1703b6dd55b6f036843b7e&#39;, &#39;bc04aacea03fa3f3457a182c64c2893eed7abde3&#39;, &#39;ba462044856ba2355ab59f0f92a6261908495508&#39;, &#39;58c5593a3f627c45fe995a5ad7c3abbdcd4558cb&#39;, &#39;4d44dfa3e97ce4f5ef510f11edc8e7fdeadc0127&#39;, &#39;76156e683a8d78dc84c9dc77b8b3295bf65ade85&#39;, &#39;0fedc3f5cc217b1195361eb24348e3da869ee9c8&#39;, &#39;d135bb807f863e4341ec5dfc3ce089e3ccb90423&#39;, &#39;9079bbc75010af82d5f820087a3d0bca68ba7335&#39;, &#39;f26d6acd59053b7e5c058e7e663a5aafdf08cbcd&#39;, &#39;3a528b4e824b7e4d94eb1771d25aab1333ee4f6c&#39;, &#39;a378b13c679091b4f6df535e274b489a1921487a&#39;, &#39;486a7b84e2d2826faf33fede673557abf13d4858&#39;, &#39;a707ce9e469a5f09bf9b20a51d36510971a8c902&#39;, &#39;fbf2945c8eb174e81d354ac0a217707e27d80df1&#39;, &#39;805fbf2e06bb2780c853a5d7cb760a09bbfede41&#39;, &#39;8077a90826ce293c28af8ec03bb9fe2bc968a87e&#39;, &#39;db5b68bc3ad6e1c7d9cadc0ef5336dac91ea7802&#39;, &#39;17db99964e9e6170c12a903fddf74614f765ac63&#39;, &#39;36a25d99fd2026aee1e93dffdab081325f6d82be&#39;, &#39;4941159f05a9c1b5316aaebe483b68ed2b3d9bf6&#39;, &#39;2783da31f7043a29011507c817c4469b03a7047f&#39;, &#39;1beaf2d802cc747acf82633d6d35498e1ef1c0f2&#39;, &#39;d9484d93128be7f62537f24609080dbf48fc15a1&#39;, &#39;a3d4b391af6a4787cc2581894a9ba952a04c06af&#39;, &#39;f09c619843ee7bf6898fdcce47dd89c329f113b3&#39;, &#39;9451d16f558cfeb8a65e92a74bcd627764d3b395&#39;, &#39;2d3ac710b84c7465044994de9c07437e629ff9aa&#39;, &#39;a7d6d56ef412462c1f0eef2a403bf2cba615710a&#39;, &#39;2b0804a61db331444c40c6d9817476c25438c702&#39;, &#39;2af9e4587ee984bfa68c2e832b61d060df812d9c&#39;, &#39;ac75705e3f02f67e319833309af23db3aeb6e9b1&#39;, &#39;002a18cb7b1836c01842c80107bce23f8899d046&#39;, &#39;2d532adec4d0de4582463c8028d7b7b1797e2ad6&#39;, &#39;4818335666c0fb4abf758fed7770f924766c08b0&#39;, &#39;753a675a197b8b7d3d8e579172aef2f5b5987ba5&#39;, &#39;69d335d9126f56b229304326e1bba38f48667b77&#39;, &#39;e57eb75086c332598025be0c424124b48f944790&#39;, &#39;7227355ee48815247ab824d580f0d8be6722ccc8&#39;, &#39;25872f29012b912e415165e3e04cb846cbfd5373&#39;, &#39;2c9aea7e3dd67d8f28551fd7c3a1ea31bbe1fa5d&#39;, &#39;64e09ec0c09b7b4c8743e1ee7899d494d9c19a99&#39;, &#39;252b538782968f65284bf2f5cfe6a804cc877567&#39;, &#39;f9e9a038358f557b9780efd2899d9f9557912821&#39;, &#39;27a6c6a7bcb3f7d53c04427f9f5bdd6c20eb78bb&#39;, &#39;79e21154bb06d1a91da161cc75e4f75dd7df3d93&#39;, &#39;10a8ea942ea2ce344c8b052d6a98f76825a0e13e&#39;, &#39;cce77357aaad177352a19d4f91ec0a35058e2e33&#39;, &#39;48f41629e57f84ae7637b11b396c78d318f7e84d&#39;]&#125;
+</code></pre>
+<p>这个文件的大小为1799542字节，每个片的长度是16384字节，一共110片。</p>
+<p>通过简单计算可以知道，最后一片的长度只有13686。所以发request的消息的时候，要注意。</p>
+<p>因为只有一个peer，简单的循环就够了。</p>
+<h2 id="实现的代码"><a href="#实现的代码" class="headerlink" title="实现的代码"></a>实现的代码</h2><p>代码中充斥了全局变量。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br></pre></td><td class="code"><pre><code class="hljs python"><br>__author__ = <span class="hljs-string">&#x27;ym&#x27;</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    Date        : &#x27;2019/1/22&#x27;</span><br><span class="hljs-string">    Description :</span><br><span class="hljs-string">    </span><br><span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-keyword">from</span> ym.bt.peer_protocol <span class="hljs-keyword">import</span> pack_handshake, unpack_handshake, sendall, recv, pack_extend, sha1<br><span class="hljs-keyword">from</span> ym.bt.parse_torrent <span class="hljs-keyword">import</span> BDecode<br><span class="hljs-keyword">from</span> ym.bt.udp_announce <span class="hljs-keyword">import</span> ip_me<br><span class="hljs-keyword">import</span> socket<br><span class="hljs-keyword">import</span> struct<br><span class="hljs-keyword">import</span> logging<br><span class="hljs-keyword">from</span> bitstring <span class="hljs-keyword">import</span> BitArray<br><br>log = logging.getLogger()<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">download</span>(<span class="hljs-params">bit_field, file_data</span>):<br>    <span class="hljs-keyword">try</span>:<br>        info_hash = <span class="hljs-string">&#x27;c99c3b7a5ba31a8966e6c9a40bc4f83887a107e5&#x27;</span><br>        ip, port = ip_me(), <span class="hljs-number">40959</span><br>        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)<br>        sock.settimeout(<span class="hljs-number">1</span>)<br>        sock.connect((ip, port))<br><br>        handshake = pack_handshake(info_hash)<br>        rt = sendall(sock, handshake)<br>        <span class="hljs-keyword">if</span> rt <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>            <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;end&quot;</span>)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;sent=&#123;&#125;, data=&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(rt, handshake))<br>        data = recv(sock, <span class="hljs-number">68</span>)<br><br>        tup = unpack_handshake(data)<br>        <span class="hljs-keyword">if</span> tup <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>            <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;end&quot;</span>)<br>        <span class="hljs-built_in">print</span>(tup)<br><br>        UT_METADATA_ID = <span class="hljs-number">1</span><br>        dic = &#123;<span class="hljs-string">&#x27;m&#x27;</span>: &#123;<span class="hljs-string">&#x27;ut_metadata&#x27;</span>: UT_METADATA_ID&#125;&#125;<br>        ext_handshake = pack_extend(dic, <span class="hljs-built_in">id</span>=<span class="hljs-number">20</span>, ext_id=<span class="hljs-number">0</span>)  <span class="hljs-comment"># 扩展协议的握手消息</span><br>        sock.sendall(ext_handshake)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;sent|ext_handshake=&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(ext_handshake))<br><br>        <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>            data = recv(sock, <span class="hljs-number">4</span>)<br>            <span class="hljs-keyword">if</span> data <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>                <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;end&quot;</span>)<br>            num, = struct.unpack(<span class="hljs-string">&quot;&gt;i&quot;</span>, data)<br><br>            <span class="hljs-keyword">if</span> num == <span class="hljs-number">0</span>:<br>                <span class="hljs-keyword">continue</span><br><br>            tmp = recv(sock, <span class="hljs-number">1</span>)<br><br>            <span class="hljs-keyword">if</span> tmp <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>                <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;end&quot;</span>)<br>            <span class="hljs-built_in">id</span>, = struct.unpack(<span class="hljs-string">&quot;&gt;B&quot;</span>, tmp)<br>            <span class="hljs-comment"># print(&quot;id=&#123;&#125;&quot;.format(id))</span><br>            tmp = recv(sock, <span class="hljs-built_in">int</span>(num) - <span class="hljs-number">1</span>)<br>            <span class="hljs-comment"># print(&quot;recv=&#123;&#125;&quot;.format(tmp))</span><br>            <span class="hljs-keyword">if</span> <span class="hljs-built_in">id</span> == <span class="hljs-number">5</span>:<br>                <span class="hljs-comment"># bitfield</span><br>                <span class="hljs-keyword">if</span> bit_field <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>                    bit_field = BitArray(tmp)<br>                    file_data = [<span class="hljs-literal">None</span>] * <span class="hljs-number">110</span>  <span class="hljs-comment"># pieces num</span><br>                <span class="hljs-built_in">print</span>(bit_field.<span class="hljs-built_in">bin</span>)<br><br>                <span class="hljs-comment"># interested</span><br>                send_interested(sock)<br>            <span class="hljs-keyword">elif</span> <span class="hljs-built_in">id</span> == <span class="hljs-number">4</span>:<br>                <span class="hljs-comment"># have</span><br>                index, = struct.unpack(<span class="hljs-string">&quot;&gt;i&quot;</span>, tmp)<br>                <span class="hljs-comment"># print(&quot;index=&#123;&#125;&quot;.format(index))</span><br>                <span class="hljs-keyword">if</span> bit_field.<span class="hljs-built_in">bin</span>[index] == <span class="hljs-string">&#x27;0&#x27;</span>:<br>                    bit_field.<span class="hljs-built_in">set</span>(<span class="hljs-string">&#x27;1&#x27;</span>, index)<br>                    <span class="hljs-comment"># print(bitfield.bin)</span><br><br>            <span class="hljs-keyword">elif</span> <span class="hljs-built_in">id</span> == <span class="hljs-number">1</span>:<br>                <span class="hljs-comment"># unchoke</span><br>                <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;unchoke&quot;</span>)<br>                send_request(bit_field, file_data, sock)<br>            <span class="hljs-keyword">elif</span> <span class="hljs-built_in">id</span> == <span class="hljs-number">7</span>:<br>                <span class="hljs-comment"># piece</span><br>                <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;piece&quot;</span>)<br>                index, begin = struct.unpack(<span class="hljs-string">&quot;&gt;i i&quot;</span>, tmp[<span class="hljs-number">0</span>:<span class="hljs-number">8</span>])<br>                <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;index=&#123;&#125;, begin=&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(index, begin))<br>                <span class="hljs-built_in">print</span>(<span class="hljs-built_in">len</span>(tmp[<span class="hljs-number">8</span>:]))<br>                file_data[index] = tmp[<span class="hljs-number">8</span>:]<br>                <span class="hljs-keyword">if</span> index == <span class="hljs-number">109</span>:<br>                    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;completed.&quot;</span>)<br>                    <span class="hljs-keyword">return</span> bit_field, file_data<br><br>                send_request(bit_field, file_data, sock)<br><br>            <span class="hljs-keyword">elif</span> <span class="hljs-built_in">id</span> == <span class="hljs-number">20</span>:<br>                <span class="hljs-comment">#</span><br>                ext_id, = struct.unpack(<span class="hljs-string">&quot;&gt;B&quot;</span>, tmp[<span class="hljs-number">0</span>:<span class="hljs-number">1</span>])<br>                <span class="hljs-keyword">if</span> ext_id == <span class="hljs-number">0</span>:<br>                    <span class="hljs-comment"># 扩展握手消息</span><br>                    dic, i, n = BDecode(tmp[<span class="hljs-number">1</span>:]).parse()<br>                    <span class="hljs-built_in">print</span>(dic)<br>                <span class="hljs-keyword">else</span>:<br>                    <span class="hljs-keyword">pass</span><br>            <span class="hljs-keyword">else</span>:<br>                <span class="hljs-keyword">pass</span><br><br>    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>        log.exception(e)<br><br>    <span class="hljs-keyword">return</span> (bit_field, file_data)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">send_interested</span>(<span class="hljs-params">sock</span>):<br>    data = struct.pack(<span class="hljs-string">&quot;&gt;i B&quot;</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>)<br>    rt = sendall(sock, data)<br>    <span class="hljs-keyword">if</span> rt <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>        <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;end&quot;</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;interested=&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(data))<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">send_request</span>(<span class="hljs-params">bit_field, file_data, sock</span>):<br>    index = find_one(bit_field.<span class="hljs-built_in">bin</span>, file_data)<br>    <span class="hljs-keyword">if</span> index <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>        <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;end&quot;</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;request piece=&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(index))<br>    data = pack_request(index)<br>    <span class="hljs-keyword">if</span> index == <span class="hljs-number">109</span>:<br>        data = pack_request(index, begin=<span class="hljs-number">0</span>, length=<span class="hljs-number">13686</span>)<br>    rt = sendall(sock, data)<br>    <span class="hljs-keyword">if</span> rt <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>        <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;end&quot;</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;sent=&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(data))<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">find_one</span>(<span class="hljs-params">bit_array: <span class="hljs-built_in">str</span>, file_data: <span class="hljs-built_in">list</span></span>):<br>    i = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">while</span> i &lt; <span class="hljs-built_in">len</span>(file_data):<br>        <span class="hljs-keyword">if</span> file_data[i] <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">and</span> bit_array[i] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>            <span class="hljs-keyword">break</span><br>        i += <span class="hljs-number">1</span><br><br>    <span class="hljs-keyword">if</span> i == <span class="hljs-built_in">len</span>(file_data):<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">None</span><br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-keyword">return</span> i<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">pack_request</span>(<span class="hljs-params">index, begin=<span class="hljs-number">0</span>, length=<span class="hljs-number">16384</span></span>):<br>    <span class="hljs-keyword">return</span> struct.pack(<span class="hljs-string">&quot;&gt;i B i i i&quot;</span>, <span class="hljs-number">13</span>, <span class="hljs-number">6</span>, index, begin, length)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">not_finish</span>(<span class="hljs-params">file_data</span>):<br>    <span class="hljs-keyword">if</span> file_data <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span><br><br>    <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> file_data:<br>        <span class="hljs-keyword">if</span> item <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span><br><br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span><br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    bit_field = <span class="hljs-literal">None</span><br>    file_data = <span class="hljs-literal">None</span><br>    <span class="hljs-keyword">while</span> not_finish(file_data):<br>        bit_field, file_data = download(bit_field, file_data)<br><br>    <span class="hljs-built_in">print</span>(bit_field)<br>    output = <span class="hljs-string">&#x27;/Users/ym/tmp/copy.gif&#x27;</span><br>    expected = &#123;<span class="hljs-string">&#x27;length&#x27;</span>: <span class="hljs-number">1799542</span>, <span class="hljs-string">&#x27;name&#x27;</span>: <span class="hljs-string">&#x27;show.gif&#x27;</span>, <span class="hljs-string">&#x27;piece length&#x27;</span>: <span class="hljs-number">16384</span>,<br>                <span class="hljs-string">&#x27;pieces&#x27;</span>: [<span class="hljs-string">&#x27;32bd6b1b19914363f3c4d6ac4aca3f8acc1fc9be&#x27;</span>, <span class="hljs-string">&#x27;189f81db5c5c12f21483fb24ee709ff6c08a0517&#x27;</span>,<br>                           <span class="hljs-string">&#x27;a3133d83aabfa6793418d3cb325012b0d4bfae46&#x27;</span>, <span class="hljs-string">&#x27;0e3d60244fabc21b723b8cd88f5f987d87743e89&#x27;</span>,<br>                           <span class="hljs-string">&#x27;132157b55b0c5b7ee9a20243846eb3f1c5ac80dc&#x27;</span>, <span class="hljs-string">&#x27;92c37804b00d5430c67747ec5fee0868445ecd69&#x27;</span>,<br>                           <span class="hljs-string">&#x27;5f1bb90f1ae670f7cbc3daa49d219d7d1b45acbf&#x27;</span>, <span class="hljs-string">&#x27;0fb09e567a1370f7903f55dff250503482de8b3e&#x27;</span>,<br>                           <span class="hljs-string">&#x27;6dd7073806b41b4ed27d45f8dbccc0a0c10be50d&#x27;</span>, <span class="hljs-string">&#x27;1fcaa683cb850fce41395576c798a61e6cf905b5&#x27;</span>,<br>                           <span class="hljs-string">&#x27;b61629bf5a6bf0e40e67e1cbdf91bb739a02d518&#x27;</span>, <span class="hljs-string">&#x27;f63a3fa985c3debb543bbcf75adeda9ab67ac9c9&#x27;</span>,<br>                           <span class="hljs-string">&#x27;e90e01fb4ceb645ee449ae0956cfb9308beeccb5&#x27;</span>, <span class="hljs-string">&#x27;cbfa039f843f7243fb2074e465741eda474e3977&#x27;</span>,<br>                           <span class="hljs-string">&#x27;943840bcfff18968113222d932298f813e5cc179&#x27;</span>, <span class="hljs-string">&#x27;c209625e0ddf0facb53b30f4480537deadae6793&#x27;</span>,<br>                           <span class="hljs-string">&#x27;f71e53fb153ad59e73eeb527bb72156e747f9275&#x27;</span>, <span class="hljs-string">&#x27;c5beef4d546249e731f67307904cfc78c74f1bca&#x27;</span>,<br>                           <span class="hljs-string">&#x27;565f7f1f15a0eb25c53ca93dfb064806788b48ec&#x27;</span>, <span class="hljs-string">&#x27;8fef5d00ba48a62546dd2a17e8710a0cc8d2d1f9&#x27;</span>,<br>                           <span class="hljs-string">&#x27;f668e1c8053cc48660106013fb2b6f985e96ae2f&#x27;</span>, <span class="hljs-string">&#x27;c6f2b38f8ec06b52988b2a440bdc1e113db1bf56&#x27;</span>,<br>                           <span class="hljs-string">&#x27;d9b628b10d349deb67e318969697311c8108c111&#x27;</span>, <span class="hljs-string">&#x27;b822aecd7d71a4182e47c7c33ed507b7ba98a9ff&#x27;</span>,<br>                           <span class="hljs-string">&#x27;8b43bb5a107942f21af0dfe93551c24ec7ed01e7&#x27;</span>, <span class="hljs-string">&#x27;fbed560ff746b870aa9a341fdeeb3b2a84437b1d&#x27;</span>,<br>                           <span class="hljs-string">&#x27;34026cdef61fe05668cb1ae45f8ca46a47539993&#x27;</span>, <span class="hljs-string">&#x27;1d68c176d5a8c019840d9013652c03d7118335c1&#x27;</span>,<br>                           <span class="hljs-string">&#x27;5476b766cab277119970254a595fd69029553d09&#x27;</span>, <span class="hljs-string">&#x27;f01dcc57eaf647ff9a7884e0c2ce6ce616a50e7d&#x27;</span>,<br>                           <span class="hljs-string">&#x27;54972dab56f5e7df31dce81d44354a39c2952da7&#x27;</span>, <span class="hljs-string">&#x27;858184b28005ea4f11cae7b280cf964bd63c5036&#x27;</span>,<br>                           <span class="hljs-string">&#x27;cdc80e8a3fbd0d258dd2557aea6fdf0b778a9740&#x27;</span>, <span class="hljs-string">&#x27;126862f9026fae3348f19d7d285658713f545d52&#x27;</span>,<br>                           <span class="hljs-string">&#x27;2cbd85f935a8a14de068e8284a449f3ab3345db9&#x27;</span>, <span class="hljs-string">&#x27;f37dadec918d6a4295fb3ced2e5e3c06680dc138&#x27;</span>,<br>                           <span class="hljs-string">&#x27;b69389c850cf159cbbc50b67cce7304e48cd2fc8&#x27;</span>, <span class="hljs-string">&#x27;520922981a1f4752742c6b680956ea62ce98f008&#x27;</span>,<br>                           <span class="hljs-string">&#x27;8e28d442dd20d82a88f9a17983fa2f7e704c958d&#x27;</span>, <span class="hljs-string">&#x27;1e3363ae14e1c0e03060a99a4f18163b1ffb07c5&#x27;</span>,<br>                           <span class="hljs-string">&#x27;f3237eeb35b900c3b6c7aa7e3ad33096d1717cb1&#x27;</span>, <span class="hljs-string">&#x27;f287d5e00c33e65fc5c73fd0e152dfcc4c75b643&#x27;</span>,<br>                           <span class="hljs-string">&#x27;8499d07f2fdaeebaab73c008725de0f8c7f3156f&#x27;</span>, <span class="hljs-string">&#x27;8e3936cf42625dfc4dd71a5128aedd051581a933&#x27;</span>,<br>                           <span class="hljs-string">&#x27;fe9db13341c3f7378c0cc0fe69895bd1a1635546&#x27;</span>, <span class="hljs-string">&#x27;86a383614a32021187439e662a0d9981d3266dac&#x27;</span>,<br>                           <span class="hljs-string">&#x27;e8fe2fbd7bc75f212188f30129ff2b5fbc326fc8&#x27;</span>, <span class="hljs-string">&#x27;c535c7d03b83d0cee8b56c380d839de86450259d&#x27;</span>,<br>                           <span class="hljs-string">&#x27;09317f2958a7ce16af570417dc2f4ff56b74739a&#x27;</span>, <span class="hljs-string">&#x27;597198e18e4fd6df0598e55ad6ac41ddd9fbfe4c&#x27;</span>,<br>                           <span class="hljs-string">&#x27;9289b6999a360314dc5c4b5a09aec9b20aec1f13&#x27;</span>, <span class="hljs-string">&#x27;6611f3a373aeecfd23bbce43f3993e8b770ba550&#x27;</span>,<br>                           <span class="hljs-string">&#x27;81fb04659a20bb00edba72c456f8ef7809dc87f3&#x27;</span>, <span class="hljs-string">&#x27;59496e456e24d27871fcb8127934df33925888af&#x27;</span>,<br>                           <span class="hljs-string">&#x27;308db6c4eff529d1caa2e436cb53ad5f0ff3ed19&#x27;</span>, <span class="hljs-string">&#x27;f0bb16a3f35928b6c3fcbd45227e732211e422bb&#x27;</span>,<br>                           <span class="hljs-string">&#x27;e0bd3d3533f9ef6051bcfe4617b45920fd42a11b&#x27;</span>, <span class="hljs-string">&#x27;79909209aa840c77043a2d9b2dddad042924b57e&#x27;</span>,<br>                           <span class="hljs-string">&#x27;899e90841a27a0c2cf691e3319ddfd6b139dd28f&#x27;</span>, <span class="hljs-string">&#x27;ff46286f5f16cfbc9d2d5d4d9574d842adf88d12&#x27;</span>,<br>                           <span class="hljs-string">&#x27;5968efcadb0fa8b62702918e2bc6d109169b1688&#x27;</span>, <span class="hljs-string">&#x27;2a1bb615d4cb43d08f1703b6dd55b6f036843b7e&#x27;</span>,<br>                           <span class="hljs-string">&#x27;bc04aacea03fa3f3457a182c64c2893eed7abde3&#x27;</span>, <span class="hljs-string">&#x27;ba462044856ba2355ab59f0f92a6261908495508&#x27;</span>,<br>                           <span class="hljs-string">&#x27;58c5593a3f627c45fe995a5ad7c3abbdcd4558cb&#x27;</span>, <span class="hljs-string">&#x27;4d44dfa3e97ce4f5ef510f11edc8e7fdeadc0127&#x27;</span>,<br>                           <span class="hljs-string">&#x27;76156e683a8d78dc84c9dc77b8b3295bf65ade85&#x27;</span>, <span class="hljs-string">&#x27;0fedc3f5cc217b1195361eb24348e3da869ee9c8&#x27;</span>,<br>                           <span class="hljs-string">&#x27;d135bb807f863e4341ec5dfc3ce089e3ccb90423&#x27;</span>, <span class="hljs-string">&#x27;9079bbc75010af82d5f820087a3d0bca68ba7335&#x27;</span>,<br>                           <span class="hljs-string">&#x27;f26d6acd59053b7e5c058e7e663a5aafdf08cbcd&#x27;</span>, <span class="hljs-string">&#x27;3a528b4e824b7e4d94eb1771d25aab1333ee4f6c&#x27;</span>,<br>                           <span class="hljs-string">&#x27;a378b13c679091b4f6df535e274b489a1921487a&#x27;</span>, <span class="hljs-string">&#x27;486a7b84e2d2826faf33fede673557abf13d4858&#x27;</span>,<br>                           <span class="hljs-string">&#x27;a707ce9e469a5f09bf9b20a51d36510971a8c902&#x27;</span>, <span class="hljs-string">&#x27;fbf2945c8eb174e81d354ac0a217707e27d80df1&#x27;</span>,<br>                           <span class="hljs-string">&#x27;805fbf2e06bb2780c853a5d7cb760a09bbfede41&#x27;</span>, <span class="hljs-string">&#x27;8077a90826ce293c28af8ec03bb9fe2bc968a87e&#x27;</span>,<br>                           <span class="hljs-string">&#x27;db5b68bc3ad6e1c7d9cadc0ef5336dac91ea7802&#x27;</span>, <span class="hljs-string">&#x27;17db99964e9e6170c12a903fddf74614f765ac63&#x27;</span>,<br>                           <span class="hljs-string">&#x27;36a25d99fd2026aee1e93dffdab081325f6d82be&#x27;</span>, <span class="hljs-string">&#x27;4941159f05a9c1b5316aaebe483b68ed2b3d9bf6&#x27;</span>,<br>                           <span class="hljs-string">&#x27;2783da31f7043a29011507c817c4469b03a7047f&#x27;</span>, <span class="hljs-string">&#x27;1beaf2d802cc747acf82633d6d35498e1ef1c0f2&#x27;</span>,<br>                           <span class="hljs-string">&#x27;d9484d93128be7f62537f24609080dbf48fc15a1&#x27;</span>, <span class="hljs-string">&#x27;a3d4b391af6a4787cc2581894a9ba952a04c06af&#x27;</span>,<br>                           <span class="hljs-string">&#x27;f09c619843ee7bf6898fdcce47dd89c329f113b3&#x27;</span>, <span class="hljs-string">&#x27;9451d16f558cfeb8a65e92a74bcd627764d3b395&#x27;</span>,<br>                           <span class="hljs-string">&#x27;2d3ac710b84c7465044994de9c07437e629ff9aa&#x27;</span>, <span class="hljs-string">&#x27;a7d6d56ef412462c1f0eef2a403bf2cba615710a&#x27;</span>,<br>                           <span class="hljs-string">&#x27;2b0804a61db331444c40c6d9817476c25438c702&#x27;</span>, <span class="hljs-string">&#x27;2af9e4587ee984bfa68c2e832b61d060df812d9c&#x27;</span>,<br>                           <span class="hljs-string">&#x27;ac75705e3f02f67e319833309af23db3aeb6e9b1&#x27;</span>, <span class="hljs-string">&#x27;002a18cb7b1836c01842c80107bce23f8899d046&#x27;</span>,<br>                           <span class="hljs-string">&#x27;2d532adec4d0de4582463c8028d7b7b1797e2ad6&#x27;</span>, <span class="hljs-string">&#x27;4818335666c0fb4abf758fed7770f924766c08b0&#x27;</span>,<br>                           <span class="hljs-string">&#x27;753a675a197b8b7d3d8e579172aef2f5b5987ba5&#x27;</span>, <span class="hljs-string">&#x27;69d335d9126f56b229304326e1bba38f48667b77&#x27;</span>,<br>                           <span class="hljs-string">&#x27;e57eb75086c332598025be0c424124b48f944790&#x27;</span>, <span class="hljs-string">&#x27;7227355ee48815247ab824d580f0d8be6722ccc8&#x27;</span>,<br>                           <span class="hljs-string">&#x27;25872f29012b912e415165e3e04cb846cbfd5373&#x27;</span>, <span class="hljs-string">&#x27;2c9aea7e3dd67d8f28551fd7c3a1ea31bbe1fa5d&#x27;</span>,<br>                           <span class="hljs-string">&#x27;64e09ec0c09b7b4c8743e1ee7899d494d9c19a99&#x27;</span>, <span class="hljs-string">&#x27;252b538782968f65284bf2f5cfe6a804cc877567&#x27;</span>,<br>                           <span class="hljs-string">&#x27;f9e9a038358f557b9780efd2899d9f9557912821&#x27;</span>, <span class="hljs-string">&#x27;27a6c6a7bcb3f7d53c04427f9f5bdd6c20eb78bb&#x27;</span>,<br>                           <span class="hljs-string">&#x27;79e21154bb06d1a91da161cc75e4f75dd7df3d93&#x27;</span>, <span class="hljs-string">&#x27;10a8ea942ea2ce344c8b052d6a98f76825a0e13e&#x27;</span>,<br>                           <span class="hljs-string">&#x27;cce77357aaad177352a19d4f91ec0a35058e2e33&#x27;</span>, <span class="hljs-string">&#x27;48f41629e57f84ae7637b11b396c78d318f7e84d&#x27;</span>]&#125;<br><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(output, <span class="hljs-string">&quot;wb+&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(file_data)):<br>            file_datum = file_data[i]<br>            <span class="hljs-keyword">if</span> sha1(file_datum) != expected[<span class="hljs-string">&#x27;pieces&#x27;</span>][i]:<br>                <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;error hash&quot;</span>)<br>            f.write(file_datum)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;download ok.&quot;</span>)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    main()<br><br><br></code></pre></td></tr></table></figure>
+
+<h2 id="运行日志"><a href="#运行日志" class="headerlink" title="运行日志"></a>运行日志</h2><p>以下是运行日志。</p>
+<pre><code class="hljs">/usr/local/bin/python3.7 /Users/ym/charm/pytest/ym/bt/bt_download_data.py
+sent=ok, data=b&#39;\x13BitTorrent protocol\x00\x00\x00\x00\x00\x10\x00\x01\xc9\x9c;z[\xa3\x1a\x89f\xe6\xc9\xa4\x0b\xc4\xf88\x87\xa1\x07\xe5ym111111111111111111&#39;
+Handshake(fixed_num=19, bt_head=b&#39;BitTorrent protocol&#39;, reserved=b&#39;\x00\x00\x00\x00\x00\x10\x00\x05&#39;, info_hash=b&#39;\xc9\x9c;z[\xa3\x1a\x89f\xe6\xc9\xa4\x0b\xc4\xf88\x87\xa1\x07\xe5&#39;, peer_id=b&#39;-UM1870-\x14\xab,SS\x82\x1d\x9crh\xc8d&#39;)
+sent|ext_handshake=b&#39;\x00\x00\x00\x1a\x14\x00d1:md11:ut_metadatai1eee&#39;
+&#123;&#39;e&#39;: 0, &#39;ipv4&#39;: &#39;ށ\x01\x14&#39;, &#39;ipv6&#39;: &#39;þ€\x00\x00\x00\x00\x00\x00\x04:^:D[\x0c’&#39;, &#39;complete_ago&#39;: 1, &#39;m&#39;: &#123;&#39;upload_only&#39;: 3, &#39;ut_holepunch&#39;: 4, &#39;ut_metadata&#39;: 2, &#39;ut_pex&#39;: 1, &#39;ut_recommend&#39;: 5, &#39;ut_comment&#39;: 6&#125;, &#39;metadata_size&#39;: 2270, &#39;p&#39;: 40959, &#39;reqq&#39;: 255, &#39;v&#39;: &#39;ÂµTorrent Mac 1.8.7&#39;, &#39;yourip&#39;: &#39;À¨+R&#39;&#125;
+0111111101110111110111111111111111111101110111110011100111010110011111011111110101101110101101111000111111111100
+interested=b&#39;\x00\x00\x00\x01\x02&#39;
+unchoke
+request piece=0
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=0, begin=0
+16384
+request piece=1
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=1, begin=0
+16384
+request piece=2
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=2, begin=0
+16384
+request piece=3
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=3, begin=0
+16384
+request piece=4
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=4, begin=0
+16384
+request piece=5
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x05\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=5, begin=0
+16384
+request piece=6
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x06\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=6, begin=0
+16384
+request piece=7
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x07\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=7, begin=0
+16384
+request piece=8
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=8, begin=0
+16384
+request piece=9
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\t\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=9, begin=0
+16384
+request piece=10
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\n\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=10, begin=0
+16384
+request piece=11
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x0b\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=11, begin=0
+16384
+request piece=12
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x0c\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=12, begin=0
+16384
+request piece=13
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\r\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=13, begin=0
+16384
+request piece=14
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x0e\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=14, begin=0
+16384
+request piece=15
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x0f\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=15, begin=0
+16384
+request piece=16
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x10\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=16, begin=0
+16384
+request piece=17
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x11\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=17, begin=0
+16384
+request piece=18
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x12\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=18, begin=0
+16384
+request piece=19
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x13\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=19, begin=0
+16384
+request piece=20
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x14\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=20, begin=0
+16384
+request piece=21
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x15\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=21, begin=0
+16384
+request piece=22
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x16\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=22, begin=0
+16384
+request piece=23
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x17\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=23, begin=0
+16384
+request piece=24
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x18\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=24, begin=0
+16384
+request piece=25
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x19\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=25, begin=0
+16384
+request piece=26
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x1a\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=26, begin=0
+16384
+request piece=27
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x1b\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=27, begin=0
+16384
+request piece=28
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=28, begin=0
+16384
+request piece=29
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x1d\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=29, begin=0
+16384
+request piece=30
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x1e\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=30, begin=0
+16384
+request piece=31
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\x1f\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=31, begin=0
+16384
+request piece=32
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00 \x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=32, begin=0
+16384
+request piece=33
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00!\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=33, begin=0
+16384
+request piece=34
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00&quot;\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=34, begin=0
+16384
+request piece=35
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00#\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=35, begin=0
+16384
+request piece=36
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00$\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=36, begin=0
+16384
+request piece=37
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00%\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=37, begin=0
+16384
+request piece=38
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00&amp;\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=38, begin=0
+16384
+request piece=39
+sent=b&quot;\x00\x00\x00\r\x06\x00\x00\x00&#39;\x00\x00\x00\x00\x00\x00@\x00&quot;
+piece
+index=39, begin=0
+16384
+request piece=40
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00(\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=40, begin=0
+16384
+request piece=41
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00)\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=41, begin=0
+16384
+request piece=42
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00*\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=42, begin=0
+16384
+request piece=43
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00+\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=43, begin=0
+16384
+request piece=44
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00,\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=44, begin=0
+16384
+request piece=45
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00-\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=45, begin=0
+16384
+request piece=46
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00.\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=46, begin=0
+16384
+request piece=47
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00/\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=47, begin=0
+16384
+request piece=48
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x000\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=48, begin=0
+16384
+request piece=49
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x001\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=49, begin=0
+16384
+request piece=50
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x002\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=50, begin=0
+16384
+request piece=51
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x003\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=51, begin=0
+16384
+request piece=52
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x004\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=52, begin=0
+16384
+request piece=53
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x005\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=53, begin=0
+16384
+request piece=54
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x006\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=54, begin=0
+16384
+request piece=55
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x007\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=55, begin=0
+16384
+request piece=56
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x008\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=56, begin=0
+16384
+request piece=57
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x009\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=57, begin=0
+16384
+request piece=58
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00:\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=58, begin=0
+16384
+request piece=59
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00;\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=59, begin=0
+16384
+request piece=60
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00&lt;\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=60, begin=0
+16384
+request piece=61
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00=\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=61, begin=0
+16384
+request piece=62
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00&gt;\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=62, begin=0
+16384
+request piece=63
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00?\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=63, begin=0
+16384
+request piece=64
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00@\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=64, begin=0
+16384
+request piece=65
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00A\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=65, begin=0
+16384
+request piece=66
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00B\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=66, begin=0
+16384
+request piece=67
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00C\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=67, begin=0
+16384
+request piece=68
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00D\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=68, begin=0
+16384
+request piece=69
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00E\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=69, begin=0
+16384
+request piece=70
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00F\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=70, begin=0
+16384
+request piece=71
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00G\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=71, begin=0
+16384
+request piece=72
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00H\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=72, begin=0
+16384
+request piece=73
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00I\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=73, begin=0
+16384
+request piece=74
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00J\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=74, begin=0
+16384
+request piece=75
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00K\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=75, begin=0
+16384
+request piece=76
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00L\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=76, begin=0
+16384
+request piece=77
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00M\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=77, begin=0
+16384
+request piece=78
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00N\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=78, begin=0
+16384
+request piece=79
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00O\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=79, begin=0
+16384
+request piece=80
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00P\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=80, begin=0
+16384
+request piece=81
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00Q\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=81, begin=0
+16384
+request piece=82
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00R\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=82, begin=0
+16384
+request piece=83
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00S\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=83, begin=0
+16384
+request piece=84
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00T\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=84, begin=0
+16384
+request piece=85
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00U\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=85, begin=0
+16384
+request piece=86
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00V\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=86, begin=0
+16384
+request piece=87
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00W\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=87, begin=0
+16384
+request piece=88
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00X\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=88, begin=0
+16384
+request piece=89
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00Y\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=89, begin=0
+16384
+request piece=90
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00Z\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=90, begin=0
+16384
+request piece=91
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00[\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=91, begin=0
+16384
+request piece=92
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00\\\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=92, begin=0
+16384
+request piece=93
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00]\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=93, begin=0
+16384
+request piece=94
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00^\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=94, begin=0
+16384
+request piece=95
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00_\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=95, begin=0
+16384
+request piece=96
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00`\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=96, begin=0
+16384
+request piece=97
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00a\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=97, begin=0
+16384
+request piece=98
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00b\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=98, begin=0
+16384
+request piece=99
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00c\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=99, begin=0
+16384
+request piece=100
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00d\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=100, begin=0
+16384
+request piece=101
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00e\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=101, begin=0
+16384
+request piece=102
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00f\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=102, begin=0
+16384
+request piece=103
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00g\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=103, begin=0
+16384
+request piece=104
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00h\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=104, begin=0
+16384
+request piece=105
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00i\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=105, begin=0
+16384
+request piece=106
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00j\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=106, begin=0
+16384
+request piece=107
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00k\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=107, begin=0
+16384
+request piece=108
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00l\x00\x00\x00\x00\x00\x00@\x00&#39;
+piece
+index=108, begin=0
+16384
+request piece=109
+sent=b&#39;\x00\x00\x00\r\x06\x00\x00\x00m\x00\x00\x00\x00\x00\x005v&#39;
+piece
+index=109, begin=0
+13686
+completed.
+0xfffffffffffffffffffffffffffc
+download ok.
+
+Process finished with exit code 0
+</code></pre>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/bitTorrent/" class="print-no-link">#bitTorrent</a>
+      
+        <a href="/tags/protocol/" class="print-no-link">#protocol</a>
+      
+        <a href="/tags/p2p/" class="print-no-link">#p2p</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>BitTorrent协议（五）之下载文件</div>
+      <div>https://threelambda.com/2019/01/25/2019-1-25-bt-5/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Ming Yang</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2019年1月25日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2019/02/18/2019-2-18-bt-6/" title="BitTorrent协议（六）之种子嗅探器">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">BitTorrent协议（六）之种子嗅探器</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2019/01/21/2019-1-23-bt-4/" title="BitTorrent协议（四）之bitfield消息">
+                        <span class="hidden-mobile">BitTorrent协议（四）之bitfield消息</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
