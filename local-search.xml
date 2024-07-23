@@ -244,9 +244,9 @@
     
     <tags>
       
-      <tag>certificate</tag>
-      
       <tag>X.509</tag>
+      
+      <tag>certificate</tag>
       
       <tag>nginx</tag>
       
@@ -321,11 +321,11 @@
     
     <tags>
       
-      <tag>docker</tag>
-      
       <tag>k8s</tag>
       
       <tag>ingress</tag>
+      
+      <tag>docker</tag>
       
       <tag>mac</tag>
       
@@ -346,11 +346,11 @@
     
     <tags>
       
+      <tag>docker</tag>
+      
       <tag>kafka</tag>
       
       <tag>container</tag>
-      
-      <tag>docker</tag>
       
     </tags>
     
@@ -829,9 +829,9 @@
       
       <tag>java</tag>
       
-      <tag>gradle</tag>
-      
       <tag>grails</tag>
+      
+      <tag>gradle</tag>
       
     </tags>
     
