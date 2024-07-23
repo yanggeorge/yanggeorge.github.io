@@ -244,9 +244,9 @@
     
     <tags>
       
-      <tag>X.509</tag>
-      
       <tag>certificate</tag>
+      
+      <tag>X.509</tag>
       
       <tag>nginx</tag>
       
@@ -321,11 +321,11 @@
     
     <tags>
       
+      <tag>docker</tag>
+      
       <tag>k8s</tag>
       
       <tag>ingress</tag>
-      
-      <tag>docker</tag>
       
       <tag>mac</tag>
       
@@ -346,11 +346,11 @@
     
     <tags>
       
-      <tag>docker</tag>
-      
       <tag>kafka</tag>
       
       <tag>container</tag>
+      
+      <tag>docker</tag>
       
     </tags>
     
@@ -597,11 +597,11 @@
     
     <tags>
       
+      <tag>python</tag>
+      
       <tag>leetcode</tag>
       
       <tag>算法</tag>
-      
-      <tag>python</tag>
       
     </tags>
     
@@ -620,11 +620,11 @@
     
     <tags>
       
+      <tag>python</tag>
+      
       <tag>leetcode</tag>
       
       <tag>算法</tag>
-      
-      <tag>python</tag>
       
     </tags>
     
@@ -643,11 +643,11 @@
     
     <tags>
       
+      <tag>python</tag>
+      
       <tag>leetcode</tag>
       
       <tag>算法</tag>
-      
-      <tag>python</tag>
       
     </tags>
     
@@ -689,11 +689,11 @@
     
     <tags>
       
+      <tag>python</tag>
+      
       <tag>leetcode</tag>
       
       <tag>算法</tag>
-      
-      <tag>python</tag>
       
     </tags>
     
@@ -804,11 +804,11 @@
     
     <tags>
       
+      <tag>python</tag>
+      
       <tag>leetcode</tag>
       
       <tag>算法</tag>
-      
-      <tag>python</tag>
       
     </tags>
     
@@ -829,9 +829,9 @@
       
       <tag>java</tag>
       
-      <tag>grails</tag>
-      
       <tag>gradle</tag>
+      
+      <tag>grails</tag>
       
     </tags>
     
@@ -850,11 +850,11 @@
     
     <tags>
       
+      <tag>python</tag>
+      
       <tag>leetcode</tag>
       
       <tag>算法</tag>
-      
-      <tag>python</tag>
       
     </tags>
     
@@ -915,11 +915,11 @@
     
     <tags>
       
+      <tag>python</tag>
+      
       <tag>leetcode</tag>
       
       <tag>算法</tag>
-      
-      <tag>python</tag>
       
     </tags>
     
@@ -938,11 +938,11 @@
     
     <tags>
       
+      <tag>python</tag>
+      
       <tag>leetcode</tag>
       
       <tag>算法</tag>
-      
-      <tag>python</tag>
       
     </tags>
     
@@ -982,9 +982,9 @@
     
     <tags>
       
-      <tag>python</tag>
-      
       <tag>R</tag>
+      
+      <tag>python</tag>
       
     </tags>
     
@@ -1003,11 +1003,11 @@
     
     <tags>
       
+      <tag>python</tag>
+      
       <tag>leetcode</tag>
       
       <tag>算法</tag>
-      
-      <tag>python</tag>
       
     </tags>
     
@@ -1026,11 +1026,11 @@
     
     <tags>
       
+      <tag>python</tag>
+      
       <tag>leetcode</tag>
       
       <tag>算法</tag>
-      
-      <tag>python</tag>
       
     </tags>
     
@@ -1049,11 +1049,11 @@
     
     <tags>
       
+      <tag>python</tag>
+      
       <tag>leetcode</tag>
       
       <tag>算法</tag>
-      
-      <tag>python</tag>
       
     </tags>
     
