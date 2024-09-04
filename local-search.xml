@@ -369,11 +369,11 @@
     
     <tags>
       
+      <tag>golang</tag>
+      
       <tag>k3s</tag>
       
       <tag>delve</tag>
-      
-      <tag>golang</tag>
       
     </tags>
     
@@ -666,9 +666,9 @@
     
     <tags>
       
-      <tag>algorithm</tag>
-      
       <tag>java</tag>
+      
+      <tag>algorithm</tag>
       
       <tag>trie</tag>
       
